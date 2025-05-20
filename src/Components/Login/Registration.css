@@ -1,0 +1,79 @@
+.Regcontainer {
+    width: 50%;
+    height: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.title {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.inputContainer {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.inputContainer:last-child {
+    margin-right: 0;
+}
+
+.selectContainer {
+    flex: 1;
+}
+
+.inputContainer label, .selectContainer label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.inputContainer input, .selectContainer select {
+    width: 100%;
+    padding: 10px;
+    font-size: small;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.inputContainer input:focus, .selectContainer select:focus {
+    border-color: #464748;
+    outline: none;
+}
+
+
+
+.errorMessage {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+}
+
+.successMessage {
+    color: green;
+    font-size: 14px;
+    text-align: center;
+}
+
+
+
+
+

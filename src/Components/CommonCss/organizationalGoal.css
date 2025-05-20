@@ -1,0 +1,235 @@
+.organizational-goal-container {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;  
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 200px;
+}
+
+.goal-inputs {
+    margin-top: 20px;
+    overflow-y: auto;
+    max-height: calc(100% - 60px);
+    padding-bottom: 50px;
+}
+.goal-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.serial-number {
+    font-weight: normal;
+    margin-right: 8px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.goal-input {
+    width: 100%;
+    padding: 6px 10px;
+    border: none;
+    border-bottom: 2px solid #ddd;
+    outline: none;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.goal-input:focus {
+    border-bottom: 2px solid #3498db;
+}
+
+/* Title should remain fixed at the top */
+.stickyHeading {
+    position: sticky;
+    top: 0;
+    background-color:white;
+    padding: 8px 0;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #ddd;
+    font-weight: normal;
+    text-align: center;
+    text-decoration: underline;
+}
+
+.goal-table-container {
+    max-width: 1080px;
+    position: relative; 
+    left: 50%; 
+    transform: translateX(-50%); 
+}
+
+
+/* Goal Table Styles */
+.goal-table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: small;
+    text-align: left;
+    background-color: #f9f9f9;
+    box-shadow: 0 12px 10px rgba(0, 0, 0, 0.1);
+}
+
+.goal-table th, .goal-table td {
+    padding: 12px 15px;
+}
+
+.goal-table thead th {
+    background-color: #d2d8fe;
+    color: black;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #dddddd;
+}
+
+.goal-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.goal-table tbody tr:nth-of-type(even) {
+    background-color: #f0f0f2;
+}
+
+.goal-table tbody tr:last-of-type {
+    border-bottom: 2px solid #b6beef;
+}
+
+.goal-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.goal-table ul {
+    padding-left: 20px;
+    list-style-type: decimal;
+}
+
+.goal-table li {
+    margin-bottom: 5px;
+}
+.orgIcon{
+  color: #a4780a;
+  font-size: medium;
+  margin-right: 10px;
+}
+.goalIcon{
+  display: flex;
+  align-items: center;
+}
+.orgIcon2{
+  color: black;
+  font-size: medium;
+  margin-right: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Team.css */
+  .card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .team-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    padding: 1.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    height: 180px;
+    width: 220px;
+  }
+  
+  .team-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    
+  }
+  .top-header{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+  }
+  .avatar {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+  }
+  
+  .card-header-info h4 {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #333;
+  }
+  
+  .card-header-info p {
+    margin: 0;
+    color: #666;
+  }
+  
+  .card-body {
+    margin-top: 0.5rem;
+    color: #444;
+  }
+  
+  .card-body p {
+    margin: 0.25rem 0;
+    font-size: 0.7rem;
+  }
+  
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+  

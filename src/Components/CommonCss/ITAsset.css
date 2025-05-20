@@ -1,0 +1,429 @@
+
+.container-asset {
+  background-color: #ffffff;
+  margin-top: 60px;
+  width: 23cm; 
+  height: auto; 
+  margin: auto;
+  border: 1px solid #ccc;
+  padding: 30px 40px; 
+}
+
+.forms-headline{
+  font-size: 20px;
+  text-align: center,
+}
+.forms-headline2{
+  font-size: 12px;
+  text-align: center;
+  
+}
+.headline {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.headline .logo {
+  width: 100px;
+  height: auto;
+  margin-right: 20px;
+}
+
+.headline div h1 {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.headline div p {
+  font-size: 12px;
+}
+
+.title {
+  text-align: center;
+  font-weight: lighter;
+  font-size: 18px;
+  margin: 10px 0;
+  text-decoration: underline;
+  margin-bottom: 20px;
+}
+
+.form .user-info {
+  margin-bottom: 20px;
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.info-table td {
+  border: 1px solid #fcfcfc;
+  padding: 12px; /* Adjusted padding */
+}
+
+.info-table input {
+  width: 100%;
+  padding: 4px;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  border-bottom: 1px solid black;
+}
+
+
+@media print {
+  .sidebar, .navbar, .btn1 {
+      display: none !important;
+  }
+  @media print {
+    #printable-content + .SavedHireChecklist {
+      display: none;
+    }
+  }
+  
+
+  /* Ensure the print view uses the full width of the page */
+  body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 99%;
+      overflow: visible;
+
+  }
+ 
+  /* Center the container for print */
+  .container-asset {
+      width: auto; 
+      max-width: 25cm;
+      height: auto; 
+      margin: auto; 
+      padding: 20px; 
+      border: 1px solid #ccc; 
+      box-shadow: none; 
+      background-color: #fff; 
+      page-break-inside: avoid; 
+  }
+
+  .info-table {
+      width: 100%;
+      overflow: visible;
+  }
+
+  .container-asset:after {
+      content: "";
+      display: block;
+      height: 30px; 
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+  }
+  .headline, .title, .form, .info-table {
+      page-break-inside: avoid;
+      
+  }
+
+  .container-asset:first-child {
+      margin-top: 0;
+  }
+
+  body {
+    orphans: 3;
+    widows: 3;
+}
+}
+
+
+
+
+
+
+/* ITRecruitment css */
+.A4-page {
+  width: 25cm ; /* A4 width */
+  height: 40cm ; /* A4 height */
+  margin: auto ;
+  border: 1px solid #ccc;
+  padding: 30px 40px ;
+  margin-top: 120px ;
+  margin-bottom: 60px ;
+  background-color: #ffffff;
+}
+.table-container {
+  margin-bottom: 20px ;
+}
+
+.table-header {
+  text-align: center;
+  margin-left: 120px;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: -10px;
+}
+.content {
+  font-size: 14px;
+  text-align: center;
+}
+.undertaking {
+  text-align: center;
+  text-decoration: underline;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+.page {
+  margin-bottom: 20px;
+}
+.employee-details {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+.employee-details th,
+.employee-details td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  width: 130px;
+}
+.employee-details th {
+  background-color: #f2f2f2;
+}
+.nested-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.nested-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+.table-content {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+ margin-top: 250px;
+}
+.table-footer div {
+  margin-top: 20px;
+  text-align: center;
+}
+.table-footer input {
+  width: 100px;
+  margin-bottom: 5px;
+  border: none;
+  border-bottom: 1px solid gray ;
+}
+@media print {
+  .top-navbar {
+      display: none; /* Remove border when printing */
+  }
+}
+
+input[type="Itext"] {
+  flex: 1 !important;
+  /* Take remaining width */
+  border: none !important;
+  /* No border */
+  border-bottom: 1px solid gray ;
+  /* Bottom border only */
+  background: transparent !important;
+  /* Transparent background */
+  outline: none !important;
+  /* No outline */
+}
+.t{
+  border: none;
+  border: bottom 1px solid;
+  }
+  .td-fields {
+    width: 470px !important;
+    height: 10px;
+    border: none !important; /* Removes all existing borders */
+    border-right: 1px solid #ccc !important;
+    
+  }
+  .td1-fields{
+    width: 200px !important;
+    height: 10px;
+    border: none !important; /* Removes all existing borders */
+    border-right: 1px solid #ccc !important;
+  }
+  .td2-fields{
+    width: 350px !important;
+    height: 10px;
+    border: none !important; /* Removes all existing borders */
+    border-right: 1px solid #ccc !important;
+    
+  }
+  @media print {
+    /* Hide top navbar in print view */
+    .top-navbar 
+     {
+        display: none;
+    }
+    @media print {
+      /* Hide SavedHireChecklist component */
+      #printable-content + .SavedHireChecklist {
+        display: none;
+      }
+    }
+    
+  
+    /* Center the content on the printing page */
+    .A4-page {
+      width: auto; /* Use full width available */
+      max-width: 25cm; /* Ensure it doesn't exceed A4 width */
+      height: auto; /* Let height adjust automatically */
+      margin: auto; /* Center the element */
+      border: 1px solid #ccc; /* Keep border for visibility */
+      padding: 30px 40px; /* Adjusted padding */
+      margin-top: 0; /* Remove top margin */
+      margin-bottom: 0; /* Remove bottom margin */
+    }
+  
+    /* Adjust input styles for printing */
+    input[type="Itext"] {
+      width: 100%; /* Take full width available */
+      margin-bottom: 5px; /* Adjust margin */
+      border: none; /* No border */
+      border-bottom: 1px solid gray; /* Bottom border only */
+      background: transparent; /* Transparent background */
+      outline: none; /* No outline */
+    }
+  }
+  
+  
+  /* SAP undertaking css */
+
+
+  @media print {
+    /* Hide sidebar and navbar in print view */
+    .sidebar, .navbar, .btn1 {
+        display: none !important;
+    }
+
+    /* Ensure the print view uses the full width of the page */
+    .undertaking-container {
+        width: auto !important;
+        height: auto !important;
+        margin: 0;
+        padding: 20px;
+        border: 1px solid #ccc; /* Keep border for visibility */
+        box-shadow: none;
+        
+    }
+
+    /* Adjusting margins and paddings for print */
+    body {
+        margin: 0;
+        padding: 0;
+    }
+}
+
+/* Rest of your styles */
+.undertaking-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    box-shadow: transparent;
+    padding: 40px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 19cm;
+    height: 21cm;
+    margin: 0 auto;
+    margin-top: 50px;
+}
+
+.undertaking-header {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 1px;
+    font-weight: bolder;
+    font-size: 20px;
+    text-decoration: underline;
+}
+
+.undertaking-content {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.undertaking-details {
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.undertaking-row {
+    display: flex;
+    align-items: center;
+}
+
+.undertaking-paragraph {
+    line-height: 3.2; /* Adjust the value as needed to increase or decrease line spacing */
+}
+
+.undertaking-label {
+    text-align: center;
+    font-weight: bold;
+    margin-right: 20px;
+    width: 100px;
+    margin-top: 10px;
+}
+
+.undertaking-value {
+    margin-right: 20px;
+    margin-bottom: 5px;
+}
+
+.s-text {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid black;
+    margin-left: 20px;
+}
+
+/* Hide scrollbars for better print view */
+::-webkit-scrollbar {
+    display: none;
+}
+
+
+.checklisttable1{
+  width: 1203px;
+  height: 55px;
+  top: 185px;
+  left: 130px;
+  gap: 0px;
+  opacity: 0px;
+  background-color: #E7E9F4;
+
+}
+.checklisttable2{
+  width: 1203px;
+height: 64px;
+top: 256px;
+left: 130px;
+gap: 0px;
+border: 1px 0px 0px 0px;
+opacity: 0px;
+background-color: #E7E9F4;
+
+
+}
+.check-form-container{
+  width: 1203px;
+  /* height: 452px; */
+  top: 358px;
+  left: 130px;
+  gap: 0px;
+  opacity: 0px;
+  /* background-color: #E7E9F4; */
+
+  }

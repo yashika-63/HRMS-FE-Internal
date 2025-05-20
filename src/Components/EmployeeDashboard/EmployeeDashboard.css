@@ -1,0 +1,107 @@
+.employeedashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.employeedashboard-card {
+    width: 200px; 
+    height: 120px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    color: white;
+    font-family: Arial, sans-serif;
+    position: relative;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    
+}
+
+.employeedashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.employeedashboard-icon {
+    width: 80px; 
+    height: 80px;
+    object-fit: cover;
+    font-weight: bold;
+}
+
+.employeedashboard-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 15px; 
+}
+
+.employeedashboard-content h3 {
+    margin: 0;
+    font-size: 16px;
+    color: white;
+}
+
+/* Description styling */
+.card-description {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.overview-employeedashboard {
+    background: linear-gradient(135deg, #11453B,  #29AB91, #11453B, #29AB91);
+    background-size: 200% 120%;
+}
+
+/* .overview-employeedashboard {
+    background: linear-gradient(130deg,#29AB91, #11453B);
+} */
+
+.feedback-employeedashboard {
+    background: linear-gradient(135deg, #e09304, #FFB427 , #e09304, #FFB427);
+    background-size: 200% 100%;
+}
+.timesheet-employeedashboard {
+    background: linear-gradient(135deg, #24001D, #8A0171 ,#24001D, #8A0171);
+    background-size: 200% 100%;
+}
+.dashboard-employeedashboard {
+    background: linear-gradient(135deg, #8a0171, #f75cdb, #8a0171, #f75cdb);
+    background-size: 200% 100%;
+}
+.appraisal-employeedashboard {
+    background: linear-gradient(135deg, #0D4003, #22A608 ,#0D4003, #22A608);
+    background-size: 200% 100%;
+}
+.ctc-employeedashboard {
+    background: linear-gradient(135deg, #4F247A, #9142E0 ,#4F247A, #9142E0);
+    background-size: 200% 100%;
+}
+.payslip-employeedashboard {
+    background: linear-gradient(135deg, #820101, #f53232 ,#820101, #f53232);
+    background-size: 200% 100%;
+}
+.kpi-employeedashboard {
+    background: linear-gradient(135deg,#224C99, #397EFF , #224C99, #397EFF );
+    background-size: 200% 100%;
+}
+.training-employeedashboard {
+    background: linear-gradient(135deg,  #fc3103 ,#eb765b,#f7390f ,#fc3103);
+    background-size: 200% 100%;
+}
+
+.induction-employeedashboard {
+    background: linear-gradient(135deg, #bd2550, #ce4e72, #8a013a, #f75ca2);
+    background-size: 200% 100%;
+}
+.exitprocess-employeedashboard {
+    background: linear-gradient(135deg, #feeb1d, #e6d263, #faed33, #f5f75c);
+    background-size: 200% 100%;
+}

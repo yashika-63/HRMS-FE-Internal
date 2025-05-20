@@ -1,0 +1,123 @@
+
+/* Project Styles */
+.data-container {
+  padding: 10px;
+  grid-gap: 20px;
+}
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+td {
+  vertical-align: top;
+}
+.project-info1-box,
+.project-info2-box,
+.project-info3-box,
+.project-info4-box {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  background-color: white;
+  max-width: 1040px;
+  margin: 0 auto;
+  margin-bottom: 30px;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.row div {
+  flex: 1;
+  min-width: 100px;
+  margin: 10px;
+}
+
+.description {
+  resize: vertical;
+  height: 100px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  padding: 10px;
+}
+
+
+.project-table-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.project-table-row .project-info1-box,
+.project-table-row .project-info2-box,
+.project-table-row .project-info3-box,
+.project-table-row .project-info4-box {
+  flex: 1 1 calc(50% - 20px);
+  box-sizing: border-box;
+  margin: 10px;
+}
+.box-container.educational-info-box {
+  overflow-x: hidden; 
+}
+
+@media (max-width: 1200px) {
+  .project-table-row .project-info1-box,
+  .project-table-row .project-info2-box,
+  .project-table-row .project-info3-box,
+  .project-table-row .project-info4-box {
+    flex: 1 1 calc(50% - 10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .project-table-row {
+    flex-direction: column;
+  }
+
+  .project-table-row .project-info1-box,
+  .project-table-row .project-info2-box,
+  .project-table-row .project-info3-box,
+  .project-table-row .project-info4-box {
+    flex: 1 1 100%;
+    margin: 10px 0;
+  }
+}
+/* Responsive Layout */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+  .project-info1-box,
+  .project-info2-box,
+  .project-info3-box,
+  .project-info4-box,
+  .data-container {
+    width: 100%;
+    margin: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .circle-button.add-more-btn,
+  .circle-button.remove-btn {
+    margin-left: auto; /* Center on smaller screens */
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

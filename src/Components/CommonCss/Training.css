@@ -1,0 +1,266 @@
+
+/* Styling for the Card Container */
+
+.employeeTrainingform{
+    max-width: 1070px;
+    margin: 0 auto;
+    margin-top: 40px;
+}
+
+.trainnigcards-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.training-trainnigcard {
+    background-color: #f5f3f1;
+    padding: 20px;
+    border-radius: 8px;
+    width: 200px;
+    cursor: pointer;
+    box-shadow: 5px 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.training-trainnigcard.selected {
+    border: 1px solid #007bff;
+    box-shadow: 0 2px 7px rgba(0, 123, 255, 0.3);
+}
+
+.trainnigcard-icon img {
+    width: 50px;
+    height: 50px;
+}
+
+.trainnigcard-content h5 {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.trainnigcard-content p {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.check-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    color: #28a745;
+    border: 2px solid #28a745;
+}
+
+.training-trainnigcard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+
+
+
+
+/* ViewTraining.css */
+
+/* Training List */
+.trainings-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Training Item */
+.training-item {
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.training-item:hover {
+    transform: translateY(-5px);
+}
+
+/* Left Section */
+.training-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.training-left p {
+    margin: 8px 0;
+}
+
+/* Right Section */
+.training-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+}
+
+
+
+/* Progress Bar */
+.progress-container {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    position: relative;
+    cursor: pointer;
+    border-radius: 14px;
+
+}
+
+.progress-bar {
+    width: 100%;
+    height: 14px;
+    background-color: #ddd;
+    border-radius: 10px;
+    position: relative;
+}
+.progress-container.disabled {
+    cursor: not-allowed;
+    opacity: 0.6; /* Make it look faded to show it's disabled */
+}
+/* Progress Fill */
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right,#f7ad25, #f96d02);
+    transition: width 0.5s ease-in-out;
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 0%;
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Airplane Icon */
+.progress-plane {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    font-size: 20px;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* Tick Mark at Completion */
+.progress-complete {
+    position: absolute;
+    right: 5px;
+    top: -25px;
+    font-size: 22px;
+    color: green;
+    font-weight: bold;
+}
+
+
+/* Progress Tick (at 100%) */
+.progress-tick {
+    position: absolute;
+    right: 0;
+    top: -10px;
+    font-size: 22px;
+    color: green;
+    font-weight: bold;
+}
+
+/* Progress Label */
+.progress-label {
+    position: absolute;
+    right: -30px;
+    top: -20px;
+    font-size: 14px;
+    color: black;
+    font-weight: bold;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* managerView css */
+/* 
+.training-grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; 
+    justify-content: space-between; 
+    margin: 20px; 
+}
+
+.trainingviewcard-grid {
+    flex: 1 1 calc(25% - 20px); 
+    box-sizing: border-box; 
+    min-width: 200px; 
+}
+
+.trainingviewcard {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.trainingviewcard:hover {
+    transform: translateY(-5px);
+}
+
+.trainingviewcard-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.trainingviewcard-icon {
+    font-size: 30px;
+    color: #e7a437;
+}
+
+.trainingviewcard-body p {
+    font-size: 12px;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.trainingviewcard-body p strong {
+    color: #333;
+} */

@@ -1,0 +1,319 @@
+.kanban-container {
+    display: flex;
+    gap: 20px;
+    padding-right: 10px;
+}
+
+.kanban-column {
+    background: #EEF2F5;
+    border-radius: 8px;
+    padding: 15px;
+    min-width: auto;
+    flex: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+ 
+}
+.toggle-btn {
+    border-bottom: 1px dashed black;
+    background: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+.kanban-column.collapsed {
+    padding: 10px 15px;
+    max-height: 60px;
+    /* just enough for header */
+    overflow: hidden;
+}
+
+.details {
+    padding: 10px;
+    margin: 0 auto;
+    width: 100%;
+}
+.letterdetails {
+    padding: 10px;
+    line-height: 1.9;
+    font-size: 14px;
+    text-align: justify;
+}
+
+.kanban-column h3 {
+    text-align: left;
+    padding-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+    text-decoration: underline;
+}
+
+.kanban-card {
+    position: relative;
+    background: #FFFFFF;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+
+}
+
+.kanban-card1 {
+    position: relative;
+    background: #FFFFFF;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    border-left: 5px solid rgb(16, 76, 167);
+    ;
+
+}
+
+.kanban-card h4 {
+    margin: 10px 5px 15px;
+    font-size: 14px;
+}
+
+.kanban-card p {
+    margin: 3px 10;
+    font-size: 12px;
+    color: #666;
+}
+
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+.initials-container {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.initial-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    position: relative;
+    margin-left: -10px;
+}
+
+
+.options-container {
+    position: absolute;
+    top: 10px;
+    z-index: 3;
+    right: 10px;
+
+}
+
+.offermodal-content {
+    background-color: white;
+    padding: 16px;
+    border-radius: 8px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.step-container {
+    align-items: center;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1000;
+    /* Ensures it stays above other elements */
+    padding: 10px 0;
+    gap: 50px;
+}
+
+
+
+
+.step {
+    width: 15%;
+    height: 40px;
+    border-radius: 70px;
+    background-color: #e0e0e0;
+    color: black;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+}
+
+.step.active {
+    background-color: #6200ea;
+    color: white;
+}
+
+.step.completeded {
+    background: linear-gradient(to right, #a3f8a6, #69efd4);
+    color: black;
+    font-weight: bold;
+}
+
+.step-line {
+    height: 5px;
+    width: 50px;
+    background-color: #e0e0e0;
+    transition: background 0.3s;
+}
+
+.step-wrapper .step.active+.step-line {
+    background-color: #6200ea;
+}
+
+.step-content {
+    text-align: center;
+    padding: 30px;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    max-width: 500px;
+    margin: auto;
+}
+
+.sender {
+
+    background-color: orange;
+}
+
+.receiver {
+
+    background-color: red;
+}
+
+
+
+
+
+
+
+
+
+
+/* TOPBAR CSS */
+/* TOPBAR CSS */
+.topBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #030303;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+    /* Required for tooltip positioning */
+}
+
+.homeIcon, .personalDetailsIcon {
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    /* Ensures that the cursor changes to pointer */
+    z-index: 10;
+    /* Ensure it is above other elements */
+}
+
+/* Tooltip styling */
+.offertooltip {
+    position: absolute;
+    top: 40px;
+    /* Position the tooltip below the icon */
+    background-color: rgba(48, 47, 47, 0.7);
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 15;
+}
+
+/* Tooltip visibility on hover */
+.center .homeIcon:hover+.offertooltip,
+.center .personalDetailsIcon:hover+.offertooltip {
+    opacity: 1;
+}
+
+/* Position tooltips relative to icons */
+.center .homeIcon:hover+.offertooltip {
+    left: -10px;
+}
+
+.center .personalDetailsIcon:hover+.offertooltip {
+    left: -20px;
+}
+
+.welcomemessage {
+    height: 20px;
+    cursor: pointer;
+    font-size: medium;
+    color: white;
+}
+
+.topbarIconList {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 75%;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* OfferLetter */
+.offerLetterContainer {
+    width: 19cm;
+    height: auto;
+    margin: 2cm auto;
+    padding: 2cm;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Times New Roman', serif;
+}
+
+.offer-header {
+    display: flex;
+    float: right;
+
+}
