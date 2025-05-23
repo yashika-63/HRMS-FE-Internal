@@ -31,7 +31,8 @@ const AllTrainings = () => {
         question: [],
         documents: [],
         regionId: '',
-        date: new Date().toISOString()
+        date: new Date().toISOString(),
+        time: '',
     });
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentTrainingId, setCurrentTrainingId] = useState(null);
@@ -365,7 +366,8 @@ const AllTrainings = () => {
                 status: item.status,
                 description: item.description || '',
                 question: item.questions || [],
-                documents: item.documents || []
+                documents: item.documents || [],
+                time: item.time || '0'
             }));
 
             setTrainings(transformedData);
@@ -394,7 +396,8 @@ const AllTrainings = () => {
             region: '',
             question: [],
             documents: [],
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
+            time: '',
         });
     };
 
@@ -436,6 +439,7 @@ const AllTrainings = () => {
                 date: trainingData.date || trainingData.createdAt || new Date().toISOString(),
                 companyId: parseInt(companyId),
                 createdByEmployeeId: parseInt(employeeId),
+                time: trainingData.time || '0',
             };
 
             setFormData(formDataUpdate);
@@ -489,6 +493,7 @@ const AllTrainings = () => {
                 date: training.date || new Date().toISOString(),
                 companyId: parseInt(companyId),
                 createdByEmployeeId: parseInt(employeeId),
+                time: training.time || '0',
             });
         }
     };
@@ -521,7 +526,8 @@ const AllTrainings = () => {
                 question: [],
                 documents: [],
                 regionId: selectedRegion ? selectedRegion.masterId : '',
-                departmentId: selectedDepartment ? selectedDepartment.masterId : ''
+                departmentId: selectedDepartment ? selectedDepartment.masterId : '',
+                time: training.time || training.time === 0 ? training.time.toString() : '0',
             };
             setFormData(formDataUpdate);
             try {
@@ -538,12 +544,12 @@ const AllTrainings = () => {
                     ...prev,
                     question: Array.isArray(questions) ?
                         questions.map(q => q.question || q) : [],
-                    documents: Array.isArray(documents) ? documents : []
+                    documents: Array.isArray(documents) ? documents : [],
+                    time: training.time || training.time === 0 ? training.time.toString() : prev.time,
                 }));
 
             } catch (error) {
                 console.error('Error fetching questions or documents:', error);
-                // Fallback to whatever data we have in the training object
                 setFormData(prev => ({
                     ...prev,
                     question: training.question || [],
@@ -563,7 +569,8 @@ const AllTrainings = () => {
             description: '',
             region: '',
             question: [],
-            documents: []
+            documents: [],
+            time: '',
         });
         setViewMode(false);
     };
@@ -648,6 +655,7 @@ const AllTrainings = () => {
                     createdByEmployeeId: parseInt(employeeId),
                     createdAt: formData.date || existingTraining.data.createdAt || new Date().toISOString(),
                     status: true,
+                    time: formData.time,
                 };
 
                 response = await axios.put(
@@ -667,9 +675,24 @@ const AllTrainings = () => {
                         companyId: parseInt(companyId),
                         createdByEmployeeId: parseInt(employeeId),
                         date: formData.date || new Date().toISOString(),
+                        time: formData.time,
                     } : ind
                 ));
             } else {
+                const payload = {
+                    heading: formData.heading,
+                    type: formData.type === 'Safety' ? 1 : 0,
+                    description: formData.description,
+                    region: formData.region,
+                    regionId: formData.regionId,
+                    department: formData.department,
+                    departmentId: formData.deptId,
+                    companyId: parseInt(companyId),
+                    createdByEmployeeId: parseInt(employeeId),
+                    createdAt: formData.date || new Date().toISOString(),
+                    status: true,
+                    time: formData.time,
+                };
                 response = await axios.post(
                     `http://${strings.localhost}/api/training/save-with-employee/${companyId}/${employeeId}`,
                     payload
@@ -696,6 +719,7 @@ const AllTrainings = () => {
                     status: true,
                     companyId: parseInt(companyId),
                     createdByEmployeeId: parseInt(employeeId),
+                    time: formData.time,
                 }]);
             }
 
@@ -1071,11 +1095,10 @@ const AllTrainings = () => {
     );
 
     useEffect(() => {
-        // Check if filters are applied, otherwise fetch active training data
         if (areFiltersApplied()) {
             fetchFilteredTrainings();
         } else {
-            fetchTrainings(filters.page); // Call active API with page
+            fetchTrainings(filters.page);
         }
     }, [filters, companyId]);
 
@@ -1388,21 +1411,22 @@ const AllTrainings = () => {
                                                 </div>
 
                                                 <div className="half-width">
-                                                    <label htmlFor="time">Time{!viewMode && <span className="required">*</span>}</label>
+                                                    <label htmlFor="time">Time (in hours){!viewMode && <span className="required">*</span>}</label>
                                                     {viewMode ? (
                                                         <input
                                                             type="text"
-                                                            value={formData.time || ''}
+                                                            value={formData.time ? `${formData.time}` : 'Not specified'}
                                                             readOnly
                                                             className="read-only-input"
                                                         />
                                                     ) : (
                                                         <input
-                                                            type="time"
+                                                            type="number"
                                                             name="time"
                                                             value={formData.time || ''}
                                                             onChange={handleInputChange}
                                                             className="selectIM"
+                                                            step="0.1"
                                                             required
                                                         />
                                                     )}
@@ -1822,13 +1846,13 @@ const AllTrainings = () => {
                                 <iframe src={previewUrl} title="PDF Preview" width="100%" height="500px" />
                             )}
                             {previewType === 'image' && (
-                                <img src={previewUrl} alt="Preview" style={{ maxWidth: '100%', maxHeight: '500px' }} />
+                                <img src={previewUrl} alt="Preview" />
                             )}
                             {previewType === 'unsupported' && (
                                 <p>Preview not available for this file type.</p>
                             )}
 
-                            <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                            <div>
                                 <a href={previewUrl} download={previewFilename} className="btn">
                                     Download File
                                 </a>

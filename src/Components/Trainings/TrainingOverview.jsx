@@ -58,7 +58,8 @@ const TrainingOverview = () => {
                     type: item.trainingHRMS?.type || 'N/A',
                     assignDate: item.assignDate,
                     status: item.completionStatus ? "Completed" : item.expiryStatus ? "Expired" : "Pending",
-                    expiryStatus: item.expiryStatus
+                    expiryStatus: item.expiryStatus,
+                    time: item.trainingHRMS?.time || '0'
                 }));
 
                 setTrainings(transformedData);
@@ -400,6 +401,7 @@ const TrainingOverview = () => {
                                                     </div>
                                                 </div>
                                             </div>
+                                            <p className="card-description1">Time: {training.time} hours</p>
                                             <p className="card-description1">{training.description}</p>
                                             <div className="card-actions">
                                                 <button

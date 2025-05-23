@@ -4,7 +4,7 @@ import { FaEdit, FaEye, FaSearch, FaUserPlus } from 'react-icons/fa';
 import EditInduction from './AddNewInduction';
 import ViewInduction from './ViewInduction';
 import AssignInduction from './AssignInduction';
-import { toast } from 'react-toastify'; // assuming you want to use toast for error handling
+import { toast } from 'react-toastify';
 import { strings } from '../../string';
 import { fetchDataByKey } from '../../Api.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

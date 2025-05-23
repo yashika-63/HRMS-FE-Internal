@@ -140,6 +140,9 @@ import AiTdsCalculator from './Components/CTC/AiTdsCalculator.jsx';
 import ExpenseReport from './Components/Expense/ExpenseReport.jsx';
 import InductionHR from './Components/Induction/InductionHR/InductionHR.jsx';
 import TrainingHR from './Components/Trainings/TrainingHR/TrainingHR.jsx';
+import ReportsFilters from './Components/Reports/ReportsFilters.jsx';
+import CompanySettings from './Components/CompanySetting/CompanySettings.jsx';
+import TransferList from './Components/Transfer/TransferList.jsx';
 // import GlobalSearchBar from './globalSearchBar.jsx';
 const App = () => {
 
@@ -227,7 +230,7 @@ const App = () => {
   const routes = [
     { title: 'Add Employee', path: '/AddEmp' }
   ];
-  
+
   return (
     <>
       <Router>
@@ -391,7 +394,9 @@ const App = () => {
                     <Route path='/Assets/:id' element={<PrivateRoute allowedRoles={['ADMIN', 'USER']}><Assets /></PrivateRoute>} />
                     <Route path='/EmployeeAssetForm' element={<PrivateRoute allowedRoles={['ADMIN', 'USER']}><EmployeeAssetForm /></PrivateRoute>} />
                     <Route path='/LeaveBucketCreation' element={<PrivateRoute allowedRoles={['ADMIN']}><LeaveBucketCreation /></PrivateRoute>} />
+                    <Route path='/CompanySettings' element={<PrivateRoute allowedRoles={['ADMIN']}><CompanySettings /></PrivateRoute>} />
                     <Route path='/InductionList' element={<PrivateRoute allowedRoles={['ADMIN']}><InductionList /></PrivateRoute>} />
+                    <Route path='/TransferList' element={<PrivateRoute allowedRoles={['ADMIN']}><TransferList /></PrivateRoute>} />
                     <Route path='/TrainingCertificate' element={<PrivateRoute allowedRoles={['ADMIN', 'USER']}><TrainingCertificate /></PrivateRoute>} />
                     <Route path='/OffBoarding' element={<PrivateRoute allowedRoles={['ADMIN']}><OffBoarding /></PrivateRoute>} />
                     <Route path='EmployeeExitProcess/:id' element={<PrivateRoute allowedRoles={['ADMIN', 'USER']}><EmployeeExitProcess /></PrivateRoute>} />
@@ -401,7 +406,7 @@ const App = () => {
                     <Route path='/AiTdsCalculator' element={<PrivateRoute allowedRoles={['ADMIN']}><AiTdsCalculator /></PrivateRoute>} />
                     <Route path='/InductionHR' element={<PrivateRoute allowedRoles={['ADMIN']}><InductionHR /></PrivateRoute>} />
                     <Route path='/TrainingHR' element={<PrivateRoute allowedRoles={['ADMIN']}><TrainingHR /></PrivateRoute>} />
-
+                    <Route path='/Reports' element={<PrivateRoute allowedRoles={['ADMIN']}><ReportsFilters /></PrivateRoute>} />
                   </Routes>
                 </Sidebar>
               </ErrorBoundary>
@@ -414,7 +419,7 @@ const App = () => {
             <ErrorBoundary>
               <PreTopBar />
               <Routes>
-                
+
                 <Route path="/PreLogin" element={<PreLogin />} />
                 <Route path="/CandidatePortal" element={<CandidatePortal />} />
                 <Route path="/PersonalDetails" element={<PersonalDetails />} />

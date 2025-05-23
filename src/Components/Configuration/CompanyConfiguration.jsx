@@ -8,11 +8,12 @@ import CtcAttributes from "../CTC/CtcAttributes";
 import OrganizationalGoal from "../Pms/OrganizationSetup/OrganizationalGoal";
 import OrganizationalKPI from "../Pms/OrganizationSetup/OrganizationalKPI";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBucket, faBullseye, faCalendarDay, faCalendarXmark, faClipboardList, faCogs, faFileAlt, faFileCircleCheck, faMoneyCheck, faTachometerAlt } from "@fortawesome/free-solid-svg-icons";
+import { faBucket, faBullseye, faCalendarDay, faCalendarXmark, faClipboardList, faCogs, faFileAlt, faFileCircleCheck, faGear, faMoneyCheck, faTachometerAlt } from "@fortawesome/free-solid-svg-icons";
 import CompanyConfig from "./CompanyConfig";
 import TemplateCreation from "../Templates/TemplateCreation";
 import CompanyDocument from "../CompanySetting/CompanyDocument";
 import LeaveBucketCreation from "../Leaves/LeaveBucketCreation";
+import CompanySettings from "../CompanySetting/CompanySettings";
 
 const CompanyConfiguration = () => {
     const [activeSection, setActiveSection] = useState('company holiday'); // Default active section is 'Attributes'
@@ -70,6 +71,10 @@ const CompanyConfiguration = () => {
                         <FontAwesomeIcon className="icon" icon={faBucket} />
                         Leave Bucket
                     </button>
+                    <button type="button" className={activeSection === 'Company Settings' ? 'active' : ''} onClick={() => handleButtonClick('Company Settings')}>
+                        <FontAwesomeIcon className="icon" icon={faGear} />
+                        Company Settings
+                    </button>
                 </div>
 
                 {/* Content Area */}
@@ -84,7 +89,7 @@ const CompanyConfiguration = () => {
                     {activeSection === 'Company Documents' && <CompanyDocument/>}
                     {activeSection === 'Company Templates' && <TemplateCreation/>}
                     {activeSection === 'Leave Bucket' && <LeaveBucketCreation/>}
-
+                    {activeSection === 'Company Settings' && <CompanySettings/>}
                 </div>
             </div>
         </div>

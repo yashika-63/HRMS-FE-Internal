@@ -72,9 +72,9 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
             reader.onloadend = function () {
                 const base64data = reader.result;
                 setPhoto(base64data);
-                localStorage.setItem("profilePhoto", base64data); 
+                localStorage.setItem("profilePhoto", base64data);
             };
-            reader.readAsDataURL(response.data); 
+            reader.readAsDataURL(response.data);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching profile photo:', error);
@@ -221,7 +221,7 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
             reader.onloadend = function () {
                 const base64data = reader.result;
                 setPhoto(base64data);
-                localStorage.setItem("profilePhoto", base64data); 
+                localStorage.setItem("profilePhoto", base64data);
             };
             reader.readAsDataURL(selectedFile);
 
@@ -344,7 +344,7 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
         },
         // { icon: <FaUserFriends />, path: `/Team`, name: "My Team", roles: ["ADMIN"] },
         // { icon: <FaChalkboardTeacher/>, path: `/TrainningSetup`, name: "Training Module", roles: ["ADMIN"] },
-      
+
         {
 
             icon: <img src="/SidebarImages/preRegistration.png" alt="PreOnoarding" style={{ width: '15px', height: '15px' }} />,
@@ -354,7 +354,7 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
             subItems: [
                 { path: "/Preregistration", name: "Pre-Onboarding" },
                 { path: "/ticketsView", name: "Tickets" },
-                { path: "/ListOfCandidates" , name: 'Candidates List'}
+                { path: "/ListOfCandidates", name: 'Candidates List' }
 
             ]
         },
@@ -364,7 +364,7 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
         //     name: "PreRegistration",
         //     roles: ["ADMIN", "SUPERADMIN"]
         // },
-       
+
         {
             icon: <img src="/SidebarImages/recruitment.png" alt="Recruitment" style={{ width: '15px', height: '15px' }} />,
             path: `/Jd`,
@@ -397,6 +397,12 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
                 { path: "/InductionHR", name: "Induction List" }
             ]
         },
+         {
+            icon: <img src="/SidebarImages/employee dashboard.png" alt="transfer" style={{ width: '15px', height: '15px' }} />,
+            path: `/TransferList`,
+            name: "Transfer",
+            roles: ["ADMIN", "USER", "SUPERADMIN"]
+        },
         {
             icon: <img src="/SidebarImages/employee dashboard.png" alt="employee dashboard" style={{ width: '15px', height: '15px' }} />,
             path: `/EmployeeDashboard`,
@@ -407,6 +413,12 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
             icon: <img src="/SidebarImages/employee dashboard.png" alt="employee dashboard" style={{ width: '15px', height: '15px' }} />,
             path: `/OffBoarding`,
             name: "OffBoarding",
+            roles: ["ADMIN", "USER", "SUPERADMIN"]
+        },
+        {
+            icon: <img src="/SidebarImages/employee dashboard.png" alt="reports" style={{ width: '15px', height: '15px' }} />,
+            path: `/Reports`,
+            name: "Reports",
             roles: ["ADMIN", "USER", "SUPERADMIN"]
         },
     ];
