@@ -4,11 +4,16 @@ import { FaEdit, FaEye, FaSearch } from 'react-icons/fa';
 import { fetchDataByKey } from '../../Api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import UpdateTransfer from './UpdateTransfer';
+import ViewTransfer from './ViewTransfer';
 
 const TransferList = () => {
     const [transfers, setTransfers] = useState([]);
     const [filteredTransfers, setFilteredTransfers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedTransfer, setSelectedTransfer] = useState(null);
+    const [showUpdateTransfer, setShowUpdateTransfer] = useState(false);
+    const [transferToView, setTransferToView] = useState(null);
     const [filters, setFilters] = useState({
         department: '',
         region: '',
@@ -92,21 +97,40 @@ const TransferList = () => {
         fetchDropdownData();
     }, []);
 
+    const handleUpdateClick = (transfer) => {
+        setSelectedTransfer(transfer);
+        setShowUpdateTransfer(true);
+    };
+
+    const handleViewClick = (transfer) => {
+        setTransferToView(transfer);
+    };
+
     const editDropdownMenu = (transfer) => (
         <div className="dropdown">
             <button className="dots-button">
                 <FontAwesomeIcon icon={faEllipsisV} />
             </button>
             <div className="dropdown-content">
-                <button className="dropdown-item" onClick={() => handleUpdateClick(induction)}>
+                <button className="dropdown-item" onClick={() => handleUpdateClick(transfer)}>
                     <FaEdit style={{ marginRight: '8px' }} /> Update
                 </button>
-                <button className="dropdown-item" onClick={() => handleViewClick(induction)}>
+                <button className="dropdown-item" onClick={() => handleViewClick(transfer)}>
                     <FaEye style={{ marginRight: '8px' }} /> View
                 </button>
             </div>
         </div>
     );
+
+    const handleUpdateTransfer = (updatedTransfer) => {
+        setTransfers(prev => prev.map(t =>
+            t.id === selectedTransfer.id ? { ...t, ...updatedTransfer } : t
+        ));
+        setFilteredTransfers(prev => prev.map(t =>
+            t.id === selectedTransfer.id ? { ...t, ...updatedTransfer } : t
+        ));
+        setShowUpdateTransfer(false);
+    };
 
     useEffect(() => {
         let result = transfers.filter(transfer => {
@@ -228,6 +252,21 @@ const TransferList = () => {
                 <AddTransfer
                     onClose={() => setShowAddTransfer(false)}
                     onSave={handleAddTransfer}
+                />
+            )}
+
+            {showUpdateTransfer && (
+                <UpdateTransfer
+                    transfer={selectedTransfer}
+                    onClose={() => setShowUpdateTransfer(false)}
+                    onUpdate={handleUpdateTransfer}
+                />
+            )}
+
+            {transferToView && (
+                <ViewTransfer
+                    transfer={transferToView}
+                    onClose={() => setTransferToView(null)}
                 />
             )}
         </div>

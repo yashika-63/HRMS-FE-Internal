@@ -6,7 +6,7 @@ import AppraisalApprovalRequest from "./AppraisalApprovalRequest";
 import TrainingApprovalRequest from "./TrainingApprovalRequest";
 import TimesheetApprovalRequest from "./TimesheetApprovalRequest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookOpen, faBullhorn, faCalendarCheck, faCheckToSlot, faReceipt, faStar, faStopwatch, faTree, faUserTimes } from "@fortawesome/free-solid-svg-icons";
+import { faBookOpen, faBullhorn, faCalendarCheck, faCheckToSlot, faPeopleArrowsLeftRight, faReceipt, faStar, faStopwatch, faTree, faUserTimes } from "@fortawesome/free-solid-svg-icons";
 import ConfirmationRequest from "./ConfirmationRequest";
 
 
@@ -55,6 +55,10 @@ const Requesthandler = () => {
                         <FontAwesomeIcon className="icon" icon={faCheckToSlot} />
                         Confirmation 
                     </button>
+                    <button type="button" className={activeSection === 'Transfer' ? 'active' : ''} onClick={() => handleButtonClick('Transfer')}>
+                        <FontAwesomeIcon className="icon" icon={faPeopleArrowsLeftRight} />
+                        Transfer 
+                    </button>
                 </div>
             </div>
 
@@ -65,6 +69,7 @@ const Requesthandler = () => {
             {activeSection === 'Training' && <TrainingApprovalRequest />}
             {activeSection === 'Timesheet' && <TimesheetApprovalRequest />}
             {activeSection === 'Confirmation' && <ConfirmationRequest />}
+            {activeSection === 'Transfer' && <ConfirmationRequest />}
 
 
 

@@ -118,7 +118,7 @@ console.log("RECORDVIEW" , record);
 
   return (
     <div className="modal-overlay">
-      <div className="modal" style={{ maxWidth: '900px' }}>
+      <div className="modal">
         <div className="modal-header">
           <h2>Offboarding Details</h2>
           <button className="button-close" onClick={onClose}>×</button>

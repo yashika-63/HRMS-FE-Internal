@@ -143,6 +143,8 @@ import TrainingHR from './Components/Trainings/TrainingHR/TrainingHR.jsx';
 import ReportsFilters from './Components/Reports/ReportsFilters.jsx';
 import CompanySettings from './Components/CompanySetting/CompanySettings.jsx';
 import TransferList from './Components/Transfer/TransferList.jsx';
+import TrainingEvaluationList from './Components/TrainingEvaluation/TrainingEvaluationList.jsx';
+import TransferApprovalRequest from './Components/ApprovalRequest/TransferApprovalRequest.jsx';
 // import GlobalSearchBar from './globalSearchBar.jsx';
 const App = () => {
 
@@ -407,6 +409,11 @@ const App = () => {
                     <Route path='/InductionHR' element={<PrivateRoute allowedRoles={['ADMIN']}><InductionHR /></PrivateRoute>} />
                     <Route path='/TrainingHR' element={<PrivateRoute allowedRoles={['ADMIN']}><TrainingHR /></PrivateRoute>} />
                     <Route path='/Reports' element={<PrivateRoute allowedRoles={['ADMIN']}><ReportsFilters /></PrivateRoute>} />
+                    <Route path='TransferApprovalRequest' element={<PrivateRoute allowedRoles={['ADMIN', "SUPERADMIN", "USER"]}><TransferApprovalRequest /></PrivateRoute>} />
+                  
+                    {/* <Route path='/TrainingEvaluationList' element={<PrivateRoute allowedRoles={['ADMIN']}><TrainingEvaluationList /></PrivateRoute>} /> */}
+                
+                  
                   </Routes>
                 </Sidebar>
               </ErrorBoundary>

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { fetchDataByKey } from '../../Api';
 import { strings } from '../../string';
 
-const AddTransfer = ({ onClose, onSave }) => {
+const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
   const companyId = localStorage.getItem('companyId');
 
   const [dropdownData, setDropdownData] = useState({ region: [], department: [] });
@@ -42,6 +42,25 @@ const AddTransfer = ({ onClose, onSave }) => {
   const [employeeSearchError, setEmployeeSearchError] = useState('');
   const [responsiblePersonSearchError, setResponsiblePersonSearchError] = useState('');
 
+  useEffect(() => {
+    if (transfer) {
+      setFormData({
+        employeeName: transfer.employeeName,
+        employeeId: transfer.employeeId,
+        fromDepartment: transfer.fromDepartment,
+        toDepartment: transfer.toDepartment,
+        fromRegion: transfer.fromRegion,
+        toRegion: transfer.toRegion,
+        transferDate: transfer.transferDate,
+        reason: transfer.reason,
+        responsiblePersonName: transfer.responsiblePerson,
+        responsiblePersonId: '' // You might need to add this to your transfer object
+      });
+      setEmployeeSearchInput(transfer.employeeName);
+      setResponsiblePersonSearchInput(transfer.responsiblePerson);
+    }
+  }, [transfer]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -52,7 +71,7 @@ const AddTransfer = ({ onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    onUpdate(formData);
   };
 
   useEffect(() => {
@@ -192,7 +211,7 @@ const AddTransfer = ({ onClose, onSave }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
-          <h3>Add New Transfer</h3>
+          <h3>Update Transfer</h3>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
@@ -419,7 +438,7 @@ const AddTransfer = ({ onClose, onSave }) => {
               Cancel
             </button>
             <button type="submit" className="btn">
-              Save Transfer
+              Update Transfer
             </button>
           </div>
         </form>
@@ -428,4 +447,4 @@ const AddTransfer = ({ onClose, onSave }) => {
   );
 };
 
-export default AddTransfer;
+export default UpdateTransfer;

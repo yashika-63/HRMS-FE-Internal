@@ -5,6 +5,7 @@ import { FaFileExcel } from 'react-icons/fa';
 import './ReportsFilters.css';
 import { reportTypes, exportReportApiPaths } from './ReportTypes';
 import ReportsTable from './ReportsTable';
+import { toast } from 'react-toastify';
 
 const ReportsFilters = () => {
   const companyId = localStorage.getItem("companyId");
@@ -244,12 +245,12 @@ const ReportsFilters = () => {
 
       const typeKey = Object.keys(item).find(key => key.toLowerCase() === 'type');
       if (typeKey) {
-      const isMandatory = Number(item[typeKey]) === 1;
-      transformedItem[typeKey] = {
-        value: isMandatory ? 'Mandatory' : 'Non Mandatory',
-        className: isMandatory ? 'green-text' : 'orange-text' 
-      };
-    }
+        const isMandatory = Number(item[typeKey]) === 1;
+        transformedItem[typeKey] = {
+          value: isMandatory ? 'Mandatory' : 'Non Mandatory',
+          className: isMandatory ? 'green-text' : 'orange-text'
+        };
+      }
       ['completionStatus', 'expiryStatus', 'applied'].forEach(key => {
         if (key in transformedItem) {
           const isYes = Boolean(transformedItem[key]);
@@ -306,7 +307,6 @@ const ReportsFilters = () => {
     if (!selectedMainOption) return;
 
     try {
-      // Get the API path from your separate object
       const apiPath = exportReportApiPaths[selectedMainOption];
       if (!apiPath) {
         throw new Error('No API path defined for this report type');
@@ -341,9 +341,10 @@ const ReportsFilters = () => {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
+      toast.success('Export completed successfully! The download should start shortly.');
     } catch (error) {
       console.error('Error exporting report:', error);
-      alert('Failed to export report. Please try again.');
+      toast.error('Failed to export report. Please try again.');
     }
   };
 
