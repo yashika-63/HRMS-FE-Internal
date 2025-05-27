@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { fetchDataByKey } from '../../Api';
 import { strings } from '../../string';
+import { toast } from 'react-toastify';
 
 const AddTransfer = ({ onClose, onSave }) => {
   const companyId = localStorage.getItem('companyId');
+  const createdById = localStorage.getItem('employeeId');
 
   const [dropdownData, setDropdownData] = useState({ region: [], department: [] });
   const [formData, setFormData] = useState({
@@ -12,12 +14,18 @@ const AddTransfer = ({ onClose, onSave }) => {
     employeeId: '',
     fromDepartment: '',
     toDepartment: '',
+    fromDepartmentId: '',
+    toDepartmentId: '',
     fromRegion: '',
     toRegion: '',
+    fromRegionId: '',
+    toRegionId: '',
     transferDate: '',
     reason: '',
-    responsiblePersonName: '',
-    responsiblePersonId: ''
+    reportingManagerName: '',
+    reportingManagerId: '',
+    responsiblePersonDisplayId: '',
+    employeeDisplayId: ''
   });
 
   const [selectedEmployee, setSelectedEmployee] = useState({
@@ -41,6 +49,8 @@ const AddTransfer = ({ onClose, onSave }) => {
   const [responsiblePersonSearchInput, setResponsiblePersonSearchInput] = useState('');
   const [employeeSearchError, setEmployeeSearchError] = useState('');
   const [responsiblePersonSearchError, setResponsiblePersonSearchError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [workflowOptions, setWorkflowOptions] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,9 +60,27 @@ const AddTransfer = ({ onClose, onSave }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    setIsSubmitting(true);
     e.preventDefault();
-    onSave(formData);
+    const { employeeId, reportingManagerId } = formData;
+
+    try {
+      const response = await axios.post(
+        `http://${strings.localhost}/api/Transfer-request/save/${employeeId}/${reportingManagerId}/${createdById}/${companyId}`,
+        formData
+      );
+
+      console.log('Transfer saved:', response.data);
+      onSave(response.data);
+      toast.success("Transfer request created successfully!");
+      onClose();
+    } catch (error) {
+      console.error('Error saving transfer:', error);
+      toast.error('Failed to save transfer. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -71,8 +99,21 @@ const AddTransfer = ({ onClose, onSave }) => {
     fetchDropdownData();
   }, []);
 
+  useEffect(() => {
+    const fetchWorkflowIds = async () => {
+      try {
+        const response = await axios.get(`http://${strings.localhost}/api/workflow/names/${companyId}`);
+        setWorkflowOptions(response.data);
+      } catch (error) {
+        console.error('Error fetching workflow Name', error);
+      }
+    };
+
+    fetchWorkflowIds();
+  }, []);
+
   const getEmployeeName = () => {
-    const manager = formData.reportingManager;
+    const manager = formData.reportingManagerName;
     if (manager && typeof manager === 'object') {
       const { firstName = '', middleName = '', lastName = '' } = manager;
       return `${firstName} ${middleName} ${lastName}`.trim();
@@ -170,8 +211,9 @@ const AddTransfer = ({ onClose, onSave }) => {
 
     setFormData(prevData => ({
       ...prevData,
-      employeeId: employee.employeeId,
-      employeeName: `${employee.firstName} ${employee.lastName}`
+      employeeId: employee.id,
+      employeeName: `${employee.firstName} ${employee.lastName}`,
+      employeeDisplayId: employee.employeeId
     }));
   };
 
@@ -183,9 +225,18 @@ const AddTransfer = ({ onClose, onSave }) => {
 
     setFormData(prevData => ({
       ...prevData,
-      responsiblePersonId: employee.employeeId,
-      responsiblePersonName: `${employee.firstName} ${employee.lastName}`
+      reportingManagerId: employee.id,
+      reportingManagerName: `${employee.firstName} ${employee.lastName}`,
+      responsiblePersonDisplayId: employee.employeeId
     }));
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   return (
@@ -196,14 +247,26 @@ const AddTransfer = ({ onClose, onSave }) => {
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <div>
           <div className='input-row'>
+            <div>
+              <span className="required-marker">*</span>
+              <label htmlFor='workflowId'>Workflow ID:</label>
+              <select className='selectIM' name='id' value={formData.id} onChange={handleInputChange} required >
+                <option value='' ></option>
+                {workflowOptions.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.workflowName}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div>
               <label>Employee ID:</label>
               <input
                 type="text"
-                name="employeeId"
-                value={formData.employeeId}
+                name="employeeDisplayId"
+                value={formData.employeeDisplayId}
                 onChange={handleEmployeeSelect}
                 className='readonly'
                 readOnly
@@ -211,6 +274,7 @@ const AddTransfer = ({ onClose, onSave }) => {
             </div>
 
             <div>
+              <span className="required-marker">*</span>
               <label>Employee Name:</label>
               <input
                 type="text"
@@ -238,6 +302,7 @@ const AddTransfer = ({ onClose, onSave }) => {
 
           <div className="input-row">
             <div>
+              <span className="required-marker">*</span>
               <label>From Department:</label>
               <select
                 name="fromDepartment"
@@ -249,8 +314,8 @@ const AddTransfer = ({ onClose, onSave }) => {
                   );
                   setFormData(prev => ({
                     ...prev,
-                    department: e.target.value,
-                    deptId: selectedDepartment ? selectedDepartment.masterId : ''
+                    fromDepartment: e.target.value,
+                    fromDepartmentId: selectedDepartment ? selectedDepartment.masterId : ''
                   }));
                 }}
                 required
@@ -269,6 +334,7 @@ const AddTransfer = ({ onClose, onSave }) => {
             </div>
 
             <div>
+              <span className="required-marker">*</span>
               <label>To Department:</label>
               <select
                 name="toDepartment"
@@ -280,8 +346,8 @@ const AddTransfer = ({ onClose, onSave }) => {
                   );
                   setFormData(prev => ({
                     ...prev,
-                    department: e.target.value,
-                    deptId: selectedDepartment ? selectedDepartment.masterId : ''
+                    toDepartment: e.target.value,
+                    toDepartmentId: selectedDepartment ? selectedDepartment.masterId : ''
                   }));
                 }}
                 required
@@ -302,6 +368,7 @@ const AddTransfer = ({ onClose, onSave }) => {
 
           <div className="input-row">
             <div>
+              <span className="required-marker">*</span>
               <label htmlFor="region">From Region:</label>
               <select
                 name="fromRegion"
@@ -313,8 +380,8 @@ const AddTransfer = ({ onClose, onSave }) => {
                   );
                   setFormData(prev => ({
                     ...prev,
-                    region: e.target.value,
-                    regionId: selectedRegion ? selectedRegion.masterId : ''
+                    fromRegion: e.target.value,
+                    fromRegionId: selectedRegion ? selectedRegion.masterId : ''
                   }));
                 }}
                 required
@@ -333,6 +400,7 @@ const AddTransfer = ({ onClose, onSave }) => {
             </div>
 
             <div>
+              <span className="required-marker">*</span>
               <label>To Region:</label>
               <select
                 name="toRegion"
@@ -344,8 +412,8 @@ const AddTransfer = ({ onClose, onSave }) => {
                   );
                   setFormData(prev => ({
                     ...prev,
-                    region: e.target.value,
-                    regionId: selectedRegion ? selectedRegion.masterId : ''
+                    toRegion: e.target.value,
+                    toRegionId: selectedRegion ? selectedRegion.masterId : ''
                   }));
                 }}
                 required
@@ -366,6 +434,7 @@ const AddTransfer = ({ onClose, onSave }) => {
 
           <div className='input-row'>
             <div>
+              <span className="required-marker">*</span>
               <label>Transfer Date:</label>
               <input
                 type="date"
@@ -378,12 +447,13 @@ const AddTransfer = ({ onClose, onSave }) => {
             </div>
 
             <div>
-              <label>Responsible Person Name:</label>
+              <span className="required-marker">*</span>
+              <label>Reporting Manager Name:</label>
               <input
                 type="text"
                 name="responsiblePersonName"
                 className='selectIM'
-                value={responsiblePersonSearchInput || formData.responsiblePersonName}
+                value={responsiblePersonSearchInput || formData.reportingManagerName}
                 onChange={handleResponsiblePersonSearchChange}
                 required
               />
@@ -414,15 +484,22 @@ const AddTransfer = ({ onClose, onSave }) => {
             />
           </div>
 
-          <div className="form-controls">
+          <div className="btnContainer">
             <button type="button" className="outline-btn" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn">
-              Save Transfer
+            <button type="button" className="btn" onClick={handleSubmit}>
+              {isSubmitting ? (
+                <>
+                  <div className="loading-spinner"></div>
+                  Submitting...
+                </>
+              ) : (
+                'Submit'
+              )}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

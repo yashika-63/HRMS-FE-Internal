@@ -246,3 +246,78 @@ input[type="email"] {
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* Tablet View (768px - 991px) */
+@media (max-width: 991px) {
+  .form-container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .form-selector {
+    width: 100%;
+    max-width: 600px;
+    margin: 50px auto 0;
+  }
+}
+
+/* Large Mobile (576px - 767px) */
+@media (max-width: 767px) {
+  .form-container {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .form-selector {
+    max-width: 400px;
+    margin-top: 30px;
+  }
+  
+  .whitetitle {
+    font-size: 17px;
+  }
+}
+
+/* Small Mobile (up to 575px) */
+@media (max-width: 575px) {
+  .form-container {
+    max-width: 280px;
+    padding: 15px;
+  }
+  
+  .form-selector {
+    max-width: 300px;
+    padding: 8px;
+    margin-top: 20px;
+  }
+  
+  .input-group input {
+    padding: 8px 35px 8px 40px;
+  }
+  
+  .blackbutton, .loginbutton {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+  
+  .password-validation-message {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
+/* Very Small Mobile (up to 400px) */
+@media (max-width: 400px) {
+  .form-container {
+    max-width: 250px;
+  }
+  
+  .form-selector {
+    max-width: 270px;
+  }
+  
+  .whitetitle {
+    font-size: 16px;
+  }
+}

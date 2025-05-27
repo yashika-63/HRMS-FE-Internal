@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { fetchDataByKey } from '../../Api';
 import { strings } from '../../string';
+import { toast } from 'react-toastify';
 
-const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
+const UpdateTransfer = ({ transferId, onClose, onUpdate }) => {
   const companyId = localStorage.getItem('companyId');
-
+  const [loading, setLoading] = useState(true);
   const [dropdownData, setDropdownData] = useState({ region: [], department: [] });
   const [formData, setFormData] = useState({
     employeeName: '',
@@ -16,8 +17,9 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
     toRegion: '',
     transferDate: '',
     reason: '',
-    responsiblePersonName: '',
-    responsiblePersonId: ''
+    reportingManagerName: '',
+    reportingManagerId: '',
+    employeeDisplayId: ''
   });
 
   const [selectedEmployee, setSelectedEmployee] = useState({
@@ -43,23 +45,87 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
   const [responsiblePersonSearchError, setResponsiblePersonSearchError] = useState('');
 
   useEffect(() => {
-    if (transfer) {
-      setFormData({
-        employeeName: transfer.employeeName,
-        employeeId: transfer.employeeId,
-        fromDepartment: transfer.fromDepartment,
-        toDepartment: transfer.toDepartment,
-        fromRegion: transfer.fromRegion,
-        toRegion: transfer.toRegion,
-        transferDate: transfer.transferDate,
-        reason: transfer.reason,
-        responsiblePersonName: transfer.responsiblePerson,
-        responsiblePersonId: '' // You might need to add this to your transfer object
-      });
-      setEmployeeSearchInput(transfer.employeeName);
-      setResponsiblePersonSearchInput(transfer.responsiblePerson);
+    const fetchTransferData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`http://${strings.localhost}/api/Transfer-request/get-by-transfer/${transferId}`);
+        const transfer = response.data;
+
+        // First get dropdown data if not already loaded
+        if (dropdownData.department.length === 0 || dropdownData.region.length === 0) {
+          const regions = await fetchDataByKey('region');
+          const departments = await fetchDataByKey('department');
+          setDropdownData({ region: regions, department: departments });
+        }
+
+        // Find IDs from dropdown data if not provided in response
+        const findId = (type, value) => {
+          const items = type === 'region' ? dropdownData.region : dropdownData.department;
+          const found = items.find(item => item.data === value);
+          return found ? found.masterId : '';
+        };
+
+        setFormData({
+          employeeName: transfer.employeeName || '',
+          employeeId: transfer.employee?.id || transfer.employeeId || '',
+          fromDepartment: transfer.fromDepartment || '',
+          toDepartment: transfer.toDepartment || '',
+          fromRegion: transfer.fromRegion || '',
+          toRegion: transfer.toRegion || '',
+          transferDate: transfer.transferDate || '',
+          reason: transfer.reason || '',
+          reportingManagerName: transfer.reportingManagerName || '',
+          reportingManagerId: transfer.reportingManagerId || '',
+          employeeDisplayId: transfer.employee?.employeeId || transfer.employeeId || '',
+          // Initialize IDs - use response if available, otherwise find from dropdown
+          fromDepartmentId: transfer.fromDepartmentId || findId('department', transfer.fromDepartment),
+          toDepartmentId: transfer.toDepartmentId || findId('department', transfer.toDepartment),
+          fromRegionId: transfer.fromRegionId || findId('region', transfer.fromRegion),
+          toRegionId: transfer.toRegionId || findId('region', transfer.toRegion)
+        });
+
+        setEmployeeSearchInput(transfer.employeeName || '');
+        setResponsiblePersonSearchInput(transfer.reportingManagerName || '');
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching transfer data:', error);
+        toast.error('Failed to load transfer data');
+        setLoading(false);
+      }
+    };
+
+    if (transferId) {
+      fetchTransferData();
     }
-  }, [transfer]);
+  }, [transferId]);
+
+  const handleDepartmentChange = (fieldName, value) => {
+    const selectedDepartment = dropdownData.department.find(
+      r => r.data === value
+    );
+
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: value,
+      ...(fieldName === 'fromDepartment'
+        ? { fromDepartmentId: selectedDepartment?.masterId || '' }
+        : { toDepartmentId: selectedDepartment?.masterId || '' })
+    }));
+  };
+
+  const handleRegionChange = (fieldName, value) => {
+    const selectedRegion = dropdownData.region.find(
+      r => r.data === value
+    );
+
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: value,
+      ...(fieldName === 'fromRegion'
+        ? { fromRegionId: selectedRegion?.masterId || '' }
+        : { toRegionId: selectedRegion?.masterId || '' })
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,9 +135,44 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onUpdate(formData);
+    try {
+      setLoading(true);
+
+      const payload = {
+        employeeName: formData.employeeName,
+        employeeId: formData.employeeId,
+        fromDepartment: formData.fromDepartment,
+        toDepartment: formData.toDepartment,
+        fromRegion: formData.fromRegion,
+        toRegion: formData.toRegion,
+        transferDate: formData.transferDate,
+        reason: formData.reason,
+        reportingManagerName: formData.reportingManagerName,
+        reportingManagerId: formData.reportingManagerId,
+        fromDepartmentId: formData.fromDepartmentId,
+        toDepartmentId: formData.toDepartmentId,
+        fromRegionId: formData.fromRegionId,
+        toRegionId: formData.toRegionId
+      };
+
+      const response = await axios.put(
+        `http://${strings.localhost}/api/Transfer-request/update-transfer/${transferId}`,
+        payload
+      );
+
+      if (response.status === 200) {
+        onUpdate(response.data);
+        toast.success("Transfer record updated successfully!");
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error updating transfer:', error);
+      toast.error(error.response?.data?.message || 'Failed to update transfer');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -83,12 +184,15 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
           region: regions,
           department: departments,
         });
+        if (transferId) {
+          await fetchTransferData();
+        }
       } catch (error) {
         console.error('Error fetching dropdown data:', error);
       }
     };
     fetchDropdownData();
-  }, []);
+  }, [transferId]);
 
   const getEmployeeName = () => {
     const manager = formData.reportingManager;
@@ -189,8 +293,9 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
 
     setFormData(prevData => ({
       ...prevData,
-      employeeId: employee.employeeId,
-      employeeName: `${employee.firstName} ${employee.lastName}`
+      employeeId: employee.id,
+      employeeName: `${employee.firstName} ${employee.lastName}`,
+      employeeDisplayId: employee.employeeId
     }));
   };
 
@@ -202,10 +307,18 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
 
     setFormData(prevData => ({
       ...prevData,
-      responsiblePersonId: employee.employeeId,
-      responsiblePersonName: `${employee.firstName} ${employee.lastName}`
+      reportingManagerId: employee.employeeId,
+      reportingManagerName: `${employee.firstName} ${employee.lastName}`
     }));
   };
+
+  if (loading && !formData.employeeId) {
+    return <div className="modal-overlay">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="modal-overlay">{error}</div>;
+  }
 
   return (
     <div className="modal-overlay">
@@ -221,8 +334,8 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
               <label>Employee ID:</label>
               <input
                 type="text"
-                name="employeeId"
-                value={formData.employeeId}
+                name="employeeDisplayId"
+                value={formData.employeeDisplayId || formData.employeeId}
                 onChange={handleEmployeeSelect}
                 className='readonly'
                 readOnly
@@ -262,16 +375,7 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
                 name="fromDepartment"
                 value={formData.fromDepartment}
                 className='selectIM'
-                onChange={(e) => {
-                  const selectedDepartment = dropdownData.department.find(
-                    r => r.data === e.target.value
-                  );
-                  setFormData(prev => ({
-                    ...prev,
-                    department: e.target.value,
-                    deptId: selectedDepartment ? selectedDepartment.masterId : ''
-                  }));
-                }}
+                onChange={(e) => handleDepartmentChange('fromDepartment', e.target.value)}
                 required
               >
                 <option value="">Select Department</option>
@@ -293,16 +397,7 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
                 name="toDepartment"
                 value={formData.toDepartment}
                 className='selectIM'
-                onChange={(e) => {
-                  const selectedDepartment = dropdownData.department.find(
-                    r => r.data === e.target.value
-                  );
-                  setFormData(prev => ({
-                    ...prev,
-                    department: e.target.value,
-                    deptId: selectedDepartment ? selectedDepartment.masterId : ''
-                  }));
-                }}
+                onChange={(e) => handleDepartmentChange('toDepartment', e.target.value)}
                 required
               >
                 <option value="">Select Department</option>
@@ -326,16 +421,7 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
                 name="fromRegion"
                 value={formData.fromRegion}
                 className='selectIM'
-                onChange={(e) => {
-                  const selectedRegion = dropdownData.region.find(
-                    r => r.data === e.target.value
-                  );
-                  setFormData(prev => ({
-                    ...prev,
-                    region: e.target.value,
-                    regionId: selectedRegion ? selectedRegion.masterId : ''
-                  }));
-                }}
+                onChange={(e) => handleRegionChange('fromRegion', e.target.value)}
                 required
               >
                 <option value="">Select Region</option>
@@ -357,16 +443,7 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
                 name="toRegion"
                 value={formData.toRegion}
                 className='selectIM'
-                onChange={(e) => {
-                  const selectedRegion = dropdownData.region.find(
-                    r => r.data === e.target.value
-                  );
-                  setFormData(prev => ({
-                    ...prev,
-                    region: e.target.value,
-                    regionId: selectedRegion ? selectedRegion.masterId : ''
-                  }));
-                }}
+                onChange={(e) => handleRegionChange('toRegion', e.target.value)}
                 required
               >
                 <option value="">Select Region</option>
@@ -402,7 +479,7 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
                 type="text"
                 name="responsiblePersonName"
                 className='selectIM'
-                value={responsiblePersonSearchInput || formData.responsiblePersonName}
+                value={responsiblePersonSearchInput || formData.reportingManagerName}
                 onChange={handleResponsiblePersonSearchChange}
                 required
               />
@@ -437,8 +514,8 @@ const UpdateTransfer = ({ transfer, onClose, onUpdate }) => {
             <button type="button" className="outline-btn" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn">
-              Update Transfer
+            <button type="submit" className="btn" disabled={loading}>
+              {loading ? 'Updating...' : 'Update Transfer'}
             </button>
           </div>
         </form>

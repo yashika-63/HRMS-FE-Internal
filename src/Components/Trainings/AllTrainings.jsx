@@ -126,7 +126,7 @@ const AllTrainings = () => {
         if (value.trim() !== '') {
             try {
                 const response = await axios.get(
-                    `http://localhost/employees/EmployeeById/${value}?companyId=${companyId}`
+                    `http://${strings.localhost}/employees/EmployeeById/${value}?companyId=${companyId}`
                 );
                 const employee = response.data;
                 setSelectedEmployee(prev => ({

@@ -1,8 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUser, FaExchangeAlt, FaCalendarAlt, FaFileAlt, FaUserTie } from 'react-icons/fa';
+import axios from 'axios';
 import './ViewTransfer.css';
+import { strings } from '../../string';
 
-const ViewTransfer = ({ transfer, onClose }) => {
+const ViewTransfer = ({ transferId, onClose }) => {
+    const [transfer, setTransfer] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchTransferData = async () => {
+            try {
+                const response = await axios.get(`http://${strings.localhost}/api/Transfer-request/get-by-transfer/${transferId}`);
+                setTransfer(response.data);
+                setLoading(false);
+            } catch (err) {
+                setError(err.message);
+                setLoading(false);
+                console.error('Error fetching transfer data:', err);
+            }
+        };
+
+        if (transferId) {
+            fetchTransferData();
+        }
+    }, [transferId]);
+
+    if (loading) return <div className="modal-overlay">Loading...</div>;
+    if (error) return <div className="modal-overlay">Error: {error}</div>;
     if (!transfer) return null;
 
     return (
@@ -19,7 +45,7 @@ const ViewTransfer = ({ transfer, onClose }) => {
                         <div className="detail-transfer-grid">
                             <div className="detail-item">
                                 <label>Employee ID:</label>
-                                <span>{transfer.employeeId || '-'}</span>
+                                <span>{transfer.employee?.employeeId || '-'}</span>
                             </div>
                             <div className="detail-item">
                                 <label>Employee Name:</label>
@@ -33,8 +59,8 @@ const ViewTransfer = ({ transfer, onClose }) => {
                             </div>
                             <div className="detail-transfer-grid">
                                 <div className="detail-item">
-                                    <label>Responsible Person Name:</label>
-                                    <span>{transfer.responsiblePerson || '-'}</span>
+                                    <label>Reporting Person Name:</label>
+                                    <span>{transfer.reportingManagerName || '-'}</span>
                                 </div>
                             </div>
                         </div>
@@ -47,11 +73,12 @@ const ViewTransfer = ({ transfer, onClose }) => {
                                 <div className="transfer-from">
                                     <h3 className="underlineText">From</h3>
                                     <div className="inline-detail-item">
-                                        <label>Department:</label>
+                                        <strong>Department: </strong>
                                         <span>{transfer.fromDepartment || '-'}</span>
                                     </div>
+                                    <br />
                                     <div className="inline-detail-item">
-                                        <label>Region:</label>
+                                        <strong>Region: </strong>
                                         <span>{transfer.fromRegion || '-'}</span>
                                     </div>
                                 </div>
@@ -61,11 +88,12 @@ const ViewTransfer = ({ transfer, onClose }) => {
                                 <div className="transfer-to">
                                     <h3 className="underlineText">To</h3>
                                     <div className="inline-detail-item">
-                                        <label>Department:</label>
+                                        <strong>Department: </strong>
                                         <span>{transfer.toDepartment || '-'}</span>
                                     </div>
+                                    <br />
                                     <div className="inline-detail-item">
-                                        <label>Region:</label>
+                                        <strong>Region: </strong>
                                         <span>{transfer.toRegion || '-'}</span>
                                     </div>
                                 </div>
@@ -82,7 +110,7 @@ const ViewTransfer = ({ transfer, onClose }) => {
                     </div>
                 </div>
 
-                <div className="form-controls" style={{ justifyContent: 'center' }}>
+                <div className="btnContainer">
                     <button type="button" className="outline-btn" onClick={onClose}>
                         Close
                     </button>
@@ -91,12 +119,5 @@ const ViewTransfer = ({ transfer, onClose }) => {
         </div>
     );
 };
-
-const DetailItem = ({ label, value }) => (
-    <div className="detail-item">
-        <label>{label}:</label>
-        <span>{value || '-'}</span>
-    </div>
-);
 
 export default ViewTransfer;
