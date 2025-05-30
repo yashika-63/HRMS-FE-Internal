@@ -1,0 +1,407 @@
+.level-indicator {
+    width: 200%;
+    height: 20px;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    /* margin-left: -150px; */
+
+}
+
+.level-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease-in-out;
+    background: repeating-linear-gradient(45deg,
+            rgba(255, 255, 255, 0.2),
+            rgba(255, 255, 255, 0.2) 10px,
+            transparent 10px,
+            transparent 20px);
+}
+
+
+.rating-1 {
+    background-color: #ec629b !important;
+}
+.rating-2 {
+    background-color: #ff7f27 !important;
+}
+.rating-3 {
+    background-color: #ffcc00 !important;
+}
+.rating-4 {
+    background-color: #409cc1 !important;
+}
+.rating-5 {
+    background-color: #4caf50 !important;
+}
+
+.level-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    line-height: 20px;
+    top: 0;
+}
+
+/* General Container */
+.coreGoalContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f4f4f9;
+    padding: 20px;
+}
+
+.dataGoal-container {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    width: 150%;
+}
+
+
+
+/* Employee Info Table */
+.ctc-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    
+}
+
+.ctc-details-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    font-size: 12px;
+}
+
+.ctc-details-table tr:nth-child(odd) {
+    background: #f9f9f9;
+}
+
+.ctc-details-table tr td:first-child {
+    font-weight: bold;
+    color: #444;
+  
+}
+
+/* Goal Container */
+.goal-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    max-width: 1050px;
+}
+
+/* Employee Goals Table */
+.Goal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: #fff;
+}
+
+
+
+
+.Goal-table td {
+    padding: 4px 10px;
+    text-align: left;
+    font-size: 12px;
+    border-bottom: 1px solid #ddd;
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: 250px;
+    overflow-wrap: break-word;
+    vertical-align: middle;
+
+}
+
+
+/* Reduce row height */
+.Goal-table tr {
+    height: auto;
+    /* Allows dynamic height based on content */
+    min-height: 30px;
+    /* Ensures compact row height */
+
+}
+
+.Goal-table th {
+    background: #2c3e50;
+    color: #fff;
+    letter-spacing: 0.5px;
+    padding: 6px 5px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+.Goal-table tr:nth-child(even) {
+    background: #f4f6f9;
+}
+
+.Goal-table tr:hover {
+    background: #eaf2ff;
+    transition: 0.3s ease-in-out;
+}
+
+/* 
+/* Rating System */
+.level-indicator {
+    width: 250px;
+    height: 20px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+*/ .level-fill {
+    height: 100%;
+    background: #ff9800;
+    transition: width 0.3s ease;
+}
+
+.level-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    /* color: #fff; */
+}
+
+/* Limit the height of text fields to prevent large input areas */
+.Goal-table input[type="text"] {
+    width: 100%;
+    padding: 4px;
+    /* Reduce padding */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    height: 30px;
+    /* Adjust input height */
+}
+
+.Goal-table input[type="text"]:focus {
+    border: 1px solid #2c3e50;
+    outline: none;
+}
+
+/* Checkbox */
+.Goal-table input[type="checkbox"] {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* Submit Button */
+.submit-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+    text-transform: uppercase;
+    transition: background 0.3s;
+}
+
+.submit-btn:hover {
+    background: #0056b3;
+}
+
+
+
+/* /////////////////////*/
+
+
+/* this is the css for Feedback Setup */
+.employee-details-table {
+    width: 100%;
+    max-width: 1020px;
+    margin: 15px auto;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.employee-details-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+    text-align: left;
+    white-space: nowrap;
+    /* Prevents text wrapping */
+}
+
+.employee-details-table .last-row td {
+    border-bottom: none;
+}
+
+.employee-details-table tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.employee-details-table tr:hover {
+    background: #f1f1f1;
+}
+
+.employee-details-table .label-cell {
+    font-weight: 600;
+    color: #444;
+    width: 16%;
+    background: white;
+}
+
+.employee-details-table .value-cell {
+    font-weight: 500;
+    color: #007bff;
+    width: 16%;
+}
+
+/* Adjust spacing for better readability */
+.employee-details-table td:first-child,
+.employee-details-table td:nth-child(3),
+.employee-details-table td:nth-child(5) {
+    padding-left: 15px;
+}
+
+
+
+
+.employee-container {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1050px;
+    margin: 20px auto;
+}
+
+.profile-circle {
+    width: 70px;
+    height: 60px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 80px;
+    margin-left: 30px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.employee-details {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.left-column,
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 48%;
+}
+
+.detail-item {
+    font-size: 12px;
+    color: #333;
+}
+
+.detail-item strong {
+    color: #444;
+    font-weight: 600;
+}
+
+.feedback-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.feedback-que-container, .feedback-rating-container {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-Direction: column;
+    justify-Content: center;
+}
+
+.feedback-que-container input {
+    width: 100%;
+    /* Make sure input takes full width */
+}
+
+.feedback-level-indicator {
+    position: relative;
+    height: 20px;
+    width: 100%;
+    cursor: pointer;
+    background-color: rgb(158, 157, 157);
+    border-radius: 10px;
+
+}
+
+
+.level-fill {
+    background-color: #4CAF50;
+    /* Green for filled progress */
+}
+
+.level-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: white;
+}
+
+.star-rating-container {
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.star {
+    font-size: 35px;
+    color: #ddd;
+    /* Grey for empty star */
+    margin: 0 2px;
+}
+
+.star.filled {
+    color: #FFD700;
+    /* Gold for filled star */
+}

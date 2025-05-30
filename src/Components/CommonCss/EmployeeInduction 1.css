@@ -1,0 +1,186 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+    --gray-color: #95a5a6;
+}
+
+/* Induction Card Styles */
+.induction-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 4px solid transparent;
+}
+
+.induction-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Status Border Colors */
+.induction-card.active {
+    border-left-color: var(--primary-color);
+}
+
+.induction-card.expired {
+    border-left-color: var(--danger-color);
+}
+
+.induction-card.inductioncomplete {
+    border-left-color: var(--secondary-color);
+}
+
+.induction-card.pending {
+    border-left-color: #ffb300;
+}
+
+.induction-card.completed {
+    border-left-color: #40a74f ;
+}
+
+.status-badge.completed {
+    color: green;
+    border: 1px solid green;
+}
+
+.status-badge.expired {
+    color: red;
+    border: 1px solid red;
+}
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/*  */
+
+.card-description1 {
+    line-height: 1.5;
+    margin-bottom: 0;
+    font-size: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.assigned-date {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 8px;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .inductions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.induction-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Status border colors */
+.induction-card.active {
+    border-left: 4px solid #00a953;
+}
+
+.induction-card.expired {
+    border-left: 4px solid #f5222d;
+}
+
+.induction-card.complete {
+    border-left: 4px solid #2ecc71;
+}
+
+/* 
+
+.card-description {
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.5;
+} */
+/* 
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+} */
+
+.assigned-date {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0;
+}
+
+
+.dropdown-item:disabled {
+    color: #999;
+    cursor: not-allowed;
+}
+
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.status-dot .Done {
+    background-color: #4CAF50;
+}
+
+.status-dot.pending {
+    background-color: #FF9800;
+}
+
+.status-dot.expired {
+    background-color: #F44336;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

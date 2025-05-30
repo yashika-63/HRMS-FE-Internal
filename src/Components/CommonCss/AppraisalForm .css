@@ -1,0 +1,168 @@
+.appeaisal-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.appeaisal-table th {
+    background-color: #f7f1f1;
+    font-weight: bold;
+    list-style: circle;
+}
+.appeaisal-table th, .appeaisal-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    transition: background-color 0.3s ease;
+}
+.appeaisal-table th:hover, .appeaisal-table td:hover {
+    background-color: #f1f1f1;
+}
+.appeaisal-table tr:hover {
+    background-color: #fef5f5; 
+}
+.star-rating {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    text-align: center; 
+    cursor: pointer;
+}
+.appeaisal-table .star-column {
+    text-align: center; 
+}
+.goal-feedback-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.goal-feedback-container .feedback-item {
+    font-size: 14px;
+    margin-top: 5px;
+    color: #555;
+}
+.goal-container ol li {
+    list-style: square;
+}
+.rating-text{
+    position: absolute;
+    bottom: 10px;
+   right: 10px;
+   font-weight: normal;
+  font-size: 14px;
+   color: rgb(244, 71, 186);
+}
+
+
+
+
+
+
+
+
+
+/* ViewAppraisal CSS */
+.appraisal-container {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 8px 3px 8px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+.appraisal-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    
+}
+.appraisal-section-header {
+    font-size: 14px;
+    font-weight: 300;
+    color: #2a3d6f;
+    border-bottom: 2px solid #2a3d6f;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+.appraisal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.appraisal-table th {
+    background-color: #2a3d6f;
+    color: #fff;
+    font-size: 14px;
+    padding: 10px;
+    text-align: left;
+}
+.appraisal-table td {
+    font-size: 12px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+.appraisal-table tr:hover {
+    background-color: #f4f4f4;
+}
+.appraisal-logo{
+    display: flex;
+    justify-content: right;
+
+}
+
+@media print {
+    .appraisal-container {
+        width: 100% !important; 
+        padding: 0 !important; 
+        margin: 0 !important; 
+        box-shadow: none; 
+        
+    }
+
+    .appraisal-title {
+        font-size: 18px !important; /* Adjust font size for printing */
+        text-align: center; /* Left align title for print */
+    }
+
+    .appraisal-section-header {
+        font-size: 16px !important; 
+        margin-top: 10px;
+    }
+
+    .appraisal-table {
+        width: 100% !important; 
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: white;
+    }
+
+    .appraisal-table th {
+        background-color: #2a3d6f;
+        color: #fff;
+        font-size: 12px !important; /* Adjust table header font size for print */
+        padding: 8px;
+        text-align: left;
+    }
+
+    .appraisal-table td {
+        font-size: 12px !important; /* Adjust table data font size for print */
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        color: #333;
+    }
+
+    .appraisal-table tr:hover {
+        background-color: transparent; /* Remove hover effect in print */
+    }
+
+    .appraisal-table, .appraisal-table th, .appraisal-table td {
+        page-break-inside: avoid !important;
+    }
+
+    .addform{
+        display: none;
+    }
+    .form-title{
+        display: none;
+    }
+}

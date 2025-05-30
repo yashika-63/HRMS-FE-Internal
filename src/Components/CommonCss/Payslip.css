@@ -1,0 +1,521 @@
+.payslip-container {
+  width: 80%;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  border: 1px solid #ccc;
+  padding: 20px;
+  background-color: #fff;
+  position: relative;  
+}
+
+.watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  opacity: 0.1;
+  font-size: 3rem; 
+  font-weight: bold;
+  color: #000;
+  pointer-events: none; 
+  text-align: center;  
+}
+
+.company-name, .company-address {
+  text-align: center;
+}
+
+.company-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.company-address {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+.payslip-header{
+  display: flex;
+  justify-content:space-between ;
+  align-items: center;
+}
+.companyInfo{
+  flex: 1;
+  text-align: center;
+}
+.employee-info {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: small;
+}
+
+.employee-info th {
+  background-color: #f4f4f4;
+  text-align: left;
+  padding: 10px;
+  font-size: small;
+}
+
+.employee-info td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+  font-size: small;
+}
+
+.income-deduction-section {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.income-table, .deduction-table {
+  width: 48%;
+  border-collapse: collapse;
+}
+
+.income-table th, .deduction-table th {
+  background-color: #f4f4f4;
+  text-align: left;
+  padding: 10px;
+}
+
+.income-table td, .deduction-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  vertical-align: middle;
+}
+
+.income-table td.amount, .deduction-table td.amount {
+  text-align: right;
+}
+
+tfoot td {
+  font-weight: bold;
+  background-color: #f9f9f9;
+}
+.footer-text {
+  text-align: right;
+  font-size: 0.5rem;
+  color: #555;
+  margin-top: 20px;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30px;
+}
+
+@media print {
+  .form-controls {
+    display: none;
+  }
+
+  /* Body and HTML setup to ensure full page height and centering */
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    font-size: 10px; 
+    line-height: 1.4; 
+  }
+
+  .payslip-container {
+    width: 100%;
+    max-width: 700px; 
+    padding: 20px;
+    box-sizing: border-box; 
+    margin: 0;
+    text-align: center;
+    page-break-before: always;
+  }
+
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    opacity: 0.1;
+    font-size: 3rem; 
+    font-weight: bold;
+    color: #000;
+    pointer-events: none;
+    text-align: center;
+  }
+
+  .company-name, .company-address, .employee-info, .income-table, .deduction-table {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .employee-info, .income-table, .deduction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+  }
+
+  .employee-info th, .income-table th, .deduction-table th {
+    background-color: #f4f4f4;
+    padding: 8px;
+    font-size: 0.9rem; 
+  }
+
+  .employee-info td, .income-table td, .deduction-table td {
+    padding: 8px;
+    border: 1px solid #ccc;
+    font-size: 0.8rem; 
+  }
+
+  .income-table td.amount, .deduction-table td.amount {
+    text-align: right;
+  }
+
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    font-size: 0.8rem;
+  }
+
+  .footer-text {
+    text-align: right;
+    color: #555;
+  }
+
+  .payslip-container, .employee-info, .income-table, .deduction-table {
+    page-break-inside: avoid;
+  }
+
+  .payslip-container {
+    line-height: 1.2;
+  }
+
+  .company-name {
+    margin-top: 0;
+  }
+
+  .employee-info td, .income-table td, .deduction-table td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.payroll-container {
+  overflow-x: auto; 
+  width: 100%;
+  padding: 20px;
+}
+
+.payroll-table-wrapper {
+  overflow-x: auto; 
+  width: 100%;
+  display: block;
+}
+
+.payroll-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.payroll-table th,
+.payroll-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.fixed-col {
+  position: sticky;
+  left: 0;
+  background-color: #f4f4f4;
+  z-index: 1;
+}
+
+.fixed-department {
+  position: sticky;
+  left: 150px;
+  background-color: #f4f4f4;
+  z-index: 1;
+}
+
+.fixed-designation {
+  position: sticky;
+  left: 300px; 
+  background-color: #f4f4f4;
+  z-index: 1;
+}
+
+.payroll-table input {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.ctc-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.switch-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.switch-container .switch {
+  margin-right: 10px;
+}
+.switch-container .slider {
+  width: 34px;
+  height: 20px;
+  position: relative;
+  display: inline-block;
+  border-radius: 50px;
+  background-color: #ccc;
+}
+
+.switch-container input[type="checkbox"]:checked + .slider {
+  background-color: #4CAF50;
+}
+
+.switch-container input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-container span {
+  font-size: 18px;
+}
+
+.container-asset {
+  margin-top: 20px;
+}
+
+.ctc-details-table,
+.ctc-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  text-align: left;
+
+}
+
+.ctc-details-table th,
+.ctc-breakdown-table th {
+  background-color: #f2f2f2;
+  padding: 12px;
+  font-weight: bold;
+  border: 1px solid #ddd;
+}
+
+.ctc-details-table td,
+.ctc-breakdown-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+.ctc-details-table tr:nth-child(even),
+.ctc-breakdown-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.ctc-details-table td {
+  text-align: left;
+  
+}
+
+.ctc-breakdown-table td {
+  text-align: left;
+}
+
+.ctc-breakdown-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+
+
+.ctc-modal {
+  position: fixed;
+  top: 0; 
+  bottom: 0; 
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+.ctc-content {
+  background-color: white;
+  padding: 20px;
+  max-width: 800px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+}
+
+.ctc-content h3 {
+  margin-top: 0;
+}
+
+.ctc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.ctc-content th,
+.ctc-content td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.ctc-content th {
+  background-color: #f2f2f2;
+}
+
+.ctc-content td {
+  text-align: left;
+}
+
+
+.ctc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.ctc-table th,
+.ctc-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.ctc-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.ctc-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.ctc-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.switch-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.switch-container .switch {
+  margin-right: 10px;
+}
+
+.switch-container .slider {
+  width: 34px;
+  height: 20px;
+  position: relative;
+  display: inline-block;
+  border-radius: 50px;
+  background-color: #ccc;
+}
+
+.switch-container input[type="checkbox"]:checked + .slider {
+  background-color: #4CAF50;
+}
+
+.switch-container input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-container span {
+  font-size: 18px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

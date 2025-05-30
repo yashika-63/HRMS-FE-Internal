@@ -1,0 +1,85 @@
+/* ListProject.css */
+.container-btn {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.popup-header{
+  cursor: grab;
+  background-color: white;
+  padding: 8px;
+}
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #888;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.popup-fields {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+
+.popup-fields label {
+  display: block;
+}
+
+.popup-fields input {
+  box-sizing: border-box;
+}
+
+ .input-row input {
+  padding: 5px; 
+  border: 1px solid #ccc; 
+  border-radius: 4px;
+  width: 100%; 
+  box-sizing: border-box; 
+}
+/* Truncate the text with ellipsis */
+.truncate-text {
+  display: inline-block;
+  max-width: 250px; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  margin-right: 20px;
+  background-color: transparent;
+
+}
+
+/* Hover effect to show full description */
+.truncate-text:hover {
+  white-space: normal; 
+  overflow: visible;   
+  padding: 5px;
+  z-index: 10;
+}
+
+/* Tooltip for full text */
+.truncate-text:hover::after {
+  content: attr(data-full-text); /* Get full text from data attribute */
+  position: absolute;
+  left: 10px ;
+  top: 100%;
+  white-space: normal;
+  display: none;
+margin-left: 30px ;
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: auto;
+  z-index: 100;
+  word-wrap: break-word ; 
+}
+

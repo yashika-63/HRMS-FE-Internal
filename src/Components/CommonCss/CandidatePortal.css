@@ -1,0 +1,60 @@
+/* Define the shaking animation for the sad emoji (Rejected) */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
+  
+  /* Define the bounce animation for the happy emoji (Accepted) */
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+  
+  /* Define the wobble animation for the remarked emoji */
+  @keyframes wobble {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+  }
+  
+  /* Define the pulse animation for the pending emoji */
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  /* Styles for different statuses with animations */
+  .accepted-status {
+    color: green; /* Green color for Accepted */
+    animation: bounce 1s ease-in-out infinite; /* Bounce animation */
+  }
+  
+  .rejected-status {
+    color: red; /* Red color for Rejected */
+    animation: shake 1s ease-in-out infinite; /* Shake animation */
+  }
+  
+  .remarked-status {
+    color: yellow; /* Yellow color for Remarked */
+    animation: wobble 1s ease-in-out infinite; /* Wobble animation */
+  }
+  
+  .pending-status {
+    color: gray; /* Gray color for Pending */
+    animation: pulse 1s infinite; /* Pulse animation */
+  }
+  
+  /* Optional: Adjust font size or add other styles for emoji */
+  .emoji {
+    font-size: 30px; /* Increase size of emoji */
+    display: inline-block; /* Ensure animation affects the emoji */
+    margin-right: 5px; /* Small margin to separate emoji from text */
+  }
+  

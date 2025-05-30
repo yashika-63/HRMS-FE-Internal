@@ -1,0 +1,395 @@
+.calendar-container {
+    padding: 30px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.calendar-day {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100px;
+}
+
+.day-top {
+    font-weight: bold;
+    font-size: 18px;
+    padding: 6px 0;
+    border-bottom: 1px dashed #605f5f;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.day-top:hover {
+    background-color: #d4edda;
+}
+
+.circle-date {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: #fafafa;
+    border: 2px solid white;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.day-top:hover .circle-date {
+    background-color: #d4edda;
+    border-color: #28a745;
+}
+
+.day-bottom {
+    font-size: 13px;
+    padding-top: 6px;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.calendar-day.today {
+    background-color: #bfd7fd;
+    border: 2px solid #2196f3;
+}
+
+.slots-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 4px;
+    align-items: start;
+    justify-items: start;
+}
+
+.slot-button {
+    background-color: rgba(137, 190, 228, 0.8);
+    color: black;
+    border-radius: 10px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: fit-content;
+}
+
+.slot-button:hover {
+    background-color: #1c567f;
+    transform: scale(1.05);
+    color: white;
+}
+
+.Arrows {
+    cursor: pointer;
+    font-size: 30px;
+
+}
+
+.calendar-day:hover {
+    background-color: #d4edda;
+    border-color: #28a745;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    vertical-align: middle;
+}
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.Ipopup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.Ipopup-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 250px;
+}
+
+.Ipopup-box h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.Ipopup-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+}
+
+.Ipopup-item:hover {
+    background-color: #f0f0f0;
+}
+
+.Ipopup-close {
+    cursor: pointer;
+    font-size: 20px;
+    float: right;
+
+}
+
+.conflict-list {
+    padding-left: 0;
+    list-style: none;
+}
+
+.interview-details {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid #eee;
+    background-color: #d7dff3;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.list-number {
+    font-weight: bold;
+    min-width: 20px;
+    margin-left: 10px;
+}
+
+.candidate-interview-tiles {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+
+.interviewtiles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 0;
+    list-style: none;
+}
+
+.interviewtile {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    width: calc(33.33% - 10px);
+    /* 3 tiles per row with gap */
+    box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-bottom: 3px solid rgb(44, 118, 149);
+}
+
+.interviewtile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.interviewtile p {
+    margin: 5px 0;
+}
+
+.interview-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+    position: relative;
+
+}
+
+.interview-label {
+    flex: 1;
+    text-align: left;
+    font-weight: bold;
+    padding-right: 10px;
+    position: relative;
+}
+
+.interview-label::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 2px;
+    bottom: 2px;
+    width: 2px;
+    background-image: linear-gradient(to bottom, #817c7c 40%, rgba(255, 255, 255, 0) 0%);
+    background-position: right;
+    background-size: 1px 6px;
+    background-repeat: repeat-y;
+}
+
+.interview-value {
+    flex: 2;
+    padding-left: 12px;
+}
+
+.time-highlight {
+    color: red;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.interview-tables {
+    /* max-width: 1080px; */
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+
+
+}
+
+.candidate-table-container {
+    flex: 1 1 60%;
+    min-width: 600px;
+}
+
+.scheduled-table-container {
+    flex: 1 1 38%;
+    min-width: 300px;
+}
+
+.interview-table {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    overflow-x: auto;
+
+}
+
+.interview-table thead {
+    background: linear-gradient(to right, rgba(75, 108, 183, 0.8), rgba(24, 40, 72, 0.8));
+    color: white;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.interview-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 400;
+    border-bottom: 2px solid #c4c4c4;
+}
+
+.interview-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    background-color: #fafafa;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #eae9e9;
+
+}
+
+.interview-table tbody tr {
+    position: relative;
+    z-index: 0;
+}
+
+.interview-table tbody tr:hover {
+    z-index: 2;
+    background-color: #e2ecff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
+    transform: scale(1.005);
+}
+
+.interview-table thead th:first-child {
+    border-top-left-radius: 10px;
+}
+
+.interview-table thead th:last-child {
+    border-top-right-radius: 10px;
+}
+
+.interview-table td,
+.interview-table th {
+    transition: all 0.3s ease;
+}
+
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8a5f66f (merging code)
+.orange-slot {
+    background-color: orange;
+    color: white;
+}
+
+.orange-slot:hover {
+    background-color: rgb(223, 148, 44);
+
+}
+
+.green-slot {
+    background-color: green;
+    color: white;
+}
+
+.green-slot:hover {
+    background-color: rgb(19, 134, 63);
+}
+
+.legend-circle.YourInterview {
+    background-color: orange;
+}
+<<<<<<< HEAD
+.legend-circle.company{
+=======
+
+.legend-circle.company {
+>>>>>>> 8a5f66f (merging code)
+    background-color: rgba(49, 78, 136, 0.8);
+}

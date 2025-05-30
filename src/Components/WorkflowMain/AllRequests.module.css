@@ -1,0 +1,158 @@
+/* .container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+}
+
+.thead th {
+    background-color: #8496fd;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+    
+}
+
+.tbody tr:hover {
+    background-color: #e9ecef;
+
+}
+
+.td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+
+}
+
+.button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: #007bff;
+}
+
+.button:hover {
+    color: #0056b3;
+}
+
+.h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 24px ;
+    text-decoration: underline;
+} */
+
+
+
+
+
+
+
+
+
+
+/*Responsive */
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+}
+
+.thead th {
+    background-color: #8496fd;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+.td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: #007bff;
+}
+
+.button:hover {
+    color: #0056b3;
+}
+
+.h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 24px;
+    text-decoration: underline;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    .thead th, .td {
+        padding: 8px;
+    }
+
+    .table {
+        margin-top: 10px;
+    }
+
+    .button {
+        padding: 6px;
+    }
+
+    .h2 {
+        font-size: 1.5em;
+        margin-bottom: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .thead th, .td {
+        padding: 6px;
+        font-size: 14px;
+    }
+
+    .h2 {
+        font-size: 1.2em;
+    }
+}

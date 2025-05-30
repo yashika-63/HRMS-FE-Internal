@@ -1,0 +1,326 @@
+/* Container for the full-screen image */
+.logincontainer {
+  position: fixed;
+  /* Fixed to cover the entire screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  /* Full viewport height */
+  background-image: url('/Login.png');
+  /* Background image */
+  background-size: cover;
+  /* Ensure image covers the entire screen */
+  background-position: center;
+  /* Center the image */
+  display: flex;
+  justify-content: center;
+  /* Center content horizontally */
+  align-items: center;
+  /* Center content vertically */
+  z-index: 1;
+  /* Ensure the background is behind the form */
+
+}
+
+/* The login form container */
+.form-container {
+  position: relative;
+  max-width: 350px;
+  width: 100%;
+  padding: 20px;
+  border-radius: 20px;
+  z-index: 2;
+  text-align: center;
+  color: black;
+  margin-left: 750px;
+}
+
+/* Style for error message */
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* Style for input group */
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+/* Position the icon inside the input fields */
+.input-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: black;
+  z-index: 2;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px 40px 10px 45px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+  color: white;
+  background-color: white;
+}
+
+/* Style for the reset password button */
+.blackbutton {
+  background-color: black;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 20px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 15px 10px;
+  }
+}
+
+
+.whitetitle {
+  color: white;
+  font-size: 19px;
+  margin-bottom: 20px;
+  text-decoration: underline;
+}
+
+
+
+
+/* Login.css */
+.form-selector {
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  width: 855px;
+  margin: 100px auto 0;
+}
+
+.loginbutton {
+  color: white;
+  width: 100%;
+  padding: 10px 40px 10px 45px;
+  background-color: #000B2B;
+  cursor: pointer;
+  border-radius: 5px;
+border: 1px solid white;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="otp"],
+.selectIM {
+  width: 100%;
+  color: black;
+  margin: 6px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: small;
+  background-color: white;
+
+
+}
+
+input[type="email"] {
+  width: 100%;
+  color: black;
+  margin: 6px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: small;
+  background-color: white;
+}
+
+.password-validation-message {
+  margin-top: 10px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: left;
+}
+
+.password-validation-message p {
+  font-weight: bold;
+  font-size: small;
+  margin-bottom: 10px;
+}
+
+.password-validation-message ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+.password-validation-message li {
+  margin-bottom: 5px;
+  font-size: x-small;
+  justify-content: left;
+  text-align: left;
+}
+
+.password-validation-message li::before {
+  content: "• ";
+  color: #721c24;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.modal-overlay1 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: visible; /* Ensure it's visible */
+  opacity: 1; /* Ensure it’s fully visible */
+  transition: opacity 0.3s ease-in-out; /* Optional for smooth transition */
+}
+
+.modal-container1 {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px; /* Adjust as needed */
+  text-align: center;
+}
+
+.profile-icon1 {
+  background-color: #4caf50;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+  font-size: 20px;
+}
+
+.modal-header h2 {
+  margin-bottom: 10px;
+}
+
+.modal-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+<<<<<<< HEAD
+
+/* Tablet View (768px - 991px) */
+@media (max-width: 991px) {
+  .form-container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .form-selector {
+    width: 100%;
+    max-width: 600px;
+    margin: 50px auto 0;
+  }
+}
+
+/* Large Mobile (576px - 767px) */
+@media (max-width: 767px) {
+  .form-container {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .form-selector {
+    max-width: 400px;
+    margin-top: 30px;
+  }
+  
+  .whitetitle {
+    font-size: 17px;
+  }
+}
+
+/* Small Mobile (up to 575px) */
+@media (max-width: 575px) {
+  .form-container {
+    max-width: 280px;
+    padding: 15px;
+  }
+  
+  .form-selector {
+    max-width: 300px;
+    padding: 8px;
+    margin-top: 20px;
+  }
+  
+  .input-group input {
+    padding: 8px 35px 8px 40px;
+  }
+  
+  .blackbutton, .loginbutton {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+  
+  .password-validation-message {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
+/* Very Small Mobile (up to 400px) */
+@media (max-width: 400px) {
+  .form-container {
+    max-width: 250px;
+  }
+  
+  .form-selector {
+    max-width: 270px;
+  }
+  
+  .whitetitle {
+    font-size: 16px;
+  }
+}
+=======
+>>>>>>> 8a5f66f (merging code)
