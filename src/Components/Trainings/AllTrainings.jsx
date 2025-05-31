@@ -24,15 +24,15 @@ const AllTrainings = () => {
 
     const [formData, setFormData] = useState({
         heading: '',
-        type: 'Safety',
+        time: 0.0,
+        type: '',
         description: '',
         region: '',
         department: '',
         question: [],
         documents: [],
         regionId: '',
-        date: new Date().toISOString(),
-        time: '',
+        date: new Date().toISOString()
     });
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentTrainingId, setCurrentTrainingId] = useState(null);
@@ -126,7 +126,7 @@ const AllTrainings = () => {
         if (value.trim() !== '') {
             try {
                 const response = await axios.get(
-                    `http://${strings.localhost}/employees/EmployeeById/${value}?companyId=${companyId}`
+                    `http://localhost/employees/EmployeeById/${value}?companyId=${companyId}`
                 );
                 const employee = response.data;
                 setSelectedEmployee(prev => ({
@@ -366,8 +366,7 @@ const AllTrainings = () => {
                 status: item.status,
                 description: item.description || '',
                 question: item.questions || [],
-                documents: item.documents || [],
-                time: item.time || '0'
+                documents: item.documents || []
             }));
 
             setTrainings(transformedData);
@@ -396,8 +395,7 @@ const AllTrainings = () => {
             region: '',
             question: [],
             documents: [],
-            date: new Date().toISOString(),
-            time: '',
+            date: new Date().toISOString()
         });
     };
 
@@ -416,7 +414,7 @@ const AllTrainings = () => {
             );
             const trainingData = trainingResponse.data;
 
-            const typeValue = training.type === "Mandatory" ? "Safety" : "Orientation";
+            const typeValue = training.type === 1 ? "Mandatory" : "Non-Mandatory";
 
             const selectedRegion = dropdownData.region.find(
                 r => r.data === training.region
@@ -439,7 +437,6 @@ const AllTrainings = () => {
                 date: trainingData.date || trainingData.createdAt || new Date().toISOString(),
                 companyId: parseInt(companyId),
                 createdByEmployeeId: parseInt(employeeId),
-                time: trainingData.time || '0',
             };
 
             setFormData(formDataUpdate);
@@ -447,7 +444,8 @@ const AllTrainings = () => {
             try {
                 const questionsResponse = await axios.get(`http://${strings.localhost}/api/acknowledges/training/${training.id}`);
                 const questions = questionsResponse.data && Array.isArray(questionsResponse.data)
-                    ? questionsResponse.data.map(q => q.question || q)
+                    // ? questionsResponse.data.map(q => q.question || q)
+                    ? questionsResponse.data
                     : [];
 
                 const documentsResponse = await axios.get(`http://${strings.localhost}/api/documentTraining/view/Training/${training.id}`);
@@ -473,7 +471,7 @@ const AllTrainings = () => {
             console.error('Error setting edit data:', error);
             toast.error('Failed to load training for editing');
 
-            const typeValue = training.type === "Mandatory" ? "Safety" : "Orientation";
+            const typeValue = training.type === 1 ? 'Mandatory' : 'Non-Mandatory';
             const selectedRegion = dropdownData.inductionRegion.find(
                 r => r.data === training.region
             );
@@ -493,7 +491,6 @@ const AllTrainings = () => {
                 date: training.date || new Date().toISOString(),
                 companyId: parseInt(companyId),
                 createdByEmployeeId: parseInt(employeeId),
-                time: training.time || '0',
             });
         }
     };
@@ -507,7 +504,7 @@ const AllTrainings = () => {
             setViewMode(true);
             setCurrentTrainingId(training.id);
 
-            const typeValue = training.type === "Mandatory" ? "Safety" : "Orientation";
+            const typeValue = training.type === 1 ? 'Mandatory' : 'Non-Mandatory';
 
             const selectedRegion = dropdownData.region.find(
                 r => r.data === training.region
@@ -526,30 +523,29 @@ const AllTrainings = () => {
                 question: [],
                 documents: [],
                 regionId: selectedRegion ? selectedRegion.masterId : '',
-                departmentId: selectedDepartment ? selectedDepartment.masterId : '',
-                time: training.time || training.time === 0 ? training.time.toString() : '0',
+                departmentId: selectedDepartment ? selectedDepartment.masterId : ''
             };
             setFormData(formDataUpdate);
             try {
                 const questionsResponse = await axios.get(`http://${strings.localhost}/api/acknowledges/training/${training.id}`);
                 const questions = questionsResponse.data && Array.isArray(questionsResponse.data)
-                    ? questionsResponse.data.map(q => q.question || q)
+                    // ? questionsResponse.data.map(q => q.question || q)
+                        ? questionsResponse.data
                     : [];
 
                 const documentsResponse = await axios.get(`http://${strings.localhost}/api/documentTraining/view/Training/${training.id}`);
                 const documents = documentsResponse.data && Array.isArray(documentsResponse.data)
                     ? documentsResponse.data
                     : [];
-                setFormData(prev => ({
+                   setFormData(prev => ({
                     ...prev,
-                    question: Array.isArray(questions) ?
-                        questions.map(q => q.question || q) : [],
-                    documents: Array.isArray(documents) ? documents : [],
-                    time: training.time || training.time === 0 ? training.time.toString() : prev.time,
+                    question: questions,
+                    documents: documents
                 }));
 
             } catch (error) {
                 console.error('Error fetching questions or documents:', error);
+                // Fallback to whatever data we have in the training object
                 setFormData(prev => ({
                     ...prev,
                     question: training.question || [],
@@ -569,8 +565,7 @@ const AllTrainings = () => {
             description: '',
             region: '',
             question: [],
-            documents: [],
-            time: '',
+            documents: []
         });
         setViewMode(false);
     };
@@ -603,12 +598,31 @@ const AllTrainings = () => {
         }
     };
 
-    const handleRemoveQuestion = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            question: prev.question.filter((_, i) => i !== index)
-        }));
+    // const handleRemoveQuestion = (index) => {
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         question: prev.question.filter((_, i) => i !== index)
+    //     }));
+    // };
+    const handleRemoveQuestion = async (item) => {
+        if (!item || !item.id) {
+            toast.error('Invalid question. Cannot delete.');
+            return;
+        }
+        try {
+            await axios.delete(`http://${strings.localhost}/api/acknowledges/Delete/${item.id}`);
+            toast.success('Question deleted successfully');
+            setFormData(prev => ({
+                ...prev,
+                question: prev.question.filter(q => q.id !== item.id)
+            }));
+        } catch (error) {
+            console.error('Error deleting question:', error);
+            toast.error('Failed to delete question. Please try again.');
+        }
     };
+
+
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -618,16 +632,17 @@ const AllTrainings = () => {
         }
     };
 
-    const handleRemoveDocument = async (documentId) => {
+    const handleRemoveDocument = async (doc) => {
         if (!window.confirm('Are you sure you want to delete this document?')) return;
 
         try {
-            await axios.delete(`http://${strings.localhost}/api/documentTraining/delete/${documentId}`);
-            setFormData(prev => ({
-                ...prev,
-                documents: prev.documents.filter(doc => doc.id !== documentId)
-            }));
+            await axios.delete(`http://${strings.localhost}/api/documentTraining/delete/${doc.documentId}`);
+            // setFormData(prev => ({
+            //     ...prev,
+            //     documents: prev.documents.filter(doc => doc.id !== documentId)
+            // }));
             toast.success('Document deleted successfully');
+            fetchDocumentsForInduction(currentTrainingId);
         } catch (error) {
             console.error('Error deleting document:', error);
             toast.error('Failed to delete document. Please try again.');
@@ -637,62 +652,47 @@ const AllTrainings = () => {
     const handleSaveBasicInfo = async () => {
         try {
             let response;
+
+            const payload = {
+                heading: formData.heading,
+                type: formData.type === 'Mandatory' ? 1 : 0,
+                description: formData.description,
+                region: formData.region,
+                regionId: formData.regionId,
+                time: formData.time,
+                department: formData.department,
+                departmentId: formData.deptId,
+                companyId: parseInt(companyId),
+                createdByEmployeeId: parseInt(employeeId),
+                createdAt: formData.date || new Date().toISOString(),
+                status: true,
+            };
+
             if (isEditMode) {
                 const existingTraining = await axios.get(
                     `http://${strings.localhost}/api/training/${currentTrainingId}`
                 );
 
-                const payload = {
+                const mergedPayload = {
                     ...existingTraining.data,
-                    heading: formData.heading,
-                    type: formData.type === 'Safety' ? 1 : 0,
-                    description: formData.description,
-                    region: formData.region,
-                    regionId: formData.regionId,
-                    department: formData.department,
-                    departmentId: formData.deptId,
-                    companyId: parseInt(companyId),
-                    createdByEmployeeId: parseInt(employeeId),
+                    ...payload,
                     createdAt: formData.date || existingTraining.data.createdAt || new Date().toISOString(),
-                    status: true,
-                    time: formData.time,
                 };
 
                 response = await axios.put(
                     `http://${strings.localhost}/api/training/${currentTrainingId}`,
-                    payload
+                    mergedPayload
                 );
 
                 setTrainings(prev => prev.map(ind =>
                     ind.id === currentTrainingId ? {
                         ...ind,
-                        heading: formData.heading,
-                        type: formData.type === 'Safety' ? "Mandatory" : "Non-Mandatory",
-                        description: formData.description,
-                        department: formData.department,
-                        region: formData.region,
-                        regionId: formData.regionId,
-                        companyId: parseInt(companyId),
-                        createdByEmployeeId: parseInt(employeeId),
+                        ...payload,
+                        type: formData.type === 1 ? "Mandatory" : "Non-Mandatory",
                         date: formData.date || new Date().toISOString(),
-                        time: formData.time,
                     } : ind
                 ));
             } else {
-                const payload = {
-                    heading: formData.heading,
-                    type: formData.type === 'Safety' ? 1 : 0,
-                    description: formData.description,
-                    region: formData.region,
-                    regionId: formData.regionId,
-                    department: formData.department,
-                    departmentId: formData.deptId,
-                    companyId: parseInt(companyId),
-                    createdByEmployeeId: parseInt(employeeId),
-                    createdAt: formData.date || new Date().toISOString(),
-                    status: true,
-                    time: formData.time,
-                };
                 response = await axios.post(
                     `http://${strings.localhost}/api/training/save-with-employee/${companyId}/${employeeId}`,
                     payload
@@ -707,19 +707,11 @@ const AllTrainings = () => {
 
                 setTrainings(prev => [...prev, {
                     id: response.data.id,
-                    heading: formData.heading,
-                    type: formData.type === 'Safety' ? "Mandatory" : "Non-Mandatory",
-                    region: formData.region,
-                    regionId: formData.regionId,
-                    department: formData.department,
+                    ...payload,
+                    type: formData.type === 1 ? "Mandatory" : "Non-Mandatory",
                     date: formData.date || new Date().toISOString(),
-                    description: formData.description,
                     question: formData.question,
                     documents: formData.documents,
-                    status: true,
-                    companyId: parseInt(companyId),
-                    createdByEmployeeId: parseInt(employeeId),
-                    time: formData.time,
                 }]);
             }
 
@@ -733,39 +725,39 @@ const AllTrainings = () => {
     };
 
 
+
     const handleSaveQuestions = async () => {
         try {
             if (!currentTrainingId) {
                 throw new Error("No training ID available");
             }
 
-            if (isEditMode) {
-                await axios.get(`http://${strings.localhost}/api/acknowledges/training/${currentTrainingId}`);
-            }
-
-            if (formData.question.length > 0) {
-                const acknowledges = formData.question.map(question => ({
-                    question: question,
-                    trainingId: currentTrainingId,
-                    rating: null
-                }));
-
-                const response = await axios.post(
-                    `http://${strings.localhost}/api/acknowledges/bulk/${currentTrainingId}`,
-                    acknowledges
-                );
-
-                console.log('Saved acknowledges:', response.data);
-            } else {
+            if (formData.question.length === 0) {
                 toast.warning('No questions added to save');
+                return;
             }
 
+            // Prepare payload with correct structure
+            const acknowledges = formData.question.map(q => ({
+                rating: q.rating || 0,
+                termAndCondition: q.termAndCondition || false,
+                question: q.question
+            }));
+
+
+            const response = await axios.post(
+                `http://${strings.localhost}/api/acknowledges/bulk/${currentTrainingId}`,
+                acknowledges
+            );
+
+            console.log('Saved acknowledges:', response.data);
             setCurrentStep(3);
         } catch (error) {
             console.error('Error saving questions:', error);
-            showToast('Failed to save questions. Please try again.', 'error');
+            toast.error('Failed to save questions. Please try again.');
         }
     };
+
 
     const handleAddDocument = async () => {
         if (!newDocument.file) {
@@ -1095,10 +1087,11 @@ const AllTrainings = () => {
     );
 
     useEffect(() => {
+        // Check if filters are applied, otherwise fetch active training data
         if (areFiltersApplied()) {
             fetchFilteredTrainings();
         } else {
-            fetchTrainings(filters.page);
+            fetchTrainings(filters.page); // Call active API with page
         }
     }, [filters, companyId]);
 
@@ -1140,7 +1133,7 @@ const AllTrainings = () => {
         }
     };
 
-    const handleViewDocument = async (id, doc) => {
+    const handleViewDocument = async (doc) => {
         const fileName = doc.fileName || "document";
 
         try {
@@ -1404,29 +1397,29 @@ const AllTrainings = () => {
                                                             required
                                                         >
                                                             <option value="">Select Type</option>
-                                                            <option value="Safety">Mandatory</option>
-                                                            <option value="Orientation">Non Mandatory</option>
+                                                            <option value="Mandatory">Mandatory</option>
+                                                            <option value="Non-Mandatory">Non-Mandatory</option>
                                                         </select>
                                                     )}
                                                 </div>
 
                                                 <div className="half-width">
-                                                    <label htmlFor="time">Time (in hours){!viewMode && <span className="required">*</span>}</label>
+                                                    <label htmlFor="time">Time{!viewMode && <span className="required">*</span>}</label>
                                                     {viewMode ? (
                                                         <input
-                                                            type="text"
-                                                            value={formData.time ? `${formData.time}` : 'Not specified'}
+
+                                                            type="time"
+                                                            value={formData.time || ''}
                                                             readOnly
                                                             className="read-only-input"
                                                         />
                                                     ) : (
                                                         <input
-                                                            type="number"
+                                                            type="time"
                                                             name="time"
                                                             value={formData.time || ''}
                                                             onChange={handleInputChange}
                                                             className="selectIM"
-                                                            step="0.1"
                                                             required
                                                         />
                                                     )}
@@ -1456,17 +1449,17 @@ const AllTrainings = () => {
 
                                     {(viewMode || currentStep === 2) && (
                                         <div className="popup-group questions-section">
-                                            <label>Training Questions</label>
+                                            <label className="centerText">Training Questions</label>
                                             <div className="questions-list">
                                                 {formData.question.length > 0 ? (
-                                                    formData.question.map((item, index) => (
-                                                        <div key={item.id || index} className="question-item">
-                                                            <span>{typeof item === 'string' ? item : item.question}</span>
+                                                    formData.question.map((item) => (
+                                                        <div key={item.id || item.question} className="question-item">
+                                                            <span>{item.question}</span>
                                                             {!viewMode && (
                                                                 <button
                                                                     type="button"
                                                                     className="remove-question-btn"
-                                                                    onClick={() => handleRemoveQuestion(index)}
+                                                                    onClick={() => handleRemoveQuestion(item)}
                                                                 >
                                                                     <FaMinus />
                                                                 </button>
@@ -1474,8 +1467,9 @@ const AllTrainings = () => {
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <div className="no-questions">No questions added</div>
+                                                    <div>No questions added</div>
                                                 )}
+
                                             </div>
                                             {!viewMode && (
                                                 <div className="add-question-container">
@@ -1499,7 +1493,7 @@ const AllTrainings = () => {
 
                                     {(viewMode || currentStep === 3) && (
                                         <div className="popup-group documents-section">
-                                            <label>Documents</label>
+                                            <label className="centerText">Documents</label>
                                             <div className="documents-list">
                                                 {formData.documents.length > 0 ? (
                                                     formData.documents.map((doc) => {
@@ -1519,7 +1513,7 @@ const AllTrainings = () => {
                                                                         href="#"
                                                                         className="preview-btn"
                                                                         onClick={(e) => {
-                                                                            handleViewDocument(doc.id, doc)
+                                                                            handleViewDocument(doc)
                                                                         }}
                                                                     >
                                                                         Preview
@@ -1529,7 +1523,7 @@ const AllTrainings = () => {
                                                                         <button
                                                                             type="button"
                                                                             className="remove-document-btn"
-                                                                            onClick={() => handleRemoveDocument(doc.id)}
+                                                                            onClick={() => handleRemoveDocument(doc)}
                                                                         >
                                                                             <FaMinus />
                                                                         </button>
@@ -1831,7 +1825,7 @@ const AllTrainings = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="6" className="no-data">No trainings found matching your criteria</td>
+                                <td colSpan="6" className="no-data1">No trainings found matching your criteria</td>
                             </tr>
                         )}
                     </tbody>
@@ -1846,13 +1840,13 @@ const AllTrainings = () => {
                                 <iframe src={previewUrl} title="PDF Preview" width="100%" height="500px" />
                             )}
                             {previewType === 'image' && (
-                                <img src={previewUrl} alt="Preview" />
+                                <img src={previewUrl} alt="Preview" style={{ maxWidth: '100%', maxHeight: '500px' }} />
                             )}
                             {previewType === 'unsupported' && (
                                 <p>Preview not available for this file type.</p>
                             )}
 
-                            <div>
+                            <div style={{ textAlign: 'center', marginTop: '10px' }}>
                                 <a href={previewUrl} download={previewFilename} className="btn">
                                     Download File
                                 </a>

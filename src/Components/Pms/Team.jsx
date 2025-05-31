@@ -6,11 +6,15 @@ import { useNavigate } from 'react-router-dom';
 import { showToast } from '../../Api.jsx';
 import { strings } from '../../string';
 import '../CommonCss/organizationalGoal.css';
- 
+import CreateJobDescription from '../Recruitment/CreateJobDescription.jsx';
+
 const Team = () => {
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isViewPopupOpen, setIsViewPopupOpen] = useState(false);
+    const [ViewRequestPopup, setViewRequestPopup] = useState(false);
+    const [viewRequestData, setViewRequestData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [isConfirmationPopupOpen, setIsConfirmationPopupOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [responsiblePerson, setResponsiblePerson] = useState(null);
@@ -20,11 +24,12 @@ const Team = () => {
     const [error, setError] = useState(null);
     const [responsibleInput, setResponsibleInput] = useState('');
     const [hrInput, setHrInput] = useState('');
- 
+    const [showPopup, setShowPopup] = useState(false);
+    const [viewType, setViewType] = useState('card');
     const employeeId = localStorage.getItem('employeeId');
     const companyId = localStorage.getItem('companyId');
     const navigate = useNavigate();
- 
+
     useEffect(() => {
         axios.get(`http://${strings.localhost}/api/employee-config/by-reporting-manager/${employeeId}`)
             .then(response => {
@@ -34,7 +39,7 @@ const Team = () => {
                 showToast('There was an error fetching the employees.', 'error');
             });
     }, []);
- 
+
     const handleEmployeeSearch = async (value, type) => {
         if (value.trim() !== '') {
             try {
@@ -62,7 +67,7 @@ const Team = () => {
             setError(null);
         }
     };
- 
+
     const handleSelectEmployee = (employee, type) => {
         if (type === 'responsible') {
             setResponsiblePerson(employee);
@@ -74,10 +79,7 @@ const Team = () => {
             setSearchResultsHR([]);
         }
     };
- 
- 
- 
- 
+
     const saveDetails = async () => {
         if (selectedEmployee && responsiblePerson && hrPerson) {
             setLoading(true);
@@ -85,13 +87,13 @@ const Team = () => {
             const requestbody = {
                 status: true
             };
- 
+
             try {
                 await axios.post(
                     `http://${strings.localhost}/api/confirmation/save?employeeId=${selectedEmployee.id}&responsiblePersonId=${responsiblePerson.id}&hrId=${hrPerson.id}&companyId=${companyId}`,
                     requestbody
                 );
- 
+
                 showToast("Saved successfully", "success");
                 setIsConfirmationPopupOpen(false);
             } catch (error) {
@@ -100,7 +102,7 @@ const Team = () => {
                     error.response?.data ||
                     error.message ||
                     "Error while saving";
- 
+
                 showToast(errorMessage, "error");
             } finally {
                 setLoading(false);
@@ -109,24 +111,24 @@ const Team = () => {
             showToast("Please select all fields", "error");
         }
     };
- 
- 
- 
+
+
+
     const openViewPopup = (employee) => {
         setSelectedEmployee(employee);
         setIsViewPopupOpen(true);
     };
- 
+
     const openConfirmationPopup = (employee) => {
         setSelectedEmployee(employee);
         setIsConfirmationPopupOpen(true);
     };
- 
+
     const closeViewPopup = () => {
         setIsViewPopupOpen(false);
         setSelectedEmployee(null);
     };
- 
+
     const closeConfirmationPopup = () => {
         setIsConfirmationPopupOpen(false);
         setSelectedEmployee(null);
@@ -137,19 +139,45 @@ const Team = () => {
         setSearchResultsResponsible([]);
         setSearchResultsHR([]);
     };
- 
- 
+    const handleOpenPopup = () => {
+        setShowPopup(true);
+    };
+
+    const handleClosePopup = () => {
+        setShowPopup(false);
+    };
+
+    const handleViewRequestPopup = async () => {
+        setViewRequestPopup(true);
+        setIsLoading(true);
+
+        try {
+            const response = await axios.get(`http://${strings.localhost}/api/jobdescription/getByCompanyAndEmployee/${companyId}/${employeeId}`);
+            setViewRequestData(response.data || []);
+        } catch (error) {
+            console.error("Failed to fetch job descriptions:", error);
+            showToast("Failed to load request data.", "error");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
+    const handleCloseViewRequestPopup = () => {
+        setViewRequestPopup(false);
+    };
+
     const getColorForInitial = (initial) => {
         const colors = [
             '#5b6fdd', '#e57373', '#81c784', '#64b5f6', '#ffd54f',
             '#ba68c8', '#4db6ac', '#ff8a65', '#7986cb', '#f06292',
             '#4dd0e1', '#aed581', '#ffb74d', '#a1887f', '#9575cd'
         ];
- 
+
         const normalizedValue = (initial.toUpperCase().charCodeAt(0) - 65) % colors.length;
         return colors[Math.abs(normalizedValue)];
     };
- 
+
     const editDropdownMenu = (employee) => (
         <div className="dropdown">
             <button className="dots-button">
@@ -169,46 +197,96 @@ const Team = () => {
             </div>
         </div>
     );
- 
+    const handleToggleChange = () => {
+        setViewType(prev => (prev === 'card' ? 'table' : 'card'));
+    };
+
     return (
         <div className='coreContainer'>
             <div className='form-title'>Team Members</div>
- 
-            <div className="card-grid">
-                {employees.length > 0 ? (
-                    employees.map(employee => (
-                        <div key={employee.employee.id} className="team-card">
-                            <div className="card-header">
-                                <div
-                                    className="avatar"
-                                    style={{ backgroundColor: getColorForInitial(employee.employee.firstName[0]) }}
-                                >
-                                    {employee.employee.firstName[0]}
-                                </div>
-                                <div className="card-header-info">
-                                    <h4>{`${employee.employee.firstName} ${employee.employee.lastName}`}</h4>
-                                    <p>{employee.employee.designation}</p>
-                                </div>
-                                <div className='top-header'>
-                                    {editDropdownMenu(employee.employee)}
-                                </div>
-                            </div>
- 
-                            <div className="card-body">
-                                <p>Department: {employee.employee.department}</p>
-                                <p>Division: {employee.employee.division}</p>
-                                <p>Joining Date: {employee.employee.joiningDate}</p>
-                                <p>Gender: {employee.employee.gender}</p>
-                                <p>Age: {employee.employee.age}</p>
-                                <p>Nationality: {employee.employee.nationality}</p>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="errorMessage">No team members found.</div>
-                )}
+         
+            <div className="toggle">
+                <label className="switch">
+                    <input type="checkbox" checked={viewType === 'table'} onChange={handleToggleChange} />
+                    <span className="slider"></span>
+                </label>
+                <span className="view-label">{viewType === 'table' ? 'Table View' : 'Card View'}</span>
             </div>
- 
+            {viewType === 'card' ? (
+                <div className="card-grid">
+                    {employees.length > 0 ? (
+                        employees.map(employee => (
+                            <div key={employee.employee.id} className="team-card">
+                                <div className="card-header">
+                                    <div
+                                        className="avatar"
+                                        style={{ backgroundColor: getColorForInitial(employee.employee.firstName[0]) }}
+                                    >
+                                        {employee.employee.firstName[0]}
+                                    </div>
+                                    <div className="card-header-info">
+                                        <h4>{`${employee.employee.firstName} ${employee.employee.lastName}`}</h4>
+                                        <p>{employee.employee.designation}</p>
+                                    </div>
+                                    <div className='top-header'>
+                                        {editDropdownMenu(employee.employee)}
+                                    </div>
+                                </div>
+
+                                <div className="card-body">
+                                    <p>Department: {employee.employee.department}</p>
+                                    <p>Division: {employee.employee.division}</p>
+                                    <p>Joining Date: {employee.employee.joiningDate}</p>
+                                    <p>Gender: {employee.employee.gender}</p>
+                                    <p>Age: {employee.employee.age}</p>
+                                    <p>Nationality: {employee.employee.nationality}</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="errorMessage">No team members found.</div>
+                    )}
+                </div>
+            ) : (
+                <div className="table-view">
+                    <table className="interview-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Designation</th>
+                                <th>Department</th>
+                                <th>Division</th>
+                                <th>Joining Date</th>
+                                <th>Gender</th>
+                                <th>Age</th>
+                                <th>Nationality</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {employees.length > 0 ? (
+                                employees.map(employee => (
+                                    <tr key={employee.employee.id}>
+                                        <td>{`${employee.employee.firstName} ${employee.employee.lastName}`}</td>
+                                        <td>{employee.employee.designation}</td>
+                                        <td>{employee.employee.department}</td>
+                                        <td>{employee.employee.division}</td>
+                                        <td>{employee.employee.joiningDate}</td>
+                                        <td>{employee.employee.gender}</td>
+                                        <td>{employee.employee.age}</td>
+                                        <td>{employee.employee.nationality}</td>
+                                        <td>{editDropdownMenu(employee.employee)}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="9">No team members found.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
             {isViewPopupOpen && selectedEmployee && (
                 <div className="add-popup">
                     <div className="popup-content">
@@ -233,7 +311,7 @@ const Team = () => {
                     </div>
                 </div>
             )}
- 
+
             {isConfirmationPopupOpen && selectedEmployee && (
                 <div className="add-popup">
                     <div>
@@ -274,9 +352,9 @@ const Team = () => {
                                 </div>
                             </div>
                         </div>
- 
+
                         {/* <hr /> */}
- 
+
                         <div>
                             <span className="required-marker">*</span>
                             <label htmlFor="responsiblePerson">Responsible Person:</label>
@@ -305,12 +383,12 @@ const Team = () => {
                                 </ul>
                             )}
                         </div>
- 
+
                         <div>
                             <span className="required-marker">*</span>
                             <label htmlFor="hrPerson">HR Person:</label>
                             <div>
- 
+
                                 <input
                                     type="text"
                                     id="hrPerson"
@@ -334,7 +412,7 @@ const Team = () => {
                                 </ul>
                             )}
                         </div>
- 
+
                         <div className="btnContainer">
                             <button
                                 type="button"
@@ -345,15 +423,16 @@ const Team = () => {
                                 {loading && <div className="loading-spinner"></div>}
                                 {loading ? "Saving..." : "Save"}
                             </button>
- 
+
                             <button type="button" className="outline-btn" onClick={closeConfirmationPopup}>Close</button>
                         </div>
                     </div>
                 </div>
             )}
- 
+          
+
         </div>
     );
 };
- 
+
 export default Team;

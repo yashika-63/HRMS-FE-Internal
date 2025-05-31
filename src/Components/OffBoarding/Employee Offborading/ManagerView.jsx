@@ -405,26 +405,14 @@ const ManagerView = () => {
         <FontAwesomeIcon icon={faEllipsisV} />
       </button>
       <div className="dropdown-content">
-        {!record.completionStatus ? (
-          <div>
-            <button
-              type="button"
-              onClick={() => handleComplete(record)}
-            >
-              <FaUserCheck /> Complete
-            </button>
-          </div>
-        ) : (
-          <div>
-            <button
-              type="button"
-              disabled
-              className="readonly"
-            >
-              <FaUserCheck /> Completed
-            </button>
-          </div>
-        )}
+        <div>
+          <button
+            type="button"
+            onClick={() => handleComplete(record)}
+          >
+            <FaUserCheck /> Complete
+          </button>
+        </div>
         <div>
           <button
             type="button"
@@ -433,14 +421,16 @@ const ManagerView = () => {
             <FaEye /> View
           </button>
         </div>
-        <div>
-          <button
-            type="button"
-            onClick={() => handleUpdate(record)}
-          >
-            <FaEdit /> Update
-          </button>
-        </div>
+        {record.status !== "Completed" && (
+          <div>
+            <button
+              type="button"
+              onClick={() => handleUpdate(record)}
+            >
+              <FaEdit /> Update
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -507,7 +497,7 @@ const ManagerView = () => {
               </tr>
             ) : records.length === 0 ? (
               <tr>
-                <td colSpan="7" className="no-data">No records found</td>
+                <td colSpan="7" className="no-data1">No records found</td>
               </tr>
             ) : (
               records.map((record, index) => (

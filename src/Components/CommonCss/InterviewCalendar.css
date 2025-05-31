@@ -359,6 +359,7 @@
     transition: all 0.3s ease;
 }
 
+
 .orange-slot {
     background-color: orange;
     color: white;
@@ -381,6 +382,7 @@
 .legend-circle.YourInterview {
     background-color: orange;
 }
-.legend-circle.company{
+
+.legend-circle.company {
     background-color: rgba(49, 78, 136, 0.8);
 }

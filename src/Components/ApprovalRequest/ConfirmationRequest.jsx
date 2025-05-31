@@ -38,7 +38,7 @@ const ConfirmationRequest = () => {
                     setError("");
                 } else {
                     setEmployees([]);
-                    setError("No active confirmations.");
+                    // setError("No active confirmations.");
                 }
             } catch (err) {
                 setEmployees([]);
@@ -165,10 +165,8 @@ const ConfirmationRequest = () => {
         <div className="coreContainer">
             {loading ? (
                 <p>Loading...</p>
-            ) : employees.length === 0 ? (
-                <p>{error}</p>
             ) : (
-                <table className="Attendance-table">
+                <table className="interview-table">
                     <thead>
                         <tr>
                             <th>Sr.No</th>
@@ -180,21 +178,29 @@ const ConfirmationRequest = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {employees.map((emp, index) => (
-                            <tr key={emp.id}>
-                                <td>{index + 1}</td>
-                                <td>{emp.employee?.employeeId}</td>
-                                <td
-                                    style={{ cursor: "pointer", color: "blue" }}
-                                    onClick={() => handleNameClick(emp)}
-                                >
-                                    {getFullName(emp)}
+                        {employees.length === 0 ? (
+                            <tr>
+                                <td colSpan="6" className="no-data1" style={{ textAlign: 'center', padding: '1rem' }}>
+                                    No confirmation requests available.
                                 </td>
-                                <td>{emp.employee?.designation}</td>
-                                <td>{emp.employee?.department}</td>
-                                <td><ActionDropdown employee={emp} /></td>
                             </tr>
-                        ))}
+                        ) : (
+                            employees.map((emp, index) => (
+                                <tr key={emp.id}>
+                                    <td>{index + 1}</td>
+                                    <td>{emp.employee?.employeeId}</td>
+                                    <td
+                                        style={{ cursor: "pointer", color: "blue" }}
+                                        onClick={() => handleNameClick(emp)}
+                                    >
+                                        {getFullName(emp)}
+                                    </td>
+                                    <td>{emp.employee?.designation}</td>
+                                    <td>{emp.employee?.department}</td>
+                                    <td><ActionDropdown employee={emp} /></td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             )}

@@ -3,7 +3,7 @@ import axios from "axios";
 import { strings } from "../../string";
 import { showToast } from "../../Api.jsx";
 
-const CandidatedetailsView = ({ fromActionTaken = false, preRegistrationId, preLoginToken, verificationTicketId, onClose, onVerificationStatusChange }) => {
+const CandidatedetailsView = ({ fromActionTaken = false, preRegistrationId,ticketId, preLoginToken, verificationTicketId, onClose, onVerificationStatusChange }) => {
     const [step, setStep] = useState(1);
     const [ticketNote, setTicketNote] = useState("");
     const [documentData, setDocumentData] = useState([]);
@@ -195,10 +195,11 @@ const CandidatedetailsView = ({ fromActionTaken = false, preRegistrationId, preL
     const handleConfirmVerification = () => {
         setLoading(true);
         try {
-            const url = `http://${strings.localhost}/api/verification/updateStatus?id=${preRegistrationId}&reportingPersonId=${reportingPersonId}`;
-            axios.put(url)
+   
+          const response = axios.put(`http://${strings.localhost}/api/verification/updateStatus?id=${ticketId}&reportingPersonId=${reportingPersonId}`);
+          
             showToast("Verification confirmed successfully", "success");
-            // window.location.reload();
+            window.location.reload();
             setShowConfirmationModal(false);
             onClose();
         } catch (error) {
@@ -274,14 +275,14 @@ const CandidatedetailsView = ({ fromActionTaken = false, preRegistrationId, preL
                                     </div>
 
                                     <div className="step-column">
-                                        <h5 className="underlineText">Current Address</h5>
+                                        <h5 className="centerText">Current Address</h5>
                                         <p><strong>House No:</strong> {personalData?.currentHouseNo}</p>
                                         <p><strong>Street:</strong> {personalData?.currentStreet}</p>
                                         <p><strong>City:</strong> {personalData?.currentCity}</p>
                                         <p><strong>State:</strong> {personalData?.currentState}</p>
                                         <p><strong>Postal Code:</strong> {personalData?.currentPostelcode}</p>
                                         <p><strong>Country:</strong> {personalData?.currentCountry}</p>
-                                        <h5 className="underlineText">Permanent Address</h5>
+                                        <h5 className="centerText">Permanent Address</h5>
                                         <p><strong>House No:</strong> {personalData?.permanentHouseNo}</p>
                                         <p><strong>Street:</strong> {personalData?.permanentStreet}</p>
                                         <p><strong>City:</strong> {personalData?.permanentCity}</p>

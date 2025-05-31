@@ -168,11 +168,11 @@ const AssignInduction = ({ induction, onClose }) => {
                     <div className='input-row'>
                         <div>
                             <span className="required-marker">*</span>
-                            <label htmlFor='empId'>Employee ID:</label>
+                            <label htmlFor='employeeId'>Employee ID:</label>
                             <input
                                 type='text'
                                 name='employeeId'
-                                id='empId'
+                                id='employeeId'
                                 value={selectedEmployee.employeeId}
                                 onChange={handleEmployeeSelect}
                                 className='readonly'
@@ -184,7 +184,7 @@ const AssignInduction = ({ induction, onClose }) => {
                             <label htmlFor='empName'>Employee Name:</label>
                             <input
                                 type='text'
-                                name='name'
+                                name='empName'
                                 id='empName'
                                 value={`${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`}
                                 onChange={handleEmployeeNameChange}
@@ -197,7 +197,6 @@ const AssignInduction = ({ induction, onClose }) => {
                                         <li
                                             key={employee.id}
                                             onClick={() => handleSelectEmployee(employee)}
-                                            style={{ cursor: 'pointer' }}
                                         >
                                             {`${employee.firstName} ${employee.lastName} (${employee.employeeId})`}
                                         </li>

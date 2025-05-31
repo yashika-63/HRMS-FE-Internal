@@ -450,13 +450,25 @@
 
 .step-grid {
     display: flex;
-    gap: 20px;
     flex-wrap: wrap;
+    gap: 20px;
 }
 
 .step-column {
-    flex: 1;
+    flex: 1 1 45%; 
     min-width: 300px;
+    padding: 10px;
+}
+
+.step-column p {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.step-column strong {
+    width: 150px; 
+    font-weight: bold;
+    margin-right: 10px; 
 }
 
 .verified-ribbon {

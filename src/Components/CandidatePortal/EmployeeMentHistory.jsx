@@ -3,7 +3,6 @@ import axios from 'axios';
 import '../CommonCss/AddEmp.css';
 import { parseISO } from 'date-fns';
 import { strings } from '../../string.jsx';
-import { useParams } from 'react-router-dom';
 import { differenceInMonths, differenceInYears } from 'date-fns';
 import 'react-toastify/dist/ReactToastify.css';
 import { showToast } from '../../Api.jsx';
@@ -35,7 +34,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
     CompanySize: [],
     currency_code: [],
   });
-
 
   const fetchDataByKey = async (keyvalue) => {
     try {
@@ -99,7 +97,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
       if (response.data && response.data.length > 0) {
         setEmployeeDetails(response.data);
         setDirtyFlags(Array(response.data.length).fill(false));
-
         setIsUpdate(true);
       } else {
 
@@ -131,7 +128,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
   const handleAddFields = () => {
     const lastEntry = employeeDetails[employeeDetails.length - 1];
     let isValid = true;
-
     if (
       !lastEntry.companyName ||
       !lastEntry.jobRole ||
@@ -199,7 +195,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
     const date = event.target.value;
     const newEmployeeDetails = [...employeeDetails];
     newEmployeeDetails[index][name] = date;
-
     if (name === 'startDate' || name === 'endDate') {
       const startDate = newEmployeeDetails[index].startDate;
       const endDate = newEmployeeDetails[index].endDate;
@@ -216,7 +211,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
         newEmployeeDetails[index].jobDuration = calculateJobDuration(startDate, endDate);
       }
     }
-
     setEmployeeDetails(newEmployeeDetails);
   };
 
@@ -235,20 +229,26 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
     const newErrors = {};
     let isValid = true;
 
+    const newRecords = [];
+    const updatedRecords = [];
+
     employeeDetails.forEach((detail, index) => {
+      const isExisting = !!detail.id;
+      const isDirty = dirtyFlags[index];
+
+      // Required validation
       if (!detail.companyName || !detail.jobRole || !detail.startDate || !detail.endDate || !detail.latestCtc || !detail.companySize || !detail.industry || !detail.employeementType) {
         isValid = false;
         newErrors[`detail${index}`] = 'Please fill all required fields in each entry.';
       }
-      // Validate Latest CTC
+
+      // CTC validations
       if (detail.latestCtc && (!/^\d+(\.\d+)?$/.test(detail.latestCtc) || parseFloat(detail.latestCtc) <= 0)) {
         newErrors[`detail${index}latestCtc`] = 'Latest CTC must be a positive number.';
       }
-      // Validate Monthly Gross
       if (detail.latestMonthGross && (!/^\d+(\.\d+)?$/.test(detail.latestMonthGross) || parseFloat(detail.latestMonthGross) <= 0)) {
         newErrors[`detail${index}latestMonthGross`] = 'Monthly Gross must be a positive number.';
       }
-      // Ensure Monthly Gross is less than Latest CTC
       if (detail.latestMonthGross && parseFloat(detail.latestMonthGross) >= parseFloat(detail.latestCtc)) {
         newErrors[`detail${index}latestMonthGrossCTC`] = 'Monthly Gross must be less than Latest CTC.';
       }
@@ -256,40 +256,48 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
         isValid = false;
         newErrors[`detail${index}dateRange`] = 'End date cannot be before start date.';
       }
+
+      // Determine if it's new or updated
+      if (isExisting && isDirty) {
+        updatedRecords.push(detail);
+      } else if (!isExisting) {
+        newRecords.push(detail);
+      }
     });
 
     if (!isValid) {
       setErrors(newErrors);
       return;
     }
+
     try {
-      let response;
-      if (isUpdate) {
-        response = await axios.put(`http://${strings.localhost}/api/employment-data/update/${employeeDetails[0].id}`, employeeDetails);
-        showToast('Employment history Updated successfully', 'success');
-      } else {
-        // Use POST request for saving new data
-        const { id: verificationTicketId } = ticketDetails;
-        response = await axios.post(`http://${strings.localhost}/api/employment-data/save-all/${verificationTicketId}/${preLoginToken}`, employeeDetails, {
+      const { id: verificationTicketId } = ticketDetails;
+
+      //  PUT: Update dirty existing records one by one
+      for (let record of updatedRecords) {
+        await axios.put(`http://${strings.localhost}/api/employment-data/update/${record.id}`, record);
+      }
+
+      //  POST: Add new records in bulk
+      if (newRecords.length > 0) {
+        await axios.post(`http://${strings.localhost}/api/employment-data/save-all/${verificationTicketId}/${preLoginToken}`, newRecords, {
           headers: { 'Content-Type': 'application/json' }
         });
-        showToast('Employment history saved successfully', 'success');
       }
+
+      showToast('Employment history saved successfully', 'success');
       nextStep();
+
     } catch (error) {
-      console.error('Error saving employment data:', error);
-      // showToast('Failed to save', 'error');
-      // onFinishStep();
+      console.error('Error saving/updating employment data:', error);
+      showToast('Failed to save/update employment history.', 'error');
     }
   };
 
 
   const handleUpdateSingleRecord = async (index) => {
     const employement = employeeDetails[index];
-
     // Optional: Validate data before sending
-
-
     try {
       const response = await axios.put(
         `http://${strings.localhost}/api/employment-data/update/${employement.id}`,
@@ -300,14 +308,11 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
           }
         }
       );
-
       const message = response?.data?.message || 'Updated successfully.';
       showToast(message.split('successfully')[0] + 'successfully', 'success');
-
       const newDirtyFlags = [...dirtyFlags];
       newDirtyFlags[index] = false;
       setDirtyFlags(newDirtyFlags);
-
     } catch (error) {
       console.error('Error updating single record:', error);
       showToast('Failed to update record.', 'error');
@@ -341,7 +346,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
                 <input type="text" name="responsibilities" value={detail.responsibilities} onChange={(e) => handleChange(index, e)} />
               </div>
             </div>
-
             <div className="input-row">
               <div className="input-wrapper">
                 <span className="required-marker">*</span>
@@ -370,7 +374,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
                 <input type="text" name="jobDuration" value={detail.jobDuration} readOnly />
               </div>
             </div>
-
             <div className="input-row">
               <div className="input-wrapper">
                 <span className="required-marker">*</span>
@@ -389,7 +392,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
                   <p className="error">{errors[`detail${index}latestMonthGrossCTC`]}</p>
                 )}
               </div>
-
               <div className="input-wrapper">
                 <label>Monthly Gross</label>
                 <input
@@ -405,13 +407,11 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
                   <p className="error">{errors[`detail${index}latestCtc`]}</p>
                 )}
               </div>
-
               <div className="input-wrapper">
                 <label>Supervisor Contact</label>
                 <input type="text" name="supervisorContact" value={detail.supervisorContact} onChange={(e) => handleChange(index, e)} />
               </div>
             </div>
-
             <div className="input-row">
               <div className="input-wrapper">
                 <label>Reason of Leaving</label>
@@ -426,7 +426,6 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
                 <input type="text" name="location" value={detail.location} onChange={(e) => handleChange(index, e)} />
               </div>
             </div>
-
             <div className="input-row">
               <div className="input-wrapper">
                 <span className="required-marker">*</span>
@@ -500,15 +499,13 @@ const EmployeeMentHistory = ({ ticketDetails, nextStep }) => {
                   Update
                 </button>
               )}
-
             </div>
           </div>
         ))}
         <div className="btnContainer">
-
-          {(employeeDetails.length > 1 || !isUpdate) && (
+          {employeeDetails.some(detail => !detail.id) && (
             <button type="submit" className="btn">
-              {isUpdate ? 'Update' : 'Save'} & Next
+              Save & Next
             </button>
           )}
 

@@ -66,10 +66,10 @@ const ExpenseApprovalRequest = () => {
             console.error("Error fetching expense data:", error);
         }
     };
-      useEffect(() => {
-            fetchEmployeeDetails();
-        }, []); 
-    
+    useEffect(() => {
+        fetchEmployeeDetails();
+    }, []);
+
     // useEffect(() => {
     //     fetchExpenses();
     // }, [token, division, department, companyRole, companyId, strings]);
@@ -229,7 +229,7 @@ const ExpenseApprovalRequest = () => {
     };
     return (
         <div className="coreContainer">
-            <table className="Attendance-table">
+            <table className="interview-table">
                 <thead>
                     <tr>
                         <th>Sr.No</th>
@@ -242,18 +242,25 @@ const ExpenseApprovalRequest = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {expenseData.map((item , index) => (
-                        <tr key={item.id}>
-                            <td>{index+1}</td>
-                            <td>{item.employee ? item.employee.employeeId : 'N/A'}</td>
-                            <td>{item.employee ? `${item.employee.firstName} ${item.employee.lastName}` : 'N/A'}</td>
-                            <td>{item.expensePurpose}</td>
-                            <td>{item.expenseAmountSpent}</td>
-                            <td style={statusStyle(item.requestStatus)}>{item.requestStatus}</td>
-                            <td>{editDropdown(item)}</td>
+                    {expenseData.length === 0 ? (
+                        <tr>
+                            <td colSpan="6" className='no-data1'> No data available. </td>
                         </tr>
-                    ))}
+                    ) : (
+                        expenseData.map((item, index) => (
+                            <tr key={item.id}>
+                                <td>{index + 1}</td>
+                                <td>{item.employee ? item.employee.employeeId : 'N/A'}</td>
+                                <td>{item.employee ? `${item.employee.firstName} ${item.employee.lastName}` : 'N/A'}</td>
+                                <td>{item.expensePurpose}</td>
+                                <td>{item.expenseAmountSpent}</td>
+                                <td style={statusStyle(item.requestStatus)}>{item.requestStatus}</td>
+                                <td>{editDropdown(item)}</td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
+
             </table>
 
             {showPopup && (

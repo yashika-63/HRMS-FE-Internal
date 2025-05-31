@@ -12,11 +12,11 @@ const ViewInduction = ({ induction, onClose }) => {
     const [documents, setDocuments] = useState([]);
     const [previewUrl, setPreviewUrl] = useState('');
     const [previewType, setPreviewType] = useState('');
-    const [showPreviewModal , setShowPreviewModal] = useState(false);
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [previewFilename, setPreviewFilename] = useState('');
     const [formData, setFormData] = useState({
         heading: '',
-        type: 'Safety',
+        type: '',
         description: '',
         region: '',
         question: [],
@@ -51,38 +51,50 @@ const ViewInduction = ({ induction, onClose }) => {
         setIsEditMode(true);
 
         try {
-            const [inductionRes, ackRes, docRes] = await Promise.all([
-                axios.get(`http://${strings.localhost}/api/inductions/get/${induction.id}`),
-                axios.get(`http://${strings.localhost}/api/inductionsACK/inductionID/${induction.id}`),
-                axios.get(`http://${strings.localhost}/documents/view/Inductions/${induction.id}`),
-            ]);
-            console.log('Induction Data:', inductionRes.data);
-            console.log('Acknowledgements:', ackRes.data);
-            console.log('Documents:', docRes.data);
+            // Fetch induction data
+            let inductionData = null;
+            try {
+                const inductionRes = await axios.get(`http://${strings.localhost}/api/inductions/get/${induction.id}`);
+                inductionData = inductionRes.data;
+                setFormData(prev => ({
+                    ...prev,
+                    heading: inductionData.heading || '',
+                    type: inductionData.type,
+                    description: inductionData.description || '',
+                    region: inductionData.region || '',
+                    regionId: inductionData.regionId || '',
+                    date: inductionData.date || new Date().toISOString(),
+                }));
+            } catch (err) {
+                console.error("Error fetching induction data:", err);
+            }
 
-            const inductionData = inductionRes.data;
+            // Fetch acknowledgements (questions)
+            try {
+                const ackRes = await axios.get(`http://${strings.localhost}/api/inductionsACK/inductionID/${induction.id}`);
+                const questions = ackRes.data || [];
+                setFormData(prev => ({ ...prev, question: questions }));
+                setAcknowledgements(questions);
+            } catch (err) {
+                console.error("Error fetching acknowledgements:", err);
+            }
 
-            setFormData({
-                heading: inductionData.heading || '',
-                type: inductionData.type === true ? 'Safety' : 'Orientation',
-                description: inductionData.description || '',
-                region: inductionData.region || '',
-                regionId: inductionData.regionId || '',
-                date: inductionData.date || new Date().toISOString(),
-                question: ackRes.data || [],
-                documents: docRes.data || []
-            });
+            // Fetch documents
+            try {
+                const docRes = await axios.get(`http://${strings.localhost}/documents/view/Inductions/${induction.id}`);
+                const docs = docRes.data || [];
+                setFormData(prev => ({ ...prev, documents: docs }));
+                setDocuments(docs);
+            } catch (err) {
+                console.error("Error fetching documents:", err);
+            }
 
-
-            setAcknowledgements(ackRes.data || []);
-            setDocuments(docRes.data || []);
-
-            toast.success('Induction data loaded successfully');
         } catch (error) {
-            console.error('Error loading induction data:', error);
-            toast.error('Failed to load induction data');
+            console.error('Unexpected error loading induction data:', error);
         }
     };
+
+
     const handleViewDocument = async (id, doc) => {
         const fileName = doc.fileName || "document";
 
@@ -137,7 +149,6 @@ const ViewInduction = ({ induction, onClose }) => {
             default: return <FaFileAlt />;
         }
     };
-    console.log("Questions", formData.question); 
     return (
         <div className="modal-overlay">
             <div className="modal-content1">
@@ -145,9 +156,6 @@ const ViewInduction = ({ induction, onClose }) => {
                     <button type='button' className='close-btn' onClick={handleClosePopup}> X</button>
                 </div>
                 <h3 className='centerText'>View Induction</h3>
-
-
-
                 <div className="popup-contentin">
                     <div className="view-mode-container">
                         <div className="view-mode-section">
@@ -159,7 +167,10 @@ const ViewInduction = ({ induction, onClose }) => {
                                 </div>
                                 <div className="view-mode-field">
                                     <label><FaIdCard className="icon" />Type</label>
-                                    <div className="view-mode-value">{formData.type}</div>
+                                    <div className="view-mode-value">
+                                        {formData.type ? 'Mandatory' : 'Non-Mandatory'}
+                                    </div>
+
                                 </div>
                                 <div className="view-mode-field">
                                     <label><FaList className="icon" /> Description</label>
@@ -177,7 +188,7 @@ const ViewInduction = ({ induction, onClose }) => {
                             <div className="view-mode-fields">
                                 <div className="view-mode-field full-width">
                                     <div className="view-mode-value">
-                                        
+
                                         {formData.question && formData.question.length > 0 ? (
                                             <ul className="questions-list-view">
                                                 {formData.question.map((q, index) => (
@@ -187,6 +198,7 @@ const ViewInduction = ({ induction, onClose }) => {
                                         ) : (
                                             'No questions added'
                                         )}
+
                                     </div>
                                 </div>
 
@@ -201,7 +213,6 @@ const ViewInduction = ({ induction, onClose }) => {
                                         {formData.documents && formData.documents.length > 0 ? (
                                             <ul className="documents-list-view">
                                                 {formData.documents.map((doc, index) => {
-                                                    // Safely get file extension
                                                     const filePath = doc.filePath || '';
                                                     const fileName = filePath.split('\\').pop() || 'document';
                                                     const fileExt = fileName.split('.').pop() || '';
@@ -209,7 +220,7 @@ const ViewInduction = ({ induction, onClose }) => {
                                                     return (
                                                         <div key={doc.id || fileName} className='input-row'>
                                                             <div className="document-info">
-                                                            <span className="document-number">{index + 1}.</span>
+                                                                <span className="document-number">{index + 1}.</span>
                                                                 {getFileIcon(fileExt)}
                                                                 <span>{fileName}</span>
                                                             </div>
@@ -223,8 +234,6 @@ const ViewInduction = ({ induction, onClose }) => {
                                                                 >
                                                                     Preview
                                                                 </a>
-                                                               
-                                                               
                                                             </div>
                                                         </div>
                                                     );
@@ -233,6 +242,8 @@ const ViewInduction = ({ induction, onClose }) => {
                                         ) : (
                                             'No documents added'
                                         )}
+
+
                                     </div>
                                 </div>
                             </div>

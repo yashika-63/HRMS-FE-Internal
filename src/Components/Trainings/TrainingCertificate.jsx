@@ -1,9 +1,15 @@
 import React from "react";
 import '../CommonCss/AddEmp.css';
 import '../CommonCss/Main.css';
+import { useCompanyLogo } from "../../Api.jsx";
 
 const TrainingCertificate = ({ data, onClose }) => {
     if (!data) return null;
+    const firstName = localStorage.getItem("firstName");
+    const lastName = localStorage.getItem("lastName");
+    const employeeName = `${firstName || ""} ${lastName || ''}`;
+    const companyId = localStorage.getItem("companyId");
+    const logo = useCompanyLogo(companyId);
 
     return (
         <div className="certificate-overlay">
@@ -12,14 +18,14 @@ const TrainingCertificate = ({ data, onClose }) => {
                 <div className="certificate-border">
                     <div className="certificate-header">
                         <div className="certificate-logo">
-                            <img src="/LoginLong.png" alt="Company Logo" style={{ width: '60%' }} />
+                             <img className='HRMSNew'   src={logo}  alt="Pristine Logo" width={120} height={30} />
                         </div>
                         <h1>Certificate of Completion</h1>
                         <p>This is to certify that</p>
                     </div>
 
                     <div className="certificate-body">
-                        <h2>{data.employeeName}</h2>
+                        <h2>{employeeName}</h2>
                         <p>has successfully completed the training program</p>
                         <h3>"{data.title}"</h3>
 

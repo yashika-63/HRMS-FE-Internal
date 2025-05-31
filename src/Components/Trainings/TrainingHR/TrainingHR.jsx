@@ -760,7 +760,7 @@ const TrainingHR = () => {
                             );
                         }) : (
                             <tr>
-                                <td colSpan="6" className="no-data">No trainings found matching your criteria</td>
+                                <td colSpan="6" className="no-data1">No trainings found matching your criteria</td>
                             </tr>
                         )}
                     </tbody>

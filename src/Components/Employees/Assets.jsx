@@ -36,26 +36,31 @@ const Assets = () => {
         setSelectedLabels([...selectedLabels, '']);
     };
 
-    const handleSave = async () => {
-        setIsSaving(true);
-        try {
-            const payload = selectedLabels
-                .filter(label => label)
-                .map(label => ({ lable: label }));
+ const handleSave = async () => {
+  setIsSaving(true);
 
-            const response = await axios.post(
-                `http://${strings.localhost}/api/asset/save/${employeeId}`,
-                payload
-            );
-            showToast('Save successful:', response.data);
-            setResponseId(response.data.responseId);
-            setShowConfirmPopup(true);
-        } catch (error) {
-            showToast('Error saving asset labels:', error);
-        } finally {
-            setIsSaving(false);
-        }
-    };
+  if (selectedLabels.some(label => label.trim() === "")) {
+    showToast("Please select all asset labels before saving.");
+    setIsSaving(false);
+    return;
+  }
+
+  try {
+    const payload = selectedLabels.map(label => ({ lable: label }));
+    const response = await axios.post(
+      `http://${strings.localhost}/api/asset/save/${employeeId}`,
+      payload
+    );
+    showToast('Save successful:', response.data);
+    setResponseId(response.data.responseId);
+    setShowConfirmPopup(true);
+  } catch (error) {
+    showToast('Error saving asset labels:', error);
+  } finally {
+    setIsSaving(false);
+  }
+};
+
 
     const handleSendToEmployee = async () => {
         if (!responseId) return;
@@ -91,7 +96,6 @@ const Assets = () => {
                    name={`${index}`}
                    value={label}
                    onChange={(e) => handleLabelChange(index, e.target.value)}
-                   required
                    className="asset-select"
                >
                    <option value="" disabled hidden>Select</option>

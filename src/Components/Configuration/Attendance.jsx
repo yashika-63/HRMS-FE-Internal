@@ -291,8 +291,6 @@ const Attendance = () => {
       <div className="form-title">Employee Working Hours / Attendance</div>
 
       <div className="middleline-btn">
-
-
         <div>
           <select value={selectedYear} onChange={handleYearChange}>
             {generateYearRange().map(year => (
