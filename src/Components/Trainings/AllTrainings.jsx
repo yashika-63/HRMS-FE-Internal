@@ -683,7 +683,7 @@ const AllTrainings = () => {
                     ind.id === currentTrainingId ? {
                         ...ind,
                         heading: formData.heading,
-                        type: formData.type === 'Safety' ? "Mandatory" : "Non-Mandatory",
+                        type: formData.type,
                         description: formData.description,
                         department: formData.department,
                         region: formData.region,
