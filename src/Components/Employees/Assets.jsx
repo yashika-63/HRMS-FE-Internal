@@ -35,51 +35,32 @@ const Assets = () => {
     const addNewDropdown = () => {
         setSelectedLabels([...selectedLabels, '']);
     };
-const handleSave = async () => {
 
+ const handleSave = async () => {
   setIsSaving(true);
- 
+
   if (selectedLabels.some(label => label.trim() === "")) {
-
     showToast("Please select all asset labels before saving.");
-
     setIsSaving(false);
-
     return;
-
   }
- 
+
   try {
-
     const payload = selectedLabels.map(label => ({ lable: label }));
-
     const response = await axios.post(
-
       `http://${strings.localhost}/api/asset/save/${employeeId}`,
-
       payload
-
     );
-
     showToast('Save successful:', response.data);
-
     setResponseId(response.data.responseId);
-
     setShowConfirmPopup(true);
-
   } catch (error) {
-
     showToast('Error saving asset labels:', error);
-
   } finally {
-
     setIsSaving(false);
-
   }
-
 };
 
- 
 
     const handleSendToEmployee = async () => {
         if (!responseId) return;

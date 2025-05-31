@@ -5,15 +5,15 @@ import { strings } from '../../../string';
 import { showToast } from '../../../Api.jsx';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
- 
+
 const ResignationForm = ({ hrDetails }) => {
- 
+
     const companyId = localStorage.getItem("companyId");
     const employeeId = localStorage.getItem("employeeId");
     const employeeFirstName = localStorage.getItem("firstName");
- 
+
     const currentDate = new Date().toISOString().split('T')[0];
- 
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
@@ -21,24 +21,24 @@ const ResignationForm = ({ hrDetails }) => {
     const [dropdownDepartment, setDropdownDepartment] = useState({ department: [] });
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [isSending, setIsSending] = useState(false);
- 
+
     const [selectedHR, setSelectedHR] = useState({
         id: hrDetails?.id || '',
         employeeId: hrDetails?.employeeId || '',
         employeeFirstName: hrDetails?.firstName || '',
         employeeLastName: hrDetails?.lastName || '',
     });
- 
+
     const [selectedManager, setSelectedManager] = useState({
         id: '',
         employeeId: '',
         employeeFirstName: '',
         employeeLastName: '',
     });
- 
+
     const [searchResults, setSearchResults] = useState([]);
     const [searchResultsManager, setSearchResultsManager] = useState([]);
- 
+
     const [formData, setFormData] = useState({
         applied: true,
         completionStatus: false,
@@ -57,7 +57,7 @@ const ResignationForm = ({ hrDetails }) => {
         reportingManagerId: selectedManager?.id || '',
         reportingManagerName: selectedManager?.name || ''
     });
- 
+
     useEffect(() => {
         const fetchDropdownDepartment = async () => {
             try {
@@ -72,7 +72,7 @@ const ResignationForm = ({ hrDetails }) => {
         };
         fetchDropdownDepartment();
     }, []);
- 
+
     useEffect(() => {
         setFormData(prev => ({
             ...prev,
@@ -85,13 +85,13 @@ const ResignationForm = ({ hrDetails }) => {
             hrName: hrDetails?.firstName ? `${hrDetails.firstName} ${hrDetails.lastName || ''}` : ''
         }));
     }, [selectedHR, selectedManager, employeeId, hrDetails]);
- 
+
     const handleEmployeeSearch = async (searchTerm, setResults) => {
         if (searchTerm.trim() === '') {
             setResults([]);
             return;
         }
- 
+
         try {
             const response = await axios.get(
                 `http://${strings.localhost}/employees/search?companyId=${companyId}&searchTerm=${searchTerm.trim()}`
@@ -104,19 +104,19 @@ const ResignationForm = ({ hrDetails }) => {
             setResults([]);
         }
     };
- 
+
     const handleHRNameChange = (event) => {
         const { value } = event.target;
         setSelectedHR(prev => ({ ...prev, employeeFirstName: value }));
         handleEmployeeSearch(value, setSearchResults);
     };
- 
+
     const handleManagerNameChange = (event) => {
         const { value } = event.target;
         setSelectedManager(prev => ({ ...prev, employeeFirstName: value }));
         handleEmployeeSearch(value, setSearchResultsManager);
     };
- 
+
     const handleSelectEmployee = (employee, setEmployee, setResults) => {
         setEmployee({
             id: employee.id,
@@ -126,7 +126,7 @@ const ResignationForm = ({ hrDetails }) => {
         });
         setResults([]);
     };
- 
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -134,7 +134,7 @@ const ResignationForm = ({ hrDetails }) => {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
- 
+
     const handleDepartmentChange = (e) => {
         const selectedDepartment = dropdownDepartment.department.find(
             r => r.data === e.target.value
@@ -145,29 +145,29 @@ const ResignationForm = ({ hrDetails }) => {
             deptId: selectedDepartment ? selectedDepartment.masterId : ''
         }));
     };
- 
+
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("handleSubmit called");
- 
+
         if (!selectedHR?.id || !selectedManager?.id) {
             setError('Please select both an HR representative and a manager');
             return;
         }
         setShowConfirmPopup(true);
     };
- 
+
     const handleSend = async () => {
         setIsSending(true);
         setError(null);
         setSuccess(null);
- 
+
         try {
             const response = await axios.post(
                 `http://${strings.localhost}/api/offboarding/save/${companyId}/${employeeId}/${selectedManager.id}/${selectedHR.id}`,
                 formData
             );
- 
+
             if (response.status === 200 || response.status === 201) {
                 setSuccess('Resignation submitted successfully!');
                 setFormData(prev => ({
@@ -198,14 +198,14 @@ const ResignationForm = ({ hrDetails }) => {
             setIsSending(false);
         }
     };
- 
+
     const handleCancelSend = () => {
         setShowConfirmPopup(false);
     };
- 
+
     const renderSearchResults = (results, handleSelect) => {
         if (results.length === 0) return null;
- 
+
         return (
             <ul className="dropdown2">
                 {results.map((employee) => (
@@ -219,23 +219,23 @@ const ResignationForm = ({ hrDetails }) => {
             </ul>
         );
     };
- 
+
     return (
         <div className="box-container personal-info-box">
             <h2 className="underlineText">Resignation Form</h2>
- 
+
             {success && <div className="success-message">{success}</div>}
             {error && <div className="error-message">{error}</div>}
- 
+
             <div className="resignation-form">
                 <div className="form-section">
- 
+
                     <div className="input-row">
                         <div>
                             <label>Application Date:</label>
                             <input type="text" value={formData.date} readOnly className="uneditable-field" />
                         </div>
- 
+
                         <div>
                             <label>Employee ID:</label>
                             <input
@@ -246,7 +246,7 @@ const ResignationForm = ({ hrDetails }) => {
                                 onChange={handleInputChange}
                             />
                         </div>
- 
+
                         <div>
                             <label>Employee Name:</label>
                             <input
@@ -258,7 +258,7 @@ const ResignationForm = ({ hrDetails }) => {
                         </div>
                     </div>
                 </div>
- 
+
                 <div className="input-row">
                     <div>
                         <label htmlFor='hrName'>HR Representative:</label>
@@ -266,6 +266,7 @@ const ResignationForm = ({ hrDetails }) => {
                             type="text"
                             name='hrName'
                             id='hrName'
+                            className="selectIM"
                             value={selectedHR.employeeFirstName}
                             onChange={handleHRNameChange}
                             required
@@ -274,13 +275,14 @@ const ResignationForm = ({ hrDetails }) => {
                             handleSelectEmployee(employee, setSelectedHR, setSearchResults))
                         }
                     </div>
- 
+
                     <div>
                         <label htmlFor='reportingManagerName'>Reporting Manager:</label>
                         <input
                             type="text"
                             name='reportingManagerName'
                             id='reportingManagerName'
+                            className="selectIM"
                             value={selectedManager.employeeFirstName}
                             onChange={handleManagerNameChange}
                         />
@@ -288,14 +290,14 @@ const ResignationForm = ({ hrDetails }) => {
                             handleSelectEmployee(employee, setSelectedManager, setSearchResultsManager)
                         )}
                     </div>
- 
-                    <div className="form-group">
+
+                    <div>
                         <label htmlFor="department">Department:</label>
                         <select
                             name="department"
+                            className="selectIM"
                             value={formData.department}
                             onChange={handleDepartmentChange}
-                            className="selectIM"
                             required
                             disabled={isLoading}
                         >
@@ -312,7 +314,7 @@ const ResignationForm = ({ hrDetails }) => {
                         </select>
                     </div>
                 </div>
- 
+
                 <div className="input-row">
                     <div>
                         <label htmlFor="lastWorkingDate">Last Working Date:</label>
@@ -326,7 +328,7 @@ const ResignationForm = ({ hrDetails }) => {
                             min={new Date().toISOString().split('T')[0]}
                         />
                     </div>
- 
+
                     <div>
                         <label htmlFor="reason">Reason for Resignation:</label>
                         <select
@@ -334,6 +336,7 @@ const ResignationForm = ({ hrDetails }) => {
                             id="reason"
                             value={formData.reason}
                             onChange={handleInputChange}
+
                             required
                         >
                             <option value="">Select a reason</option>
@@ -357,7 +360,7 @@ const ResignationForm = ({ hrDetails }) => {
                         placeholder="Please provide additional details if you selected 'Other' as reason"
                     />
                 </div>
- 
+
                 <div className="btnContainer">
                     <button type="button" className="btn" onClick={(e) => {
                         console.log("Button clicked");
@@ -385,5 +388,5 @@ const ResignationForm = ({ hrDetails }) => {
         </div>
     );
 };
- 
+
 export default ResignationForm;

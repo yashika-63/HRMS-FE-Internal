@@ -245,7 +245,7 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
     const menuItem = [
         {
 
-            icon: <img src="/SidebarImages/ORG DATA.png" alt="Organizational Data" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/ORG DATA.png" alt="Organizational Data" className='sidebar-icon' />,
             path: "/AddEmp",
             name: "Organizational Data",
             roles: ["ADMIN", "SUPERADMIN"],
@@ -257,7 +257,7 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
         },
 
         {
-            icon: <img src="/SidebarImages/timesheet.png" alt="Timesheet" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/timesheet.png" alt="Timesheet" className='sidebar-icon' />,
             path: "/TimeSheetSetup",
             name: "Timesheet",
             roles: ["ADMIN", "USER", "SUPERADMIN"],
@@ -268,19 +268,19 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
             ]
         },
         {
-            icon: <img src="/SidebarImages/company config.png" alt="Company Configuration" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/company config.png" alt="Company Configuration" className='sidebar-icon' />,
             path: "/CompanyConfiguration",
             name: "Company Configuration",
             roles: ["ADMIN", "SUPERADMIN"]
         },
         {
-            icon: <img src="/SidebarImages/master data.png" alt="Master Data" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/master data.png" alt="Master Data" className='sidebar-icon' />,
             path: "/Masterpage",
             name: "Master Data",
             roles: ["ADMIN", "SUPERADMIN"]
         },
         {
-            icon: <img src="/SidebarImages/workflow.png" alt="Workflow" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/workflow.png" alt="Workflow" className='sidebar-icon' />,
             path: "/CreateWorkflow",
             name: "Workflow",
             roles: ["ADMIN", "SUPERADMIN"]
@@ -288,39 +288,39 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
         // { icon: <FaClock />, path: "/TimeSheetDashboard", name: "Time-Sheet", roles: ["ADMIN", "USER"] },
         // { icon: <FaTable />, path: `/AdminViewTimesheet`, name: "View Timesheet", roles: ["ADMIN"] },
         {
-            icon: <img src="/SidebarImages/leave dashboard.png" alt="Leave Dashboard" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/leave dashboard.png" alt="Leave Dashboard" className='sidebar-icon' />,
             path: "/LeaveDashboard",
             name: "Leave Dashboard",
             roles: ["ADMIN", "USER", "SUPERADMIN"],
             badge: pendingLeaveCount > 0 ? pendingLeaveCount : null
         },
         {
-            icon: <img src="/SidebarImages/Req approval.png" alt="Approval Request" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/Req approval.png" alt="Approval Request" className='sidebar-icon' />,
             path: "/RequestHandler",
             name: "Approval Request",
             roles: ["ADMIN", "USER", "SUPERADMIN"],
             badge: combinedRequestCount > 0 ? combinedRequestCount : null
         },
         {
-            icon: <img src="/SidebarImages/expense managment.png" alt="Expense Managment" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/expense managment.png" alt="Expense Managment" className='sidebar-icon' />,
             path: "/ExpenseMan",
             name: "Expense management ",
             roles: ["ADMIN", "USER", "SUPERADMIN"],
             badge: pendingExpenseCount > 0 ? pendingExpenseCount : null
         },
         {
-            icon: <img src="/SidebarImages/enrollment.png" alt="Enrollment" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/enrollment.png" alt="Enrollment" className='sidebar-icon' />,
             path: `/EnrollmentDashboard`,
             name: "Enrollment", roles: ["ADMIN", "SUPERADMIN"]
         },
         {
-            icon: <img src="/SidebarImages/work hour.png" alt="Attendance" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/work hour.png" alt="Attendance" className='sidebar-icon' />,
             path: `/Attendance`,
             name: "Working Hours",
             roles: ["ADMIN", "SUPERADMIN"]
         },
         {
-            icon: <img src="/SidebarImages/payroll.png" alt="Payroll Data" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/payroll.png" alt="Payroll Data" className='sidebar-icon' />,
             path: "/PayrollTransactionScreen",
             name: "Payroll Transactions",
             roles: ["ADMIN", "SUPERADMIN"],
@@ -333,12 +333,13 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
             ]
         },
         {
-            icon: <img src="/SidebarImages/MY TEAM.png" alt="My team" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/MY TEAM.png" alt="My team" className='sidebar-icon'/>,
             path: "/Team",
             name: "My Team",
             roles: ["ADMIN", "USER", "SUPERADMIN"],
             subItems: [
-                { path: "/ModerateRating", name: "Ratings Adjustment" }
+                { path: "/ModerateRating", name: "Ratings Adjustment" },
+                { path: "/MrfFormList", name: "ManPower Request" }
 
             ]
         },
@@ -346,8 +347,7 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
         // { icon: <FaChalkboardTeacher/>, path: `/TrainningSetup`, name: "Training Module", roles: ["ADMIN"] },
 
         {
-
-            icon: <img src="/SidebarImages/preRegistration.png" alt="PreOnoarding" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/preRegistration.png" alt="PreOnoarding" className='sidebar-icon' />,
             path: "/Preregistration",
             name: "Pre-Onboarding",
             roles: ["ADMIN", "SUPERADMIN"],
@@ -366,20 +366,20 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
         // },
 
         {
-            icon: <img src="/SidebarImages/recruitment.png" alt="Recruitment" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/recruitment.png" alt="Recruitment" className='sidebar-icon' />,
             path: `/Jd`,
             name: "Recruitment",
             roles: ["ADMIN", "SUPERADMIN"]
         },
         {
-            icon: <img src="/SidebarImages/tickets.png" alt="Confirmation" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/tickets.png" alt="Confirmation" className='sidebar-icon'/>,
             path: `/AllActiveConfirmation`,
             name: "Confirmation List",
             roles: ["ADMIN", "SUPERADMIN"]
         },
         {
 
-            icon: <img src="/SidebarImages/trainning.png" alt="Trainings" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/trainning.png" alt="Trainings" className='sidebar-icon' />,
             path: "/AllTrainings",
             name: "Trainings",
             roles: ["ADMIN", "SUPERADMIN"],
@@ -389,7 +389,7 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
         },
         {
 
-            icon: <img src="/SidebarImages/Induction.png" alt="Induction" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/Induction.png" alt="Induction" className='sidebar-icon'/>,
             path: "/InductionList",
             name: "Induction",
             roles: ["ADMIN", "SUPERADMIN"],
@@ -397,28 +397,22 @@ const Sidebar = ({ children, toggleTheme, isDarkTheme }) => {
                 { path: "/InductionHR", name: "Induction List" }
             ]
         },
-         {
-            icon: <img src="/SidebarImages/employee dashboard.png" alt="transfer" style={{ width: '15px', height: '15px' }} />,
-            path: `/TransferList`,
-            name: "Transfer",
+        {
+            icon: <img src="/SidebarImages/employee dashboard.png" alt="reports" className='sidebar-icon' />,
+            path: `/ReportsFilters`,
+            name: "Reports",
             roles: ["ADMIN", "USER", "SUPERADMIN"]
         },
         {
-            icon: <img src="/SidebarImages/employee dashboard.png" alt="employee dashboard" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/employee dashboard.png" alt="employee dashboard" className='sidebar-icon' />,
             path: `/EmployeeDashboard`,
             name: "Employee Dashboard",
             roles: ["ADMIN", "USER", "SUPERADMIN"]
         },
         {
-            icon: <img src="/SidebarImages/employee dashboard.png" alt="employee dashboard" style={{ width: '15px', height: '15px' }} />,
+            icon: <img src="/SidebarImages/employee dashboard.png" alt="employee dashboard" className='sidebar-icon' />,
             path: `/OffBoarding`,
             name: "OffBoarding",
-            roles: ["ADMIN", "USER", "SUPERADMIN"]
-        },
-        {
-            icon: <img src="/SidebarImages/employee dashboard.png" alt="reports" style={{ width: '15px', height: '15px' }} />,
-            path: `/Reports`,
-            name: "Reports",
             roles: ["ADMIN", "USER", "SUPERADMIN"]
         },
     ];

@@ -493,7 +493,7 @@ const OffBoarding = () => {
               </tr>
             ) : records.length === 0 ? (
               <tr>
-                <td colSpan="7" className="no-data">No records found</td>
+                <td colSpan="7" className="no-data1">No records found</td>
               </tr>
             ) : (
               records.map((record, index) => (

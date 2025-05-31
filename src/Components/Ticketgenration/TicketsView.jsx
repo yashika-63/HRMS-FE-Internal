@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { strings } from "../../string";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarAlt, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faEllipsisV, faIdCard, faTable } from '@fortawesome/free-solid-svg-icons';
 import { showToast } from "../../Api.jsx";
 import CandidatedetailsView from "./CandidatedetailsView.jsx";
 
@@ -17,13 +17,22 @@ const TicketsView = () => {
     const employeeId = localStorage.getItem("employeeId");
     const [completeVerificationStatus, setCompleteVerificationStatus] = useState(false);
     const [selectedPreRegistrationId, setSelectedPreRegistrationId] = useState(null);
+    const [selectedTicketId, setSelectedTicketId] = useState(null);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [employeeToNotify, setEmployeeToNotify] = useState(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showCandidateDetails, setShowCandidateDetails] = useState(false);
     const [pendingTickets, setPendingTickets] = useState([]);
     const [actionTakenTickets, setActionTakenTickets] = useState([]);
+    const [sortOrder, setSortOrder] = useState("asc");
+    const [viewType, setViewType] = useState('kanban');
+    const [tableFilter, setTableFilter] = useState('pending');
     const verifiedIcon = "/assets/Verified3.png";
+    const [tickets, setTickets] = useState({
+        active: [],
+        pending: [],
+        taken: []
+    });
     const [expandedColumns, setExpandedColumns] = useState({
         all: true,
         pending: true,
@@ -43,7 +52,12 @@ const TicketsView = () => {
             .get(`http://${strings.localhost}/api/verification/pendingByReportingPerson/${employeeId}`)
             .then((response) => {
                 setPendingTickets(response.data);
+                setTickets(prev => ({
+                    ...prev,
+                    pending: response.data
+                }))
             })
+
             .catch((error) => {
                 console.error("Error fetching pending tickets:", error);
             });
@@ -53,6 +67,10 @@ const TicketsView = () => {
             .get(`http://${strings.localhost}/api/verification/latest-verified/${companyId}`)
             .then((response) => {
                 setActionTakenTickets(response.data);
+                setTickets(prev => ({
+                    ...prev,
+                    taken: response.data
+                }))
             })
             .catch((error) => {
                 console.error("Error fetching action taken tickets:", error);
@@ -64,12 +82,17 @@ const TicketsView = () => {
             .then((response) => {
                 const employeeList = response.data;
                 setEmployees(employeeList);
-
-
+                setTickets(prev => ({
+                    ...prev,
+                    active: response.data
+                }))
                 employeeList.forEach(async (employee) => {
                     try {
                         const preregistrationId = employee.preRegistration?.id;
+                        const ticketId = employee.id;
                         setSelectedPreRegistrationId(preregistrationId);
+                        setSelectedTicketId(ticketId);
+
                         const [personalRes, eduRes, empRes] = await Promise.all([
                             axios.get(`http://${strings.localhost}/api/employeedata/get-by-prereg?preRegistrationId=${preregistrationId}&preLoginToken=${employee.preRegistration?.preLoginToken}`),
                             axios.get(`http://${strings.localhost}/api/education/getByVerificationAndToken?verificationId=${employee.id}&preLoginToken=${employee.preRegistration?.preLoginToken}`),
@@ -188,11 +211,29 @@ const TicketsView = () => {
         </div>
     );
 
+
+    const handleToggleChange = () => {
+        setViewType((prev) => (prev === 'kanban' ? 'table' : 'kanban'));
+    };
+    const filteredTickets = tickets[tableFilter];
+
     const handleViewDetailsFromActionTaken = (employee) => {
         setSelectedEmployee(employee);
         setShowCandidateDetails(true);
         setIsFromActionTaken(true);
     };
+
+    const sortedTickets = [...filteredTickets].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+
+        if (sortOrder === "asc") {
+            return dateA - dateB;
+        } else {
+            return dateB - dateA;
+        }
+    });
+
 
     const editDropdownPending = (employee, isActionTaken = false) => (
         <div className="dropdown">
@@ -237,178 +278,284 @@ const TicketsView = () => {
                 setEmployeeToNotify(null);
             });
     };
+
+
+    const getEditDropdown = (ticket) => {
+        if (pendingTickets.some(t => t.id === ticket.id)) {
+            return editDropdownPending(ticket);
+        } else if (actionTakenTickets.some(t => t.id === ticket.id)) {
+            return editDropdownPending(ticket.preRegistration, true);
+        } else {
+            return editDropdown(ticket);
+        }
+    };
+
+
+
     return (
         <div className="coreContainer">
             <h3 className="title">Candidate List</h3>
-            <div className="kanban-container" style={{ marginTop: '50px' }}>
-                <div className={`kanban-column ${!expandedColumns.all ? 'collapsed' : ''}`}>
-                    <div className="column-header">
-                        <h3>All Tickets</h3>
-                        <div className="header-controls">
-                            <span className="badge">{employees.length}</span>
-                            <button className="toggle-btn" onClick={() => toggleColumn('all')}>
-                                {expandedColumns.all ? "−" : "+"}
-                            </button>
+            <div className="toggle">
+                <label className="switch-icon">
+                    <input
+                        type="checkbox"
+                        checked={viewType === "table"}
+                        onChange={handleToggleChange}
+                    />
+                    <span className="slider-icon">
+                        <FontAwesomeIcon icon={faIdCard} className="icon kanban-icon" />
+                        <FontAwesomeIcon icon={faTable} className="icon table-icon" />
+                    </span>
+                </label>
+                <span className="view-label">
+                    {viewType === "table" ? "Table View" : "Card View"}
+                </span>
+            </div>
+            {viewType === 'kanban' && (
+                <div className="kanban-container" style={{ marginTop: '50px' }}>
+                    <div className={`kanban-column ${!expandedColumns.all ? 'collapsed' : ''}`}>
+                        <div className="column-header">
+                            <h3>All Tickets</h3>
+                            <div className="header-controls">
+                                <span className="badge">{employees.length}</span>
+                                <button className="toggle-btn" onClick={() => toggleColumn('all')}>
+                                    {expandedColumns.all ? "−" : "+"}
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    {expandedColumns.all ? (
-                        employees.length > 0 ? (
-                            employees.map((employee) => (
-                                <div key={employee.id} className="kanban-card">
-                                    <div className="details">
-                                        <h4>{employee.preRegistration?.firstName} {employee.preRegistration?.lastName}</h4>
-                                        <hr />
-                                        <p>
-                                            <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: "6px", color: "#2980b9" }} />
-                                            {employee.date}
-                                        </p>
-                                        <p>
-                                            <strong>Sent to employee:</strong>{" "}
-                                            <span className={employee.sentForEmployeeAction ? "status-completed" : "status-pending"}>
-                                                {employee.sentForEmployeeAction ? "Completed" : "Pending"}
-                                            </span>
-                                        </p>
-                                        <p>
-                                            <strong>Employee Action:</strong>{" "}
-                                            <span className={employee.employeeAction ? "status-completed" : "status-pending"}>
-                                                {employee.employeeAction ? "Completed" : "Pending"}
-                                            </span>
-                                        </p>
-                                        <p>
-                                            <strong>Sent back:</strong>{" "}
-                                            <span className={employee.sentBack ? "status-completed" : ""}>
-                                                {employee.sentBack ? "Yes" : "No"}
-                                            </span>
-                                        </p>
-                                        <div className="top-header">
-                                            {editDropdown(employee)}
+                        {expandedColumns.all ? (
+                            employees.length > 0 ? (
+                                employees.map((employee) => (
+                                    <div key={employee.id} className="kanban-card">
+                                        <div className="details">
+                                            <h4>{employee.preRegistration?.firstName} {employee.preRegistration?.lastName}</h4>
+                                            <hr />
+                                            <p>
+                                                <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: "6px", color: "#2980b9" }} />
+                                                {employee.date}
+                                            </p>
+                                            <p>
+                                                <strong>Sent to employee:</strong>{" "}
+                                                <span className={employee.sentForEmployeeAction ? "status-completed" : "status-pending"}>
+                                                    {employee.sentForEmployeeAction ? "Completed" : "Pending"}
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <strong>Employee Action:</strong>{" "}
+                                                <span className={employee.employeeAction ? "status-completed" : "status-pending"}>
+                                                    {employee.employeeAction ? "Completed" : "Pending"}
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <strong>Sent back:</strong>{" "}
+                                                <span className={employee.sentBack ? "status-completed" : ""}>
+                                                    {employee.sentBack ? "Yes" : "No"}
+                                                </span>
+                                            </p>
+                                            <div className="top-header">
+                                                {editDropdown(employee)}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="error-message">No Active Tickets</p>
-                        )
-                    ) : null}
-                </div>
-
-                <div className={`kanban-column ${!expandedColumns.pending ? 'collapsed' : ''}`}>
-                    <div className="column-header">
-                        <h3>Pending Tickets</h3>
-                        <div className="header-controls">
-                            <span className="badge">{pendingTickets.length}</span>
-                            <button className="toggle-btn" onClick={() => toggleColumn('pending')}>
-                                {expandedColumns.pending ? "−" : "+"}
-                            </button>
-                        </div>
-                    </div>
-                    {expandedColumns.pending && (
-                        pendingTickets.length > 0 ? (
-                            pendingTickets.map(employee => (
-                                <div key={employee.id} className="kanban-card">
-                                    <div className="details">
-                                        <h4>{employee.preRegistration?.firstName} {employee.preRegistration?.lastName}</h4>
-                                        <hr />
-                                        <p>
-                                            <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: "6px", color: "#2980b9" }} />
-                                            {employee.date}
-                                        </p>
-                                        <p>
-                                            <strong>Sent to employee:</strong>{" "}
-                                            <span className={employee.sentForEmployeeAction ? "status-completed" : "status-pending"}>
-                                                {employee.sentForEmployeeAction ? "Completed" : "Pending"}
-                                            </span>
-                                        </p>
-                                        {verifiedTickets[employee.preRegistration?.id] && (
-                                            <div className="verified-section">
-                                                <img src={verifiedIcon} alt="Verified" className="verified-icon" />
-                                                <span className="verified-text">Verified</span>
-                                            </div>
-                                        )}
-
-                                        <p>
-                                            <strong>Employee Action:</strong>{" "}
-                                            <span className={employee.employeeAction ? "status-completed" : "status-pending"}>
-                                                {employee.employeeAction ? "Completed" : "Pending"}
-                                            </span>
-                                        </p>
-                                        <p>
-                                            <strong>Sent back:</strong>{" "}
-                                            <span className={employee.sentBack ? "status-completed" : ""}>
-                                                {employee.sentBack ? "Yes" : "No"}
-                                            </span>
-                                        </p>
-                                    </div>
-                                    <div className="top-header">
-                                        {editDropdownPending(employee)}
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="error-message">No Pending Tickets</p>
-                        )
-                    )}
-                </div>
-                <div className={`kanban-column ${!expandedColumns.taken ? 'collapsed' : ''}`}>
-                    <div className="column-header">
-                        <h3>Action Taken</h3>
-                        <div className="header-controls">
-                            <span className="badge">{actionTakenTickets.length}</span>
-                            <button className="toggle-btn" onClick={() => toggleColumn('taken')}>
-                                {expandedColumns.taken ? "−" : "+"}
-                            </button>
-                        </div>
-
+                                ))
+                            ) : (
+                                <p className="error-message">No Active Tickets</p>
+                            )
+                        ) : null}
                     </div>
 
-                    {expandedColumns.taken && (
-                        actionTakenTickets.length > 0 ? (
-                            actionTakenTickets.map(employee => (
-                                <div key={employee.id} className="kanban-card">
-                                    <div className="details">
-                                        <h4>{employee.preRegistration?.firstName} {employee.preRegistration?.lastName}</h4>
-                                        <hr />
-                                        <p>
-                                            <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: "6px", color: "#2980b9" }} />
-                                            {employee.date}
-                                        </p>
-                                        {verifiedTickets[employee.preRegistration?.id] && (
-                                            <div className="verified-section">
-                                                <img src={verifiedIcon} alt="Verified" className="verified-icon" />
-                                                <span className="verified-text">Verified</span>
-                                            </div>
-                                        )}
-                                        <p>
-                                            <strong>Sent to employee:</strong>{" "}
-                                            <span className={employee.sentForEmployeeAction ? "status-completed" : "status-pending"}>
-                                                {employee.sentForEmployeeAction ? "Completed" : "Pending"}
-                                            </span>
-                                        </p>
-                                        <p>
-                                            <strong>Employee Action:</strong>{" "}
-                                            <span className={employee.employeeAction ? "status-completed" : "status-pending"}>
-                                                {employee.employeeAction ? "Completed" : "Pending"}
-                                            </span>
-                                        </p>
-                                        <p>
-                                            <strong>Sent back:</strong>{" "}
-                                            <span className={employee.sentBack ? "status-completed" : ""}>
-                                                {employee.sentBack ? "Yes" : "No"}
-                                            </span>
-                                        </p>
+                    <div className={`kanban-column ${!expandedColumns.pending ? 'collapsed' : ''}`}>
+                        <div className="column-header">
+                            <h3>Pending Tickets</h3>
+                            <div className="header-controls">
+                                <span className="badge">{pendingTickets.length}</span>
+                                <button className="toggle-btn" onClick={() => toggleColumn('pending')}>
+                                    {expandedColumns.pending ? "−" : "+"}
+                                </button>
+                            </div>
+                        </div>
+                        {expandedColumns.pending && (
+                            pendingTickets.length > 0 ? (
+                                pendingTickets.map(employee => (
+                                    <div key={employee.id} className="kanban-card">
+                                        <div className="details">
+                                            <h4>{employee.preRegistration?.firstName} {employee.preRegistration?.lastName}</h4>
+                                            <hr />
+                                            <p>
+                                                <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: "6px", color: "#2980b9" }} />
+                                                {employee.date}
+                                            </p>
+                                            <p>
+                                                <strong>Sent to employee:</strong>{" "}
+                                                <span className={employee.sentForEmployeeAction ? "status-completed" : "status-pending"}>
+                                                    {employee.sentForEmployeeAction ? "Completed" : "Pending"}
+                                                </span>
+                                            </p>
+                                            {verifiedTickets[employee.preRegistration?.id] && (
+                                                <div className="verified-section">
+                                                    <img src={verifiedIcon} alt="Verified" className="verified-icon" />
+                                                    <span className="verified-text">Verified</span>
+                                                </div>
+                                            )}
+
+                                            <p>
+                                                <strong>Employee Action:</strong>{" "}
+                                                <span className={employee.employeeAction ? "status-completed" : "status-pending"}>
+                                                    {employee.employeeAction ? "Completed" : "Pending"}
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <strong>Sent back:</strong>{" "}
+                                                <span className={employee.sentBack ? "status-completed" : ""}>
+                                                    {employee.sentBack ? "Yes" : "No"}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div className="top-header">
+                                            {editDropdownPending(employee)}
+                                        </div>
                                     </div>
-                                    <div className="top-header">
-                                        {editDropdownPending(employee, true)}
+                                ))
+                            ) : (
+                                <p className="error-message">No Pending Tickets</p>
+                            )
+                        )}
+                    </div>
+                    <div className={`kanban-column ${!expandedColumns.taken ? 'collapsed' : ''}`}>
+                        <div className="column-header">
+                            <h3>Action Taken</h3>
+                            <div className="header-controls">
+                                <span className="badge">{actionTakenTickets.length}</span>
+                                <button className="toggle-btn" onClick={() => toggleColumn('taken')}>
+                                    {expandedColumns.taken ? "−" : "+"}
+                                </button>
+                            </div>
+
+                        </div>
+
+                        {expandedColumns.taken && (
+                            actionTakenTickets.length > 0 ? (
+                                actionTakenTickets.map(employee => (
+                                    <div key={employee.id} className="kanban-card">
+                                        <div className="details">
+                                            <h4>{employee.preRegistration?.firstName} {employee.preRegistration?.lastName}</h4>
+                                            <hr />
+                                            <p>
+                                                <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: "6px", color: "#2980b9" }} />
+                                                {employee.date}
+                                            </p>
+                                            {verifiedTickets[employee.preRegistration?.id] && (
+                                                <div className="verified-section">
+                                                    <img src={verifiedIcon} alt="Verified" className="verified-icon" />
+                                                    <span className="verified-text">Verified</span>
+                                                </div>
+                                            )}
+                                            <p>
+                                                <strong>Sent to employee:</strong>{" "}
+                                                <span className={employee.sentForEmployeeAction ? "status-completed" : "status-pending"}>
+                                                    {employee.sentForEmployeeAction ? "Completed" : "Pending"}
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <strong>Employee Action:</strong>{" "}
+                                                <span className={employee.employeeAction ? "status-completed" : "status-pending"}>
+                                                    {employee.employeeAction ? "Completed" : "Pending"}
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <strong>Sent back:</strong>{" "}
+                                                <span className={employee.sentBack ? "status-completed" : ""}>
+                                                    {employee.sentBack ? "Yes" : "No"}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div className="top-header">
+                                            {editDropdownPending(employee, true)}
+                                        </div>
                                     </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="error-message">No Tickets</p>
-                        )
-                    )}
+                                ))
+                            ) : (
+                                <p className="error-message">No Tickets</p>
+                            )
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
+            {viewType === 'table' && (
+                <div className="form-controls">
+                    <div>
+                        <label htmlFor="statusFilter">Filter by Status: </label>
+                        <select
+                            className="selectIM"
+                            id="statusFilter"
+                            value={tableFilter}
+                            onChange={(e) => setTableFilter(e.target.value)}
+                        >
+                            <option value="pending">Pending Tickets</option>
+                            <option value="taken">Action Taken Tickets</option>
+                            <option value="active">Active Tickets</option>
+                        </select>
+                    </div>
+                </div>
+            )}
+            <br />
+            {viewType === 'table' && (
+                <table className="interview-table">
+                    <thead>
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Name</th>
+                            <th onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")} style={{ cursor: "pointer" }}>
+                                Date {sortOrder === "asc" ? "↑↓" : "↓↑"}
+                            </th>
+
+                            <th>Sent to Employee</th>
+                            <th>Employee Action</th>
+                            <th>Sent Back</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedTickets.length > 0 ? (
+                            sortedTickets.map((ticket, index) => {
+                                return (
+                                    <tr key={ticket.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{ticket.preRegistration?.firstName} {ticket.preRegistration?.lastName}</td>
+                                        <td>
+                                            <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: "6px", color: "#2980b9" }} />
+                                            {ticket.date}
+                                        </td>
+                                        <td>
+                                            <span className={`status-confirmationBadge ${ticket.sentForEmployeeAction ? 'confirmed' : 'pending'}`}>
+                                                {ticket.sentForEmployeeAction ? "Completed" : "Pending"}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span className={`status-confirmationBadge ${ticket.employeeAction ? 'confirmed' : 'pending'}`}>
+                                                {ticket.employeeAction ? "Completed" : "Pending"}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span className={`status-confirmationBadge ${ticket.sentBack ? 'terminated' : 'pending'}`}>
+                                                {ticket.sentBack ? "Yes" : "No"}
+                                            </span>
+                                        </td>
+
+                                        <td>{getEditDropdown(ticket)}</td>
+                                    </tr>
+                                );
+                            })
+                        ) : (
+                            <tr>
+                                <td colSpan="7">No Tickets for this status</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            )}
+
             {showModal && !employeeToNotify && selectedEmployee && (
                 <div className="add-popup">
                     <div>
@@ -492,12 +639,16 @@ const TicketsView = () => {
             {showCandidateDetails && selectedEmployee && (
                 <CandidatedetailsView
                     preRegistrationId={selectedEmployee.preRegistration?.id}
+                    ticketId={selectedEmployee.id}
                     preLoginToken={selectedEmployee.preRegistration?.preLoginToken}
                     verificationTicketId={selectedEmployee.id}
                     onClose={() => setShowCandidateDetails(false)}
                     onVerificationStatusChange={setCompleteVerificationStatus}
-                    fromActionTaken={isFromActionTaken} />
+                    fromActionTaken={isFromActionTaken}
+                />
             )}
+
+
 
         </div>
     );

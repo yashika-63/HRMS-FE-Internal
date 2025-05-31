@@ -141,10 +141,9 @@ import ExpenseReport from './Components/Expense/ExpenseReport.jsx';
 import InductionHR from './Components/Induction/InductionHR/InductionHR.jsx';
 import TrainingHR from './Components/Trainings/TrainingHR/TrainingHR.jsx';
 import ReportsFilters from './Components/Reports/ReportsFilters.jsx';
-import CompanySettings from './Components/CompanySetting/CompanySettings.jsx';
-import TransferList from './Components/Transfer/TransferList.jsx';
-import TrainingEvaluationList from './Components/TrainingEvaluation/TrainingEvaluationList.jsx';
-import TransferApprovalRequest from './Components/ApprovalRequest/TransferApprovalRequest.jsx';
+import CompanyRequest from './Components/CompanyConfig/CompanyRequest.jsx';
+import ActiveCandidateList from './Components/Recruitment/ActiveCandidateList.jsx';
+import MrfFormList from './Components/Recruitment/MrfFormList.jsx';
 // import GlobalSearchBar from './globalSearchBar.jsx';
 const App = () => {
 
@@ -396,9 +395,7 @@ const App = () => {
                     <Route path='/Assets/:id' element={<PrivateRoute allowedRoles={['ADMIN', 'USER']}><Assets /></PrivateRoute>} />
                     <Route path='/EmployeeAssetForm' element={<PrivateRoute allowedRoles={['ADMIN', 'USER']}><EmployeeAssetForm /></PrivateRoute>} />
                     <Route path='/LeaveBucketCreation' element={<PrivateRoute allowedRoles={['ADMIN']}><LeaveBucketCreation /></PrivateRoute>} />
-                    <Route path='/CompanySettings' element={<PrivateRoute allowedRoles={['ADMIN']}><CompanySettings /></PrivateRoute>} />
                     <Route path='/InductionList' element={<PrivateRoute allowedRoles={['ADMIN']}><InductionList /></PrivateRoute>} />
-                    <Route path='/TransferList' element={<PrivateRoute allowedRoles={['ADMIN']}><TransferList /></PrivateRoute>} />
                     <Route path='/TrainingCertificate' element={<PrivateRoute allowedRoles={['ADMIN', 'USER']}><TrainingCertificate /></PrivateRoute>} />
                     <Route path='/OffBoarding' element={<PrivateRoute allowedRoles={['ADMIN']}><OffBoarding /></PrivateRoute>} />
                     <Route path='EmployeeExitProcess/:id' element={<PrivateRoute allowedRoles={['ADMIN', 'USER']}><EmployeeExitProcess /></PrivateRoute>} />
@@ -408,12 +405,11 @@ const App = () => {
                     <Route path='/AiTdsCalculator' element={<PrivateRoute allowedRoles={['ADMIN']}><AiTdsCalculator /></PrivateRoute>} />
                     <Route path='/InductionHR' element={<PrivateRoute allowedRoles={['ADMIN']}><InductionHR /></PrivateRoute>} />
                     <Route path='/TrainingHR' element={<PrivateRoute allowedRoles={['ADMIN']}><TrainingHR /></PrivateRoute>} />
-                    <Route path='/Reports' element={<PrivateRoute allowedRoles={['ADMIN']}><ReportsFilters /></PrivateRoute>} />
-                    <Route path='TransferApprovalRequest' element={<PrivateRoute allowedRoles={['ADMIN', "SUPERADMIN", "USER"]}><TransferApprovalRequest /></PrivateRoute>} />
-                  
-                    {/* <Route path='/TrainingEvaluationList' element={<PrivateRoute allowedRoles={['ADMIN']}><TrainingEvaluationList /></PrivateRoute>} /> */}
-                
-                  
+                    <Route path='/ReportsFilters' element={<PrivateRoute allowedRoles={['ADMIN']}><ReportsFilters /></PrivateRoute>} />
+                    <Route path='/CompanyRequest' element={<PrivateRoute allowedRoles={['ADMIN']}><CompanyRequest /></PrivateRoute>} />
+                    <Route path='/ActiveCandidateList/:id' element={<PrivateRoute allowedRoles={['ADMIN']}><ActiveCandidateList /></PrivateRoute>} />
+                    <Route path='/MrfFormList' element={<PrivateRoute allowedRoles={['ADMIN']}><MrfFormList /></PrivateRoute>} />
+
                   </Routes>
                 </Sidebar>
               </ErrorBoundary>

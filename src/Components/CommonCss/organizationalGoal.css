@@ -233,3 +233,116 @@
     margin-top: 1rem;
   }
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .toggle{
+    margin-bottom: 20px;
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    font-size: 16px;
+    color: rgb(130, 130, 194);
+  }
+  .switch-icon {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch-icon input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider-icon {
+  position: absolute;
+  cursor: pointer;
+  background-color: #ccc;
+  border-radius: 34px;
+  width: 80%;
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  transition: background-color 0.4s;
+}
+
+.switch-icon input:checked + .slider-icon {
+  background-color: #089a28;
+}
+/* 
+.icon {
+  color: white;
+  font-size: 16px;
+  transition: transform 0.4s ease;
+} */
+
+.switch-icon input + .slider-icon .kanban-icon {
+  transform: translateX(0);
+  color: white;
+}
+
+.switch-icon input:checked + .slider-icon .kanban-icon {
+  transform: translateX(-60px);
+    color: white;
+}
+
+.switch-icon input + .slider-icon .table-icon {
+  transform: translateX(60px);
+    color: white;
+}
+
+.switch-icon input:checked + .slider-icon .table-icon {
+  transform: translateX(0);
+    color: white;
+}

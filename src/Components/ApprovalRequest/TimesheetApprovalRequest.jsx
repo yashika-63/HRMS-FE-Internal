@@ -129,16 +129,14 @@ const TimesheetApprovalRequest = () => {
 
     return (
         <div className='coreContainer'>
-            <table className='Attendance-table'>
+            <table className='interview-table'>
                 <thead>
                     <tr>
                         <th>Sr.No</th>
                         <th>Employee Id</th>
                         <th>Employee Name</th>
-                       
                         <th>From Date</th>
                         <th>To Date</th>
-                        {/* <th>Request Status</th> */}
                         <th>Send For Approval On </th>
                         <th>Action</th>
                     </tr>
@@ -165,7 +163,7 @@ const TimesheetApprovalRequest = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="7">No pending timesheets found</td>
+                            <td colSpan="7" className="no-data1">No pending timesheets found</td>
                         </tr>
                     )}
                 </tbody>

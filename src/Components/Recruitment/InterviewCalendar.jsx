@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { strings } from "../../string.jsx";
 import { showToast } from "../../Api.jsx";
-import "../CommonCss/InterviewCalendar.css"; 
+import "../CommonCss/InterviewCalendar.css";
 
 const InterviewCalendar = () => {
     const { jobDescriptionId, candidateId } = useParams();
@@ -241,13 +241,13 @@ const InterviewCalendar = () => {
             showToast?.("Interview description is required.", "error");
             return;
         }
-     
-    
+
+
         setIsScheduling(true);
         try {
             const interviewDateTimeString = `${interviewDetails.interviewDate}T${interviewDetails.interviewTime}`; // Assuming UTC time
             const interviewDateTime = new Date(interviewDateTimeString);
-    
+
             await axios.post(`http://${strings.localhost}/api/interview/save`, {
                 ...interviewDetails,
                 interviewDateTime: interviewDateTime.toISOString(),
@@ -259,7 +259,7 @@ const InterviewCalendar = () => {
                     interviewerId: selectedEmployee.employeeId,
                 }
             });
-    
+
             showToast?.("Interview scheduled successfully!", "success");
             setShowPopup(false);
             fetchMonthlyInterviews();
@@ -270,7 +270,7 @@ const InterviewCalendar = () => {
             setIsScheduling(false);
         }
     };
-    
+
 
     const handleViewInterviewDetails = async () => {
         try {
@@ -294,6 +294,9 @@ const InterviewCalendar = () => {
         setIsViewing(false);
     };
 
+    const handleBack = () => {
+        navigate(`/InterviewedCandidate/${jobDescriptionId}`);
+    };
     return (
         <div className="coreContainer">
 
@@ -309,6 +312,9 @@ const InterviewCalendar = () => {
                 </h2>
                 <button type="button" className="Arrows" onClick={handleNextMonth}>→</button>
             </div>
+            {/* <div className="form-controls">
+                <button type="button" className="outline-btn" onClick={handleBack}>Back</button>
+            </div> */}
             <div className="calendar-grid">
                 {daysInMonth.map((day) => (
                     <div key={day.toISOString()} className={`calendar-day ${isToday(day) ? 'today' : ''}`} >
@@ -380,7 +386,7 @@ const InterviewCalendar = () => {
                                 <div>
                                     <div className="input-row">
                                         <div>
-                                        <span className="required-marker">*</span>
+                                            <span className="required-marker">*</span>
                                             <label>Interview Title:</label>
                                             <input name="interviewTitle" type="text" value={interviewDetails.interviewTitle} onChange={handleChange} required />
                                         </div>
@@ -389,9 +395,9 @@ const InterviewCalendar = () => {
                                             <input name="interviewUrl" type="text" value={interviewDetails.interviewUrl} onChange={handleChange} />
                                         </div>
                                         <div>
-                                        <span className="required-marker">*</span>
+                                            <span className="required-marker">*</span>
                                             <label>Interviewer Name:</label>
-                                            <input type="text" value={selectedEmployee.employeeFirstName || ''} onChange={handleEmployeeNameChange} required/>
+                                            <input type="text" value={selectedEmployee.employeeFirstName || ''} onChange={handleEmployeeNameChange} required />
                                             {error && <div style={{ color: 'red' }}>{error}</div>}
                                             {searchResults.length > 0 && (
                                                 <ul className="dropdown2">
@@ -407,7 +413,7 @@ const InterviewCalendar = () => {
 
                                     <div className="input-row">
                                         <div>
-                                        <span className="required-marker">*</span>
+                                            <span className="required-marker">*</span>
                                             <label>Mode:</label>
                                             <select className="selectIM" name="interviewMode" value={interviewDetails.interviewMode} onChange={handleChange} required>
                                                 <option value={true}>Virtual</option>
@@ -419,7 +425,7 @@ const InterviewCalendar = () => {
                                             <input type="date" className="selectIM" value={interviewDetails.interviewDate} readOnly style={{ cursor: 'not-allowed' }} />
                                         </div>
                                         <div>
-                                        <span className="required-marker">*</span>
+                                            <span className="required-marker">*</span>
                                             <label>Time:</label>
                                             <input
                                                 className="selectIM"
@@ -444,7 +450,7 @@ const InterviewCalendar = () => {
 
                                     </div>
                                     <div>
-                                    <span className="required-marker">*</span>
+                                        <span className="required-marker">*</span>
                                         <label>Description:</label>
                                         <textarea name="interviewDescription" value={interviewDetails.interviewDescription} onChange={handleChange} required />
                                     </div>
@@ -543,10 +549,8 @@ const InterviewCalendar = () => {
                         )}
                     </div>
                 </div>
-
-
-
             )}
+
             {showYearPicker && (
                 <div className="Ipopup-overlay">
                     <div className="Ipopup-box">
@@ -606,7 +610,6 @@ const InterviewCalendar = () => {
                     </div>
                 </div>
             )}
-
 
         </div>
     );

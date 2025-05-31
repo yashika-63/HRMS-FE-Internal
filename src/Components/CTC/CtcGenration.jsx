@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { strings } from '../../string.jsx';
-import { fetchDataByKey , showToast } from '../../Api.jsx';
+import { fetchDataByKey, showToast } from '../../Api.jsx';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -16,9 +15,18 @@ const CtcGenration = () => {
   const [error, setError] = useState('');
   const [effectiveFromDate, setEffectiveFromDate] = useState('');
   const [effectiveToDate, setEffectiveToDate] = useState('');
+  const [customAttributes, setCustomAttributes] = useState([]);
+  const [showNewRow, setShowNewRow] = useState(false);
+  const [newCustomAttr, setNewCustomAttr] = useState({
+    label: '',
+    percentage: '',
+    amount: '',
+  });
+
   const navigate = useNavigate();
   const [dropdownData, setDropdownData] = useState({
     CtcCategory: [],
+    customeAttribute: []
   });
 
   const companyId = localStorage.getItem('companyId');
@@ -57,8 +65,12 @@ const CtcGenration = () => {
     const fetchDropdownData = async () => {
       try {
         const CtcCategory = await fetchDataByKey('CtcCategory');
+        const customeAttribute = await fetchDataByKey("customeattribute");
+        console.log("Fetched CtcCategory:", CtcCategory);
+        console.log("Fetched Custom Attributes:", customeAttribute);
         setDropdownData({
           CtcCategory: CtcCategory,
+          customeAttribute: customeAttribute
         });
       } catch (error) {
         console.error('Error fetching dropdown data:', error);
@@ -70,6 +82,7 @@ const CtcGenration = () => {
   useEffect(() => {
     if (category && amount >= 1000) {
       fetchAttributes(category);
+
     }
   }, [amount, category]);
 
@@ -94,15 +107,12 @@ const CtcGenration = () => {
     fetchEmployeeDetails();
   }, [employeeId]);
 
-
-
   const fetchAttributes = async (CtcCategory) => {
     const companyId = localStorage.getItem('companyId');
     if (!companyId) {
       console.error('Company ID is missing');
       return;
     }
-
     try {
       const response = await axios.get(`http://${strings.localhost}/api/ctcMaster/company/${companyId}/category/${encodeURIComponent(CtcCategory)}`);
 
@@ -192,14 +202,12 @@ const CtcGenration = () => {
 
         // Round percentages to 3 decimal places
         const roundedPercentages = calculatedPercentages.map(percentage => parseFloat(percentage.toFixed(3)));
-
         // Ensure total percentage sums to 100
         const totalPercentage = roundedPercentages.reduce((acc, value) => acc + value, 0);
         const difference = 100 - totalPercentage;
         if (difference !== 0) {
           roundedPercentages[roundedPercentages.length - 1] += difference;
         }
-
         // Set the final percentages
         setPercentages(roundedPercentages);
         console.log('Updated Percentages:', roundedPercentages);
@@ -211,7 +219,6 @@ const CtcGenration = () => {
       console.error('Error fetching attributes:', error);
     }
   };
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -250,7 +257,6 @@ const CtcGenration = () => {
         setDistributedAmounts([]);
         return;
       }
-
       // Step 3: Assign Basic Salary value based on its percentage, directly use newAmount for Basic Salary
       const basicSalaryIndex = attributes.findIndex(attr => attr.label === 'Basic');
       const basicSalaryPercentage = basicSalaryIndex !== -1 ? percentages[basicSalaryIndex] : 0;
@@ -286,12 +292,6 @@ const CtcGenration = () => {
     }
   }
 
-
-
-
-
-
-
   const handleEditChange = (index, newAmount) => {
     let parsedAmount = newAmount === "" ? 0 : parseFloat(newAmount);
 
@@ -306,63 +306,56 @@ const CtcGenration = () => {
     if (remainingAmount > 0) {
       const specialAllowanceIndex = attributes.findIndex(attr => attr.label === 'Special Allowances');
       if (specialAllowanceIndex !== -1) {
-        updatedAmounts[specialAllowanceIndex] += remainingAmount; // Add remaining to special allowance
+        updatedAmounts[specialAllowanceIndex] += remainingAmount;
       }
     }
-
-    // Update the distributed amounts state
     setDistributedAmounts(updatedAmounts);
   };
+  const handleCustomAttributeChange = (index, newValue) => {
+    if (newValue === '') {
+      const updated = [...customAttributes];
+      updated[index].amount = '';
+      setCustomAttributes(updated);
+      return;
+    }
 
-
-
+    const numberPattern = /^\d*\.?\d{0,2}$/;
+    if (numberPattern.test(newValue)) {
+      const updated = [...customAttributes];
+      updated[index].amount = newValue;
+      setCustomAttributes(updated);
+    }
+  };
 
 
   const handleSave = async () => {
     if (!effectiveFromDate || !effectiveToDate || !category) {
-      showToast('Please fill in all required fields.' ,'warn');
+      showToast('Please fill in all required fields.', 'warn');
       return;
     }
-  
-    // const basicSalaryIndex = attributes.findIndex(attr => attr.label === 'Basic');
-    // if (basicSalaryIndex !== -1) {
-    //   const basicSalaryPercentage = percentages[basicSalaryIndex];
-    //   if (basicSalaryPercentage < 40 || basicSalaryPercentage > 50) {
-    //     toast.error('Basic Salary percentage must be between 40% and 50%.');
-    //     return;
-    //   }
-    // }
-  
-    // Ensure total percentage is 100%
     const totalPercentage = percentages.reduce((acc, value) => acc + value, 0);
     if (Math.abs(totalPercentage - 100) > 0.10) {
-      showToast('Total percentage must be 100%. Please adjust the percentages.' , 'warn');
+      showToast('Total percentage must be 100%. Please adjust the percentages.', 'warn');
       return;
     }
-  
+
     let hasError = false;
     attributes.forEach((attr, index) => {
       const attributePercentage = percentages[index];
       const attributeAmount = distributedAmounts[index];
-  
-      // Check if attribute percentage is within the valid range
-      // if (attr.label === 'Basic' && (attributePercentage < 40 || attributePercentage > 50)) {
-      //   toast.error('Basic Salary percentage must be between 40% and 50%.');
-      //   hasError = true;
-      // }
       const userDefinedPercentage = (distributedAmounts[index] / amount) * 100;
       if (Math.abs(attributeAmount - (amount * userDefinedPercentage / 100)) > 0.01) {
-        showToast(`${attr.label} has an incorrect distributed amount. Expected: ${(amount * userDefinedPercentage / 100).toFixed(2)}, but got: ${attributeAmount}` , 'error');
+        showToast(`${attr.label} has an incorrect distributed amount. Expected: ${(amount * userDefinedPercentage / 100).toFixed(2)}, but got: ${attributeAmount}`, 'error');
         hasError = true;
       }
-  
-    });
-  
-    if (hasError) return;
-    const totalCTCAmount = parseFloat(distributedAmounts.reduce((acc, amount) => acc + amount, 0).toFixed(2));
 
+    });
+
+    if (hasError) return;
+    const totalCTCAmount = parseFloat([...distributedAmounts, ...customAttributes.map(a => parseFloat(a.amount))].reduce((acc, amount) => acc + amount, 0).toFixed(2));
     const staticData = [];
     const variableData = [];
+    const annualdata = [];
     const basicSalaryAmount = distributedAmounts.find((amount, index) => attributes[index]?.label === 'Basic') || 0;
 
     attributes.forEach((attr, index) => {
@@ -370,39 +363,68 @@ const CtcGenration = () => {
         label: attr.label,
         amount: distributedAmounts[index],
       };
-  
+
       if (attr.label === 'Basic') {
-        // Make sure Basic Salary is treated as a variable component
         variableData.push(data);
       } else if (attr.type === 'Static') {
         staticData.push(data);
       } else if (attr.type === 'Variable') {
         variableData.push(data);
+      } else if (attr.type === 'Annual') {
+        annualdata.push(data);
       }
     });
-  
+    customAttributes.forEach(attr => {
+      const matched = dropdownData.customeAttribute.find(opt => opt.data === attr.label);
+      const type = (matched?.category || '').toLowerCase();
+
+      const data = {
+        label: attr.label,
+        amount: parseFloat(attr.amount),
+      };
+
+      if (attr.label === 'Basic') {
+        variableData.push(data);
+      } else if (type === 'static') {
+        staticData.push(data);
+      } else if (type === 'variable') {
+        variableData.push(data);
+      } else if (type === 'annual') {
+        annualdata.push(data);
+      } else {
+        console.warn(`-> Unknown category for custom attribute "${attr.label}"`);
+      }
+    });
+
+
+    customAttributes.forEach(attr => {
+      if (!attr.label || !attr.amount) {
+        showToast(`Custom attribute ${attr.label || 'Unnamed'} is invalid.`, 'error');
+        hasError = true;
+      }
+    });
+
     const dataToSend = {
       header: {
         effectiveFromDate,
         effectiveToDate,
         ctcAmount: totalCTCAmount,
-        basicAmount:basicSalaryAmount,
+        basicAmount: basicSalaryAmount,
       },
       staticBreakdowns: staticData,
       variableBreakdowns: variableData,
+      annualBreakdowns: annualdata,
     };
-  
+
     try {
       const response = await axios.post(`http://${strings.localhost}/api/ctcmain/header/save/${employeeId}/${companyId}`, dataToSend);
       console.log('datasend', dataToSend);
-      showToast('CTC Distribution saved successfully' , 'success');
+      showToast('CTC Distribution saved successfully', 'success');
     } catch (error) {
       console.error('Error saving data:', error);
       showToast('Error while saving.', 'error');
     }
   };
-  
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -418,9 +440,9 @@ const CtcGenration = () => {
       if (toDate < fromDate) {
         showToast('To Date must be after From Date', 'warn');
       } else if ((toDate - fromDate) < (30 * 24 * 60 * 60 * 1000)) {
-        showToast('To Date must be at least one month after From Date' , 'warn');
+        showToast('To Date must be at least one month after From Date', 'warn');
       } else {
-        setEffectiveToDate(value); 
+        setEffectiveToDate(value);
       }
     }
   };
@@ -430,7 +452,6 @@ const CtcGenration = () => {
   };
   return (
     <div className='coreContainer'>
-      
       <div className='data-container project-info1-box'>
         <h3>CTC Calculation</h3>
         <table className="ctc-details-table">
@@ -476,11 +497,10 @@ const CtcGenration = () => {
           </div>
           <div>
             <label>Enter Yearly Basic Amount: </label>
-            <input  type="text" value={amount} onChange={handleAmountChange} placeholder="Enter amount " />
-            {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
+            <input type="text" value={amount} onChange={handleAmountChange} placeholder="Enter amount " />
+            {error && <p className='no-data'>{error}</p>}
           </div>
         </div>
-
         {attributes.length > 0 && (
           <div>
             <table className='Attendance-table'>
@@ -489,7 +509,6 @@ const CtcGenration = () => {
                   <th>Attribute Name</th>
                   <th>Standard Percentage</th>
                   <th>Distributed Amount</th>
-                  {/* <th>Percentage of Total Amount</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -503,52 +522,156 @@ const CtcGenration = () => {
                     )}
                     <td>
                       {isEditing ? (
-                        <input
-                          type="text"
+                        <input type='text'
                           value={distributedAmounts[index] || ""}
                           onChange={(e) => handleEditChange(index, e.target.value)}
                         />
-                      ) : (distributedAmounts[index] || 0).toFixed(2)}
+                      ) : (
+                        <span>{(distributedAmounts[index] || 0).toFixed(2)}</span>
+                      )}
                     </td>
-                    {/* <td>
-                      {(distributedAmounts[index] !== null && distributedAmounts[index] !== undefined && amount !== 0) ?
-                        ((distributedAmounts[index] / amount) * 100).toFixed(2) + '%' : '0.00%'}
-                    </td> */}
                   </tr>
                 ))}
+                {customAttributes.map((attr, idx) => (
+                  <tr key={`custom-${idx}`}>
+                    <td>{attr.label}</td>
+                    <td>{attr.percentage ? `${attr.percentage}% of Basic` : 'Manual Entry'}</td>
+                    <td>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={attr.amount || ''}
+                          onChange={(e) => handleCustomAttributeChange(idx, e.target.value)}
+                          inputMode="decimal"
+                          placeholder="Amount"
+                        />
+                      ) : (
+                        <span>{parseFloat(attr.amount || 0).toFixed(2)}</span>
+                      )}
+                      <button
+                        type="button"
+                        className="remove-question-btn"
+                        onClick={() => {
+                          const updated = customAttributes.filter((_, i) => i !== idx);
+                          setCustomAttributes(updated);
+                        }}
+                      >
+                        ❌
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+
               </tbody>
+
               <tfoot>
                 <tr>
                   <td><strong>Total CTC</strong></td>
                   <td><strong></strong></td>
-                  <td><strong>{distributedAmounts.reduce((acc, amount) => acc + amount, 0).toFixed(2)}</strong></td>
-                  {/* <td><strong>{((distributedAmounts.reduce((acc, amount) => acc + amount, 0) / amount) * 100).toFixed(2)}%</strong></td> */}
-                </tr>
-                {/* <tr>
-                  <td><strong>Remaining Amount</strong></td>
-                  <td colSpan="3" style={{ textAlign: 'right', color: 'red' }}>
+                  <td>
                     <strong>
-                      {(amount - distributedAmounts.reduce((acc, amount) => acc + amount, 0).toFixed(2))}
+                      {(
+                        distributedAmounts.reduce((acc, amount) => acc + amount, 0) +
+                        customAttributes.reduce((acc, attr) => acc + parseFloat(attr.amount || 0), 0)
+                      ).toFixed(2)}
                     </strong>
                   </td>
-                </tr> */}
+                </tr>
+
               </tfoot>
+              <tr>
+                <td colSpan="3">
+                  <button className="btn" onClick={() => setShowNewRow(true)}>+ Add Custom Attribute</button>
+                </td>
+              </tr>
+              {showNewRow && (
+                <>
+                  <tr>
+                    <td>
+                      <select
+                        value={newCustomAttr.label}
+                        onChange={(e) =>
+                          setNewCustomAttr({ ...newCustomAttr, label: e.target.value })
+                        }
+                      >
+                        <option value="">Select Attribute</option>
+                        {dropdownData.customeAttribute?.map((option) => (
+                          <option key={option.masterId} value={option.data}>
+                            {option.data}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        placeholder="% of Basic"
+                        value={newCustomAttr.percentage}
+                        onChange={(e) => {
+                          const perc = e.target.value;
+                          const basicAmount =
+                            distributedAmounts.find(
+                              (amount, index) => attributes[index]?.label === "Basic"
+                            ) || 0;
+                          const calculatedAmount = ((basicAmount * perc) / 100).toFixed(2);
+                          setNewCustomAttr({
+                            ...newCustomAttr,
+                            percentage: perc,
+                            amount: calculatedAmount,
+                          });
+                        }}
+                       
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        placeholder="Amount"
+                        value={newCustomAttr.amount}
+                        onChange={(e) =>
+                          setNewCustomAttr({
+                            ...newCustomAttr,
+                            amount: e.target.value,
+                          })
+                        }
+                      
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan="3">
+                      <button
+                        className="btn"
+                        onClick={() => {
+                          if (!newCustomAttr.label || !newCustomAttr.amount) {
+                            showToast("Please provide label and amount", "warn");
+                            return;
+                          }
+                          setCustomAttributes([...customAttributes, newCustomAttr]);
+                          setShowNewRow(false);
+                          setNewCustomAttr({ label: "", percentage: "", amount: "" });
+                        }}
+                      >
+                        ✔
+                      </button>
+                    </td>
+                  </tr>
+                </>
+              )}
 
             </table>
             <div className='form-controls'>
               <button type='button' className='btn' onClick={() => setIsEditing(!isEditing)}>
                 {isEditing ? 'Lock Distribution' : 'Edit Distribution'}
               </button>
-
               <button className='btn' onClick={handleSave}>Save</button>
               <button type="button" className="outline-btn" onClick={handleBack} >Back</button>
             </div>
           </div>
         )}
-      
+
       </div>
     </div>
   );
 };
-
 export default CtcGenration;

@@ -10,9 +10,13 @@ const EmployeeDocuments = ({ ticketDetails, onFinishStep }) => {
     const [uploadedFiles, setUploadedFiles] = useState({});
     const [uploadedLabels, setUploadedLabels] = useState([]);
     const [uniqueLabels, setUniqueLabels] = useState([]);
-    const [otherLabel, setOtherLabel] = useState('');  // To store the custom document name
+    const [otherLabel, setOtherLabel] = useState('');
     const companyId = localStorage.getItem('companyId');
     const preRegistrationId = localStorage.getItem('Id');
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState('');
+    const [previewType, setPreviewType] = useState('');
+    const [previewFilename, setPreviewFilename] = useState('');
 
     useEffect(() => {
         const fetchCompanyDocuments = async () => {
@@ -76,6 +80,30 @@ const EmployeeDocuments = ({ ticketDetails, onFinishStep }) => {
         setOtherLabel('');
     };
 
+    const handleViewUploadedDocument = async (label) => {
+        const file = uploadedFiles[label];
+
+        if (!file) {
+            showToast("File not available for preview", "error");
+            return;
+        }
+
+        const fileUrl = URL.createObjectURL(file);
+        const extension = file.name.split('.').pop().toLowerCase();
+
+        const fileType = extension === 'pdf'
+            ? 'pdf'
+            : ['jpg', 'jpeg', 'png'].includes(extension)
+                ? 'image'
+                : 'unsupported';
+
+        setPreviewFilename(file.name);
+        setPreviewType(fileType);
+        setPreviewUrl(fileUrl);
+        setShowPreviewModal(true);
+    };
+
+
     // Confirm button should only be enabled when all required documents have a ✅
     const allSaved = uniqueLabels.length > 0 && uniqueLabels.every(label => uploadedLabels.includes(label));
 
@@ -85,30 +113,50 @@ const EmployeeDocuments = ({ ticketDetails, onFinishStep }) => {
                 <div>
                     <div className='underlineText'>Upload Required Documents</div>
                     <ul>
-                        {uniqueLabels.map((label, idx) => (
-                            <li key={idx} className="document-row">
-                                <span className="document-label">
-                                    {`${idx + 1}. ${label}`}{" "}
-                                    {uploadedLabels.includes(label) && (
-                                        <span className="uploaded-check">✅</span>
+                        {uniqueLabels.map((label, idx) => {
+                            const isUploaded = uploadedLabels.includes(label);
+
+                            return (
+                                <li key={idx} className="document-row">
+                                    <span className="document-label">
+                                        {`${idx + 1}. ${label}`}{" "}
+                                        {isUploaded && (
+                                            <>
+                                                <span className="verified-text">✅ Uploaded</span>
+                                                <button
+                                                    className="outline-btn"
+                                                    style={{ marginLeft: '10px' }}
+                                                    onClick={() => handleViewUploadedDocument(label)}
+                                                >
+                                                    View Preview
+                                                </button>
+                                            </>
+                                        )}
+
+                                    </span>
+
+                                    {!isUploaded && (
+                                        <>
+                                            <input
+                                                type="file"
+                                                className="document-input"
+                                                onChange={(e) => handleFileChange(label, e.target.files[0])}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="upload-btn"
+                                                onClick={() => handleSaveSingleDocument(label)}
+                                            >
+                                                <FontAwesomeIcon icon={faUpload} />
+                                                Upload
+                                            </button>
+                                        </>
                                     )}
-                                </span>
-                                <input
-                                    type="file"
-                                    className="document-input"
-                                    onChange={(e) => handleFileChange(label, e.target.files[0])}
-                                />
-                                <button
-                                    type="button"
-                                    className="upload-btn"
-                                    onClick={() => handleSaveSingleDocument(label)}
-                                >
-                                    <FontAwesomeIcon icon={faUpload}/>
-                                    Upload
-                                </button>
-                            </li>
-                        ))}
+                                </li>
+                            );
+                        })}
                     </ul>
+
                 </div>
             )}
 
@@ -135,7 +183,7 @@ const EmployeeDocuments = ({ ticketDetails, onFinishStep }) => {
                 type="button"
                 disabled={!allSaved}
                 style={{
-                    backgroundColor: allSaved ? '#00b894' : '#b2bec3',
+                    backgroundColor: allSaved ? '#74b9ff' : '#b2bec3', // light blue when enabled
                     cursor: allSaved ? 'pointer' : 'not-allowed',
                     marginTop: '20px'
                 }}
@@ -143,6 +191,32 @@ const EmployeeDocuments = ({ ticketDetails, onFinishStep }) => {
             >
                 Confirm
             </button>
+
+            {showPreviewModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <button className="close-button" onClick={() => setShowPreviewModal(false)}>X</button>
+                        <h3>Preview: {previewFilename}</h3>
+
+                        {previewType === 'pdf' && (
+                            <iframe src={previewUrl} title="PDF Preview" width="100%" height="500px" />
+                        )}
+                        {previewType === 'image' && (
+                            <img src={previewUrl} alt="Preview" style={{ maxWidth: '100%', maxHeight: '500px' }} />
+                        )}
+                        {previewType === 'unsupported' && (
+                            <p>Preview not available for this file type.</p>
+                        )}
+
+                        <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                            <a href={previewUrl} download={previewFilename} className="btn">
+                                Download File
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

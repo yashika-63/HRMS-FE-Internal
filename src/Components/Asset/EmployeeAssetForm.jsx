@@ -33,7 +33,7 @@ const EmployeeAssetForm = () => {
         });
 
         if (incompleteDescriptions.length > 0) {
-            setErrorMessage("Please provide descriptions for all fields.");
+            // setErrorMessage("Please provide descriptions for all fields.");
             showToast("Please provide descriptions for all fields.",'warn');
             return; 
         }

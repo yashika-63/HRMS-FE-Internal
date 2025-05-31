@@ -95,12 +95,12 @@ const OffboardingCompleteModal = ({ record, onClose, onComplete }) => {
   const handleAssetReturn = async (assetId, isReturned) => {
     try {
       const response = await axios.put(
-        `http://${strings.localhost}/api/asset/updateAssetAction/${assetId}?actiontakenBy=${employeeName}`
+        `http://${strings.localhost}/api/asset/${assetId}/submit`
       );
       toast.success(response.data);
       setAssets(prevAssets =>
         prevAssets.map(asset =>
-          asset.id === assetId ? { ...asset, returned: isReturned } : asset
+          asset.id === assetId ? { ...asset, submitted: isReturned } : asset
         )
       );
     } catch (error) {
@@ -243,7 +243,7 @@ const OffboardingCompleteModal = ({ record, onClose, onComplete }) => {
                 </div>
               ))
             ) : (
-              <div className="no-data">Exit interview not conducted</div>
+              <div className="no-data1">Exit interview not conducted</div>
             )}
           </div>
 
@@ -258,7 +258,7 @@ const OffboardingCompleteModal = ({ record, onClose, onComplete }) => {
                     <div className="asset-checkbox">
                       <input
                         type="checkbox"
-                        checked={asset.returned || false}
+                        checked={asset.submitted || false}
                         onChange={(e) => handleAssetReturn(asset.id, e.target.checked)}
                       />
                     </div>
@@ -266,7 +266,7 @@ const OffboardingCompleteModal = ({ record, onClose, onComplete }) => {
                 ))}
               </div>
             ) : (
-              <div className="no-data">No assets assigned</div>
+              <div className="no-data1">No assets assigned</div>
             )}
           </div>
 

@@ -418,7 +418,7 @@ const ExpenseManagement = () => {
         />
         <div>
 
-          <table className="Attendance-table">
+          <table className="interview-table">
             <thead>
               <tr>
                 <th>Sr.No</th>

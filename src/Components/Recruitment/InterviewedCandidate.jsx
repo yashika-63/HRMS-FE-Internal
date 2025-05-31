@@ -21,12 +21,9 @@ const InterviewedCandidate = () => {
     const [note, setNote] = useState("");
     const [interviewScore, setInterviewScore] = useState("");
     const Name = localStorage.getItem("firstName");
-    const companyId = localStorage.getItem("companyId");
     const navigate = useNavigate();
     const { id } = useParams();
     const jobDescriptionId = id;
-
-
 
     const fetchCandidates = async () => {
         try {
@@ -64,7 +61,6 @@ const InterviewedCandidate = () => {
             fetchInterviews();
         }
     }, [jobDescriptionId]);
-
 
     const handleViewInterviewDetails = async (candidateId) => {
         try {
@@ -192,7 +188,6 @@ const InterviewedCandidate = () => {
                     <button
                         type='button'
                         onClick={() => navigate(`/InterviewCalendar/${jobDescriptionId}/${candidate.id}`)}
-
                     >
                         Schedule Interview
                     </button>
@@ -224,7 +219,6 @@ const InterviewedCandidate = () => {
                     >
                         Pass
                     </button>
-
                 </div>
                 <div>
                     <button
@@ -254,6 +248,9 @@ const InterviewedCandidate = () => {
             !interview.interviewComplitionStatus
         );
     };
+    const hasAnyInterview = (candidateId) => {
+        return interviewList.some(interview => interview.candidateRegistration?.id === candidateId);
+    };
 
     return (
         <div className="interview-tables">
@@ -276,7 +273,6 @@ const InterviewedCandidate = () => {
                         <tbody>
                             {candidates.map((candidate, index) => {
                                 const getInitials = (name) => name ? name[0].toUpperCase() : '';
-
                                 const key = `${candidate.email}-${index}`;
                                 return (
                                     <tr key={key}>
@@ -289,17 +285,18 @@ const InterviewedCandidate = () => {
                                         <td>{candidate.yearsOfExperience || "NA"}</td>
                                         <td>{editdropdown(candidate)}</td>
                                         <td>
-                                            {!isInterviewResultPending(candidate.id) ? (
+                                            {!hasAnyInterview(candidate.id) ? (
+                                                <span className="no-data">Not interviewed</span>
+                                            ) : isInterviewResultPending(candidate.id) ? (
+                                                <span className="no-data">Awaiting result</span>
+                                            ) : (
                                                 <input
                                                     type="checkbox"
                                                     checked={!!selectedCandidates[key]}
                                                     onChange={() => handleCheckboxChange(candidate, index)}
                                                 />
-                                            ) : (
-                                                <span className="no-data">Awaiting result</span>
                                             )}
                                         </td>
-
                                     </tr>
                                 );
                             })}
@@ -436,7 +433,6 @@ const InterviewedCandidate = () => {
                                 ))}
                             </ul>
                         )}
-
                         <div className="form-controls">
                             <button className="outline-btn" onClick={() => setShowInterviewDataPopup(false)}>Close</button>
                         </div>

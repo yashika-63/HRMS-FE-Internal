@@ -71,7 +71,7 @@ const LeaveApprovalRequest = () => {
     };
     useEffect(() => {
         fetchEmployeeDetails();
-    }, []); 
+    }, []);
 
     // useEffect(() => {
     //     fetchLeaves();
@@ -240,7 +240,7 @@ const LeaveApprovalRequest = () => {
 
     return (
         <div className="coreContainer">
-            <table className="Attendance-table">
+            <table className="interview-table">
                 <thead>
                     <tr>
                         <th>Sr.No</th>
@@ -255,20 +255,29 @@ const LeaveApprovalRequest = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {leaveData.map((item , index) => (
-                        <tr key={item.id}>
-                            <td>{index+1}</td>
-                            <td>{item.employee ? item.employee.employeeId : 'N/A'}</td>
-                            <td>{item.employee ? `${item.employee.firstName} ${item.employee.lastName}` : 'N/A'}</td>
-                            <td>{item.reason}</td>
-                            <td>{item.totalNoOfDays}</td>
-                            <td>{item.fromDate}</td>
-                            <td>{item.toDate}</td>
-                            <td style={statusStyle(item.requestStatus)}>{item.requestStatus}</td>
-                            <td>{editDropdownMenu(item)}</td>
+                    {leaveData.length === 0 ? (
+                        <tr>
+                            <td colSpan="9" className='no-data1'>
+                                No leave requests available.
+                            </td>
                         </tr>
-                    ))}
+                    ) : (
+                        leaveData.map((item, index) => (
+                            <tr key={item.id}>
+                                <td>{index + 1}</td>
+                                <td>{item.employee ? item.employee.employeeId : 'N/A'}</td>
+                                <td>{item.employee ? `${item.employee.firstName} ${item.employee.lastName}` : 'N/A'}</td>
+                                <td>{item.reason}</td>
+                                <td>{item.totalNoOfDays}</td>
+                                <td>{item.fromDate}</td>
+                                <td>{item.toDate}</td>
+                                <td style={statusStyle(item.requestStatus)}>{item.requestStatus}</td>
+                                <td>{editDropdownMenu(item)}</td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
+
             </table>
 
             {showPopup && (
@@ -277,13 +286,15 @@ const LeaveApprovalRequest = () => {
                     <div className="popup-content">
                         <h3>{popupType === 'approve' ? 'Approve Request' : 'Reject Request'}</h3>
                         <label htmlFor="name">Employee Name</label>
-                        <input type="text" id="name" value={formData.employeeName} readOnly />
+                        <input type="text" id="name" value={formData.employeeName} readOnly className='readonly' />
                         <label htmlFor="date">Date</label>
                         <input
                             type="text"
                             id="date"
                             value={popupData.date}
                             onChange={(e) => setPopupData({ ...popupData, date: e.target.value })}
+                            readOnly
+                            className='readonly'
                         />
                         <label htmlFor="note">Note</label>
                         <input
@@ -298,6 +309,8 @@ const LeaveApprovalRequest = () => {
                             id="email"
                             value={popupData.email}
                             onChange={(e) => setPopupData({ ...popupData, email: e.target.value })}
+                            className='readonly'
+                            readOnly
                         />
                         <div className="popup-buttons">
                             {popupType === 'approve' ? (

@@ -467,7 +467,7 @@ const LeaveDashboard = () => {
                         </div>
                     </div>
                     <div>
-                        <table className='Attendance-table'>
+                        <table className='interview-table'>
                             <thead>
                                 <tr>
                                     <th>ID</th>

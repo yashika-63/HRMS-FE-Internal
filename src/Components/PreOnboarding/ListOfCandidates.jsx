@@ -28,6 +28,7 @@ const ListOfCandidates = () => {
     const [completeVerificationStatus, setCompleteVerificationStatus] = useState(false);
     const [showGenrateConfirmation, setShowGenrateConfirmation] = useState(false);
     const employeeId = localStorage.getItem("employeeId");
+    const [sortOrder, setSortOrder] = useState('asc');
     const [showViewOfferPopup, setShowViewOfferPopup] = useState(false);
     const pastYears = 5;
     const futureYears = 3;
@@ -57,6 +58,16 @@ const ListOfCandidates = () => {
         fetchCandidates();
     }, [month, year, page]);
 
+    const sortedTickets = [...candidates].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+
+        if (sortOrder === "asc") {
+            return dateA - dateB;
+        } else {
+            return dateB - dateA;
+        }
+    });
 
     const confirmSendTicket = () => {
         if (!selectedPreRegistrationId) return;
@@ -132,7 +143,7 @@ const ListOfCandidates = () => {
 
     const handleOfferView = (candidate) => {
         setSelectedEmployee(candidate);
-   setShowViewOfferPopup(true);
+        setShowViewOfferPopup(true);
     }
     const handleViewDetails = (candidate) => {
         setEmployeeToNotify(candidate);
@@ -268,7 +279,10 @@ const ListOfCandidates = () => {
 
                         <th>ID</th>
                         <th>Employee Name</th>
-                        <th>Date</th>
+                            <th onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")} style={{ cursor: "pointer" }}>
+                            Date {sortOrder === 'asc' ? "↑↓" : "↓↑"}
+                        </th>
+
                         <th>Created By</th>
                         <th>Action</th>
                         <th>Status</th>
@@ -276,8 +290,8 @@ const ListOfCandidates = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {candidates.length > 0 ? (
-                        candidates.map((candidate, index) => {
+                    {sortedTickets.length > 0 ? (
+                        sortedTickets.map((candidate, index) => {
                             const [color1, color2] = getInitialsColorSet(index);
                             return (
                                 <tr key={candidate.id}>
