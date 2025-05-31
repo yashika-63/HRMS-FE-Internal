@@ -291,7 +291,7 @@ function EmployeeInduction() {
             </div>
 
             {inductions.length === 0 ? (
-                <p className='no-data'>No inductions assigned to you.</p>
+                <p className='no-data1'>No inductions assigned to you.</p>
             ) : (
                 <div className="training-grid">
                     {inductions.map(induction => (

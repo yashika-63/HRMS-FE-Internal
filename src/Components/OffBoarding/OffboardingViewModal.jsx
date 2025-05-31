@@ -118,7 +118,7 @@ console.log("RECORDVIEW" , record);
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <div className="modal" style={{ maxWidth: '900px' }}>
         <div className="modal-header">
           <h2>Offboarding Details</h2>
           <button className="button-close" onClick={onClose}>×</button>
@@ -197,7 +197,7 @@ console.log("RECORDVIEW" , record);
                 </table>
               </div>
             ) : (
-              <div className="no-data">No handover records found</div>
+              <div className="no-data1">No handover records found</div>
             )}
           </div>
 
@@ -235,7 +235,7 @@ console.log("RECORDVIEW" , record);
                       </div>
                     ))
                   ) : (
-                    <div className="no-data">Exit interview not conducted</div>
+                    <div className="no-data1">Exit interview not conducted</div>
                   )}
                 </div>
 
@@ -243,7 +243,7 @@ console.log("RECORDVIEW" , record);
           <div className="detail-section">
             <h3 className='underlineText'>Assets</h3>
             {loadingAssets ? (
-              <div className="no-data">Loading assets...</div>
+              <div className="no-data1">Loading assets...</div>
             ) : assets && assets.length > 0 ? (
               <div className="assets-grid">
                 {assets.map((asset, index) => {
@@ -258,7 +258,7 @@ console.log("RECORDVIEW" , record);
                 })}
               </div>
             ) : (
-              <div className="no-data">No assets assigned</div>
+              <div className="no-data1">No assets assigned</div>
             )}
           </div>
 

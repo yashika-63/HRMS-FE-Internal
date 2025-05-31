@@ -345,7 +345,7 @@ function EmployeeHandover() {
             </div>
 
             {handovers.length === 0 ? (
-                <p className='no-data'>No handovers assigned to you.</p>
+                <p className='no-data1'>No handovers assigned to you.</p>
             ) : (
                 <div className="training-grid">
                     {handovers.map(handover => (

@@ -57,7 +57,8 @@ export const fetchDataByKey = async (keyvalue) => {
     if (response.data && Array.isArray(response.data)) {
       return response.data.map(item => ({
         masterId: item.masterId,
-        data: item.data || ''
+        data: item.data || '',
+        category: item.category || '',
       }));
     }
     console.error(`Invalid data structure or empty response for ${keyvalue}`);

@@ -187,7 +187,8 @@
   display: flex;
   justify-content: center;
 }
-.upload-btn{
+
+.upload-btn {
   color: rgb(240, 143, 15);
   font-size: 14px;
   border: 1px solid rgb(215, 134, 28);
@@ -195,6 +196,7 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
 .remove-button {
   color: red;
   cursor: pointer;
@@ -1007,7 +1009,7 @@ h3 {
 }
 
 .verticalForm button.active {
-  background-color: #6a0dad;
+  background: linear-gradient(to right, rgba(75, 108, 183, 0.8), rgba(24, 40, 72, 0.8));
   color: white;
   border-radius: 5px;
 }

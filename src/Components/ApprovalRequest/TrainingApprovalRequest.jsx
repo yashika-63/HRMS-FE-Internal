@@ -110,31 +110,43 @@ const TrainingApprovalRequest = () => {
 
     return (
         <div className='coreContainer'>
-            <table className='Attendance-table'>
+            <table className='interview-table'>
                 <thead>
                     <tr>
                         <th>Sr.No</th>
                         <th>Employee ID</th>
-                        <th>Employee Name</th>                     
+                        <th>Employee Name</th>
                         <th>Department</th>
                         <th>Division</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.values(groupedTrainingRequests).map((group, index) => (
-                        <tr key={group.employee.id}>
-                            <td>{index + 1}</td>
-                            <td>{group.employee.employeeId}</td>
-                            <td onClick={() => handleEmployeeClick(group.employee)} style={{ cursor: 'pointer', color: 'blue' }}>
-                                {`${group.employee.firstName} ${group.employee.lastName}`}
+                    {Object.keys(groupedTrainingRequests).length === 0 ? (
+                        <tr>
+                            <td colSpan="6" className='no-data1'>
+                                No training requests available.
                             </td>
-                            <td>{group.employee.department}</td>
-                            <td>{group.employee.division}</td>
-                            <td>{editdropdownfeedback(group.employee)}</td>
                         </tr>
-                    ))}
+                    ) : (
+                        Object.values(groupedTrainingRequests).map((group, index) => (
+                            <tr key={group.employee.id}>
+                                <td>{index + 1}</td>
+                                <td>{group.employee.employeeId}</td>
+                                <td
+                                    onClick={() => handleEmployeeClick(group.employee)}
+                                    style={{ cursor: 'pointer', color: 'blue' }}
+                                >
+                                    {`${group.employee.firstName} ${group.employee.lastName}`}
+                                </td>
+                                <td>{group.employee.department}</td>
+                                <td>{group.employee.division}</td>
+                                <td>{editdropdownfeedback(group.employee)}</td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
+
 
             </table>
 
@@ -148,7 +160,7 @@ const TrainingApprovalRequest = () => {
                             <p><strong>Employee Id : </strong>{selectedEmployee.id}</p>
                         </div> */}
                         <h3>Training Details</h3>
-                        <table className='Attendance-table'>
+                        <table className='interview-table'>
                             <thead>
                                 <tr>
                                     <th>Date</th>

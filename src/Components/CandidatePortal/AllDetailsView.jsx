@@ -14,7 +14,11 @@ const AllDetailsView = ({ verificationTicketId, onClose, onVerificationStatusCha
     const [verifiedSteps, setVerifiedSteps] = useState({ personal: false, education: [], employment: [] });
     const preLoginToken = localStorage.getItem("PreLoginToken");
     const preRegistrationId = localStorage.getItem("Id");
-
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewFilename, setPreviewFilename] = useState("");
+    const [previewType, setPreviewType] = useState("");
+    const [showPreviewModal, setShowPreviewModal] = useState(false);
+ const [previewDocument, setPreviewDocument] = useState(null);
 
 
 
@@ -79,6 +83,35 @@ const AllDetailsView = ({ verificationTicketId, onClose, onVerificationStatusCha
     }, [personalData, educationData, employmentData, verificationTicketId]);
 
 
+    const handleViewDocument = async (id) => {
+        try {
+            const doc = documentData.find(d => d.documentId === id);
+            const response = await axios.get(`http://${strings.localhost}/api/employeeVerificationDocument/view/${id}`, {
+                responseType: 'blob',
+            });
+
+            const contentType = response.headers['content-type'];
+            const fileUrl = URL.createObjectURL(response.data);
+            const extension = contentType.split('/').pop();
+            const filename = `${doc?.fileName || 'document'}.${extension}`;
+
+            setPreviewFilename(filename);
+
+            if (contentType.includes('pdf')) {
+                setPreviewType('pdf');
+            } else if (contentType.includes('image')) {
+                setPreviewType('image');
+            } else {
+                setPreviewType('unsupported');
+            }
+
+            setPreviewDocument(fileUrl);
+            setShowPreviewModal(true);
+        } catch (error) {
+            console.error('Error fetching document preview:', error);
+            showToast('Failed to load document preview.', 'error');
+        }
+    };
 
 
 
@@ -213,21 +246,25 @@ const AllDetailsView = ({ verificationTicketId, onClose, onVerificationStatusCha
                         <h4 className="centerText">Documents</h4>
                         {documentData.length > 0 ? (
                             documentData.map((doc, i) => (
-                                <div key={i}>
-                                    <p>{i + 1}. <strong>Document Name:</strong> {doc.fileName || "N/A"}</p>
-                                    {doc.verificationStatus && (
-                                        <span className="verified-ribbon">Verified </span>
+                                <div key={i} className="document-row">
+                                    <p className="document-label">{i + 1}. <strong>{doc.label}:</strong> {doc.fileName || "N/A"}</p>
+                                    <div className="document-button">
+                                        <button className="outline-btn" onClick={() => handleViewDocument(doc.documentId)}>
+                                            View Preview
+                                        </button>
+                                    </div>
+                                    {(doc.verificationStatus === true || doc.verificationStatus === 'true') && (
+                                        <span className="verified-ribbon">Verified</span>
                                     )}
-                                  
-
+                                    <hr />
                                 </div>
                             ))
                         ) : (
                             <p>No documents found.</p>
                         )}
-
                     </div>
                 );
+
 
 
             default:
@@ -302,6 +339,34 @@ const AllDetailsView = ({ verificationTicketId, onClose, onVerificationStatusCha
                         <button className="outline-btn" onClick={() => setShowConfirmationModal(false)}>
                             Cancel
                         </button>
+                    </div>
+                </div>
+            )}
+            {showPreviewModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <button className="close-button" onClick={() => setShowPreviewModal(false)}>X</button>
+                        <h3>Preview: {previewFilename}</h3>
+
+                        {previewType === 'pdf' && (
+                            <iframe src={previewDocument} title="PDF Preview" width="100%" height="500px" />
+                        )}
+
+                        {previewType === 'image' && (
+                            <img src={previewDocument} alt="Preview" style={{ maxWidth: '100%', maxHeight: '500px' }} />
+                        )}
+
+                        {previewType === 'unsupported' && (
+                            <div style={{ textAlign: 'center' }}>
+                                <p>Preview not available for this file type.</p>
+                            </div>
+                        )}
+
+                        <div className="modal-footer" style={{ textAlign: 'center', marginTop: '10px' }}>
+                            <a href={previewDocument} download={previewFilename} className="btn">
+                                Download File
+                            </a>
+                        </div>
                     </div>
                 </div>
             )}

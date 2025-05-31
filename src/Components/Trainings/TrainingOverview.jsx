@@ -36,7 +36,9 @@ const TrainingOverview = () => {
     const [previewFilename, setPreviewFilename] = useState('');
     const [activeTab, setActiveTab] = useState('details');
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    const firstName = localStorage.getItem("firstName");
+    const lastName = localStorage.getItem("lastName");
+    const employeeName = `${firstName || ""} ${lastName || ''}`;
     useEffect(() => {
         const fetchAssignedTrainings = async () => {
             setLoading(true);
@@ -58,10 +60,8 @@ const TrainingOverview = () => {
                     type: item.trainingHRMS?.type || 'N/A',
                     assignDate: item.assignDate,
                     status: item.completionStatus ? "Completed" : item.expiryStatus ? "Expired" : "Pending",
-                    expiryStatus: item.expiryStatus,
-                    time: item.trainingHRMS?.time || '0'
+                    expiryStatus: item.expiryStatus
                 }));
-
                 setTrainings(transformedData);
                 setTotalPages(data.totalPages);
                 setTotalElements(data.totalElements);
@@ -88,50 +88,73 @@ const TrainingOverview = () => {
     const handleTrainingAction = async (training) => {
         setSelectedTraining(training);
         setLoading(true);
-        setError(null); // Reset previous errors
+        setError(null);
         setQuestions([]);
         setMediaContent([]);
-        setShowPopup(true); // Ensure popup opens early
+        setShowPopup(true);
         setActiveTab('details');
 
         try {
-            // Load media/documents
+            // 1. Fetch documents/media
             const response = await fetch(
                 `http://${strings.localhost}/api/documentTraining/view/Training/${training.trainingId}`
             );
-
             if (response.ok) {
                 const mediaData = await response.json();
                 setMediaContent(Array.isArray(mediaData) ? mediaData : []);
-            } else {
-                setMediaContent([]);
-                console.warn("Failed to fetch media content", response.status);
             }
 
-            // Load questions if not completed
-            if (training.status !== "Completed") {
+            // 2. If training is completed, fetch question + answer set
+            if (training.status === "Completed") {
+                const resultResponse = await fetch(
+                    `http://${strings.localhost}/api/resultTraining/${training.trainingId}`
+                );
+
+                if (resultResponse.ok) {
+                    const resultData = await resultResponse.json();
+                    if (Array.isArray(resultData)) {
+                        const formattedQuestions = resultData.map(item => ({
+                            id: item?.trainingAcknowledge?.id ?? item.id,
+                            question: item?.trainingAcknowledge?.question ?? 'No question text',
+                            termAndCondition: item?.trainingAcknowledge?.termAndCondition ?? false,
+                            answer: item?.note || item?.rating || 'N/A',
+                        }));
+
+                        setQuestions(formattedQuestions);
+
+                        const answersMap = {};
+                        formattedQuestions.forEach(q => {
+                            answersMap[q.id] = q.answer;
+                        });
+                        setAnswers(answersMap);
+                    }
+                }
+            } else {
+                // 3. If not completed, fetch questions normally
                 const questionsResponse = await fetch(
                     `http://${strings.localhost}/api/acknowledges/training/${training.trainingId}`
                 );
 
-                let questionsArray = [];
                 if (questionsResponse.ok) {
                     const questionsData = await questionsResponse.json();
+                    let questionsArray = [];
+
                     if (Array.isArray(questionsData)) {
                         questionsArray = questionsData;
-                    } else if (questionsData.content && Array.isArray(questionsData.content)) {
+                    } else if (questionsData?.content && Array.isArray(questionsData.content)) {
                         questionsArray = questionsData.content;
                     } else if (typeof questionsData === 'object' && questionsData !== null) {
                         questionsArray = [questionsData];
                     }
-                }
 
-                setQuestions(questionsArray);
-                const initialAnswers = {};
-                questionsArray.forEach(question => {
-                    initialAnswers[question.id] = '';
-                });
-                setAnswers(initialAnswers);
+                    setQuestions(questionsArray);
+
+                    const initialAnswers = {};
+                    questionsArray.forEach(q => {
+                        initialAnswers[q.id] = q.termAndCondition ? false : '';
+                    });
+                    setAnswers(initialAnswers);
+                }
             }
 
         } catch (err) {
@@ -142,6 +165,8 @@ const TrainingOverview = () => {
             setOpenMenuId(null);
         }
     };
+
+
 
     const handleSubmit = async () => {
         if (!acknowledged) return;
@@ -316,7 +341,7 @@ const TrainingOverview = () => {
 
             setCertificateData({
                 title: training.title || training.heading || "No Title",
-                employeeName: localStorage.getItem("employeeName") || "Employee",
+                employeeName: employeeName || "Employee",
                 completionDate: certificateData.completionDate || new Date().toLocaleDateString(),
                 trainingId: trainingId,
                 certificateId: certificateData.certificationId,
@@ -401,7 +426,6 @@ const TrainingOverview = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <p className="card-description1">Time: {training.time} hours</p>
                                             <p className="card-description1">{training.description}</p>
                                             <div className="card-actions">
                                                 <button
@@ -480,53 +504,68 @@ const TrainingOverview = () => {
                                                     })}
                                                 </div>
                                             ) : (
-                                                <p className="no-data">No documents available for this training.</p>
+                                                <p className="no-data1">No documents available for this training.</p>
                                             )}
 
                                             <hr />
 
-                                            {selectedTraining.status !== "Completed" && questions.length > 0 && (
+                                            {questions.length > 0 && (
                                                 <div className="questions-section">
                                                     <h4>Please answer the following questions:</h4>
                                                     {questions.map((question, index) => (
                                                         <div key={question.id} className="question-item">
-                                                            <span className="required-marker">*</span>
                                                             <label>{index + 1}. {question.question}</label>
-                                                            {question.termAndCondition ? (
-                                                                <div className="terms-checkbox">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={`terms-${question.id}`}
-                                                                        checked={answers[question.id] || false}
-                                                                        onChange={(e) => handleTermsChange(question.id, e.target.checked)}
-                                                                    />
-                                                                    <label htmlFor={`terms-${question.id}`}>
-                                                                        I accept the terms and conditions
-                                                                    </label>
-                                                                </div>
+
+                                                            {selectedTraining.status === "Completed" ? (
+                                                                question.termAndCondition ? (
+                                                                    <p className="readonly-answer">✅ Terms Accepted</p>
+                                                                ) : (
+                                                                    <textarea value={answers[question.id]} readOnly rows={3} />
+                                                                )
                                                             ) : (
-                                                                <textarea
-                                                                    value={answers[question.id] || ''}
-                                                                    onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                                                                    placeholder="Your answer..."
-                                                                    rows={3}
-                                                                    required={!question.termAndCondition}
-                                                                />
+                                                                question.termAndCondition ? (
+                                                                    <div className="terms-checkbox">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            id={`terms-${question.id}`}
+                                                                            checked={answers[question.id] || false}
+                                                                            onChange={(e) =>
+                                                                                handleTermsChange(question.id, e.target.checked)
+                                                                            }
+                                                                        />
+                                                                        <label htmlFor={`terms-${question.id}`}>
+                                                                            I accept the terms and conditions
+                                                                        </label>
+                                                                    </div>
+                                                                ) : (
+                                                                    <textarea
+                                                                        value={answers[question.id] || ''}
+                                                                        onChange={(e) =>
+                                                                            handleAnswerChange(question.id, e.target.value)
+                                                                        }
+                                                                        placeholder="Your answer..."
+                                                                        rows={3}
+                                                                    />
+                                                                )
                                                             )}
                                                         </div>
                                                     ))}
 
-                                                    <div className="acknowledge-check">
-                                                        <input
-                                                            type="checkbox"
-                                                            id="acknowledgeCheckbox"
-                                                            checked={acknowledged}
-                                                            onChange={(e) => setAcknowledged(e.target.checked)}
-                                                        />
-                                                        <label htmlFor="acknowledgeCheckbox">
-                                                            I confirm that I have read and understood this training material
-                                                        </label>
-                                                    </div>
+
+                                                    {selectedTraining.status !== "Completed" && (
+                                                        <div className="acknowledge-check">
+                                                            <input
+                                                                type="checkbox"
+                                                                id="acknowledgeCheckbox"
+                                                                checked={acknowledged}
+                                                                onChange={(e) => setAcknowledged(e.target.checked)}
+                                                            />
+                                                            <label htmlFor="acknowledgeCheckbox">
+                                                                I confirm that I have read and understood this training material
+                                                            </label>
+                                                        </div>
+                                                    )}
+
 
                                                     <div className="modal-actions">
                                                         <button
@@ -535,23 +574,30 @@ const TrainingOverview = () => {
                                                         >
                                                             Close
                                                         </button>
-                                                        <button
-                                                            type="button"
-                                                            className="btn"
-                                                            onClick={handleSubmit}
-                                                            disabled={!acknowledged ||
-                                                                questions.some(q =>
-                                                                    !q.termAndCondition &&
-                                                                    (!answers[q.id] || answers[q.id].trim() === '')
-                                                                )
-                                                            }
-                                                        >
-                                                            {isSubmitting ? (
-                                                                <div className="loading-spinner"></div>
-                                                            ) : (
-                                                                `Submit Acknowledgment`
-                                                            )}
-                                                        </button>
+                                                        {selectedTraining.status !== "Completed" && !selectedTraining?.expiryStatus && (
+                                                            <button
+                                                                type="button"
+                                                                className="btn"
+                                                                onClick={handleSubmit}
+                                                                disabled={
+                                                                    !acknowledged ||
+                                                                    questions.some(
+                                                                        q =>
+                                                                            !q.termAndCondition &&
+                                                                            (!answers[q.id] || answers[q.id].trim() === '')
+                                                                    )
+                                                                }
+                                                            >
+                                                                {isSubmitting ? (
+                                                                    <div className="loading-spinner"></div>
+                                                                ) : (
+                                                                    'Submit Acknowledgment'
+                                                                )}
+                                                            </button>
+                                                        )}
+
+
+
                                                     </div>
                                                 </div>
                                             )}

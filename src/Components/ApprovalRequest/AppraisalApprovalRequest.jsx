@@ -434,7 +434,7 @@ const AppraisalApprovalRequest = () => {
             {isLoading ? (
                 <div>Loading...</div>
             ) : (
-                <table className="Attendance-table" striped bordered hover>
+                <table className="interview-table" striped bordered hover>
                     <thead>
                         <tr>
                             <th>Sr.No</th>
@@ -445,23 +445,31 @@ const AppraisalApprovalRequest = () => {
                             <th>Action</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        {Object.keys(groupedData).map((employeeId, index) => {
-                            const employeeItems = groupedData[employeeId];
-                            const employee = employeeItems[0].employee;
-                            return (
-                                <tr key={employeeId} onClick={() => handleRowClick(employee.id)}>
-                                    <td>{index+1}</td>
-                                    <td>{employee.employeeId}</td>
-                                    <td>{`${employee.firstName} ${employee.lastName}`}</td>
-                                    <td>{employeeItems[0].appraisalYear}</td>
-                                    <td>{employeeItems[0].status ? 'Active' : 'Inactive'}</td>
-                                    <td>{editdropdownfeedback(employee)}</td>
-                                </tr>
-                            );
-                        })}
+                        {Object.keys(groupedData).length === 0 ? (
+                            <tr>
+                                <td colSpan="6" className='no-data1'>
+                                    No data available.
+                                </td>
+                            </tr>
+                        ) : (
+                            Object.keys(groupedData).map((employeeId, index) => {
+                                const employeeItems = groupedData[employeeId];
+                                const employee = employeeItems[0].employee;
+                                return (
+                                    <tr key={employeeId} onClick={() => handleRowClick(employee.id)}>
+                                        <td>{index + 1}</td>
+                                        <td>{employee.employeeId}</td>
+                                        <td>{`${employee.firstName} ${employee.lastName}`}</td>
+                                        <td>{employeeItems[0].appraisalYear}</td>
+                                        <td>{employeeItems[0].status ? 'Active' : 'Inactive'}</td>
+                                        <td>{editdropdownfeedback(employee)}</td>
+                                    </tr>
+                                );
+                            })
+                        )}
                     </tbody>
+
                 </table>
             )}
             {showModal && selectedItem && selectedItem.length > 0 && selectedItem[0].employee && (

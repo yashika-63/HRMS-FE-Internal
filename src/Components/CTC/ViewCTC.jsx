@@ -17,10 +17,10 @@ const ViewCTC = () => {
         variableCTCBreakdowns: [],
         ctcAmount: 0,
     });
-
+    const [activeCtcData, setActiveCtcData] = useState(null);
     const [isActive, setIsActive] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [showDetailPopUp , setShowDetailPopUp] = useState(false);
+    const [showDetailPopUp, setShowDetailPopUp] = useState(false);
     const companyId = localStorage.getItem('companyId');
     const logo = useCompanyLogo(companyId);
     const accountId = localStorage.getItem('accountId');
@@ -33,12 +33,12 @@ const ViewCTC = () => {
     };
 
     const handleOpenModal = () => {
-    setShowDetailPopUp(true);
+        setShowDetailPopUp(true);
 
     }
 
 
-    
+
     useEffect(() => {
         const fetchCtcData = async () => {
             const status = isActive ? 'True' : 'False';
@@ -68,6 +68,8 @@ const ViewCTC = () => {
                             companyAddress: `${ctcRecord.company.companyName}, ${ctcRecord.company.companyType}`
                         });
                         setCompanyAssignId(ctcRecord.company.companyAssignId);
+                        setSelectedCtc(ctcRecord);
+                        setActiveCtcData(ctcRecord);
                     } else {
                         // Set inactive CTC records for display
                         setCtcData(response.data); // Assuming response contains multiple inactive records
@@ -270,16 +272,20 @@ const ViewCTC = () => {
                     </table>
                     <div className='form-controls'>
                         <button className='btn' type='button' onClick={handlePrint}>Print</button>
-                        <button className='ai-button' type='button' onClick={handleOpenModal}>
-                        <span className="sparkle">✨</span>
-
-                            AI TDS Calculator</button>
-                        <AiTdsCalculator
-                                ctcData={selectedCtc}
-                                isOpen={showDetailPopUp}
-                                onClose={() => setShowDetailPopUp(false)}
+                        {activeCtcData && (
+                            <>
+                                <button className='ai-button' type='button' onClick={handleOpenModal}>
+                                    <span className="sparkle">✨</span>
+                                    AI TDS Calculator
+                                </button>
+                                <AiTdsCalculator
+                                    ctcData={activeCtcData}
+                                    isOpen={showDetailPopUp}
+                                    onClose={() => setShowDetailPopUp(false)}
                                 />
-                        
+                            </>
+                        )}
+
                         {/* <button type="button" className="outline-btn" onClick={handleBack} >Back</button> */}
                     </div>
                 </div>
@@ -369,7 +375,7 @@ const ViewCTC = () => {
                                     <td style={{ textAlign: 'right' }}><strong>{totalAnnual.toFixed(0)}</strong></td>
                                 </tr>
                             </tbody>
-                            
+
                         </table>
                         <div className="form-controls">
                             <button className="btn" onClick={() => window.print()}>Print</button>
@@ -378,9 +384,7 @@ const ViewCTC = () => {
                     </div>
                 </div>
             )}
-            <AiTdsCalculator
-               setCtcData={selectedCtc}
-               />
+
         </div>
     );
 };

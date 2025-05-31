@@ -82,8 +82,9 @@ const AiTdsCalculator = ({ ctcData, isOpen, onClose }) => {
 
         setIsSaving(true);
         try {
-            const employeeId = ctcData.employeeId || 2;
-            const ctcBreakdownId = ctcData.ctcBreakdownId || 3;
+            const employeeId = ctcData?.employee?.id;
+            const ctcBreakdownId = ctcData?.id;
+
             const incomeTaxAmount = response.totalTDS;
 
             await axios.post(`http://${strings.localhost}/api/incomeTax/save`, null, {

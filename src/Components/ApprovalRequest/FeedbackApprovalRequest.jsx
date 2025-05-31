@@ -127,7 +127,7 @@ const FeedbackApprovalrequest = () => {
         <div className="coreContainer">
 
             {loading && <div className="loading-spinner"></div>}
-            <table className="Attendance-table">
+            <table className="interview-table">
                 <thead>
                     <tr>
                         <th>Sr.No</th>

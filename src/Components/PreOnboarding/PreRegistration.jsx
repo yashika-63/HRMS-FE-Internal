@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisV, faEye, faHandshake, faTicket } from '@fortawesome/free-solid-svg-icons';
+import { faCreditCard, faEllipsisV, faEye, faHandshake, faIdCard, faTable, faThLarge, faTicket } from '@fortawesome/free-solid-svg-icons';
 import { showToast } from "../../Api.jsx";
 import "../CommonCss/PreRegistraion.css";
 import CTC from "./CTC.jsx";
@@ -18,6 +18,8 @@ const PreRegistration = () => {
     const [candidateNameForConfirmation, setCandidateNameForConfirmation] = useState('');
     const [showOfferPage, setShowOfferPage] = useState(false);
     const [open, setOpen] = useState(false);
+    const [viewType, setViewType] = useState("kanban");
+    const [tableFilter, setTableFilter] = useState("Pending");
     const [completedSteps, setCompletedSteps] = useState({ 1: false, 2: false, 3: false });
     const [formData, setFormData] = useState({
         firstName: '',
@@ -100,7 +102,7 @@ const PreRegistration = () => {
         setCandidateNameForConfirmation(`${employee.firstName} ${employee.lastName}`);
         setShowOfferConfirmation(true);
     };
-    
+
     const handleCardClick = (employee) => {
         setSelectedEmployee(employee);
         setIsEmployeeDataModalOpen(true);
@@ -164,7 +166,7 @@ const PreRegistration = () => {
             assignByFirstName,
             assignByLastName
         };
-    
+
         try {
             const response = await axios.post(
                 `http://${strings.localhost}/api/preregistration/save/${companyId}/${employeeId}`,
@@ -182,7 +184,7 @@ const PreRegistration = () => {
             setIsLoading(false);
         }
     };
-    
+
     const getInitials = (firstName, lastName) => {
         if (!firstName || !lastName) {
             return '';
@@ -280,7 +282,10 @@ const PreRegistration = () => {
             </div>
         </div>
     );
-
+    const handleToggleChange = () => {
+        setViewType(prev => (prev === 'kanban' ? 'table' : 'kanban'));
+    };
+    const filteredEmployees = employees.filter(emp => emp.status === tableFilter);
     return (
         <div className="coreContainer">
             <div>
@@ -288,70 +293,172 @@ const PreRegistration = () => {
                 <div className="form-controls">
                     <button type="button" onClick={openModal} className="btn">Add Candidate</button>
                 </div>
-                <div className="kanban-container">
-                    {["Active", "Pending", "Offered"].map((status, index) => {
-                        const isExpanded = expandedColumns[status];
-                        const employeeCount = groupedEmployees[status].length;
 
-                        return (
-                            <div key={status} className={`kanban-column ${status} ${!isExpanded ? 'collapsed' : ''}`}>
-                                <div className="column-header">
-                                    <h3>{status}</h3>
-                                    <div className="header-controls">
-                                        <span className="badge">{employeeCount}</span>
-                                        <button
-                                            className="toggle-btn"
-                                            onClick={() =>
-                                                setExpandedColumns((prev) => ({
-                                                    ...prev,
-                                                    [status]: !prev[status],
-                                                }))
-                                            }
-                                        >
-                                            {isExpanded ? "-" : "+"}
-                                        </button>
-                                    </div>
-                                </div>
-                                {isExpanded && (
-                                    <div className="card-list">
-                                        {employeeCount > 0 ? (
-                                            groupedEmployees[status].map((emp, index) => {
-                                                const [color1, color2] = getInitialsColorSet(index);
-                                                return (
-                                                    <div key={emp.id} className="kanban-card">
-                                                        <div className="initials-container">
-                                                            <div className="initial-circle" style={{ backgroundColor: color1 }}>
-                                                                {getInitials(emp.firstName, emp.lastName)}
-                                                            </div>
-                                                            <div className="initial-circle" style={{ backgroundColor: color2 }}>
-                                                                {getInitials(emp.assignByFirstName, emp.assignByLastName)}
-                                                            </div>
-                                                        </div>
-                                                        <div className="details">
-                                                            <h4>{emp.firstName} {emp.lastName}</h4>
-                                                            <hr />
-                                                            <p><strong>Email:</strong> {emp.email}</p>
-                                                            <p><strong>Date:</strong> {emp.date}</p>
-                                                            <p>
-                                                                <strong className="textbutton">Offer Send to Candidate:</strong>{" "}
-                                                                {emp.offerGenerated ? "Completed" : "Pending"}
-                                                            </p>
-                                                        </div>
-                                                        <div className="options-container">
-                                                            {editDropdown(emp)}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })
-                                        ) : (
-                                            <p className="error-message">No data available</p>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
+                <div className="toggle">
+                    <label className="switch-icon">
+                        <input
+                            type="checkbox"
+                            checked={viewType === "table"}
+                            onChange={handleToggleChange}
+                        />
+                        <span className="slider-icon">
+                            <FontAwesomeIcon icon={faIdCard} className="icon kanban-icon" />
+                            <FontAwesomeIcon icon={faTable} className="icon table-icon" />
+                        </span>
+                    </label>
+                    <span className="view-label">{viewType === "table" ? "Table View" : "Card View"}</span>
                 </div>
+
+                {viewType === "kanban" && (
+                    <div className="kanban-container">
+                        {["Active", "Pending", "Offered"].map((status, index) => {
+                            const isExpanded = expandedColumns[status];
+                            const employeeCount = groupedEmployees[status].length;
+
+                            return (
+                                <div key={status} className={`kanban-column ${status} ${!isExpanded ? 'collapsed' : ''}`}>
+                                    <div className="column-header">
+                                        <h3>{status}</h3>
+                                        <div className="header-controls">
+                                            <span className="badge">{employeeCount}</span>
+                                            <button
+                                                className="toggle-btn"
+                                                onClick={() =>
+                                                    setExpandedColumns((prev) => ({
+                                                        ...prev,
+                                                        [status]: !prev[status],
+                                                    }))
+                                                }
+                                            >
+                                                {isExpanded ? "-" : "+"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {isExpanded && (
+                                        <div className="card-list">
+                                            {employeeCount > 0 ? (
+                                                groupedEmployees[status].map((emp, index) => {
+                                                    const [color1, color2] = getInitialsColorSet(index);
+                                                    return (
+                                                        <div key={emp.id} className="kanban-card">
+                                                            <div className="initials-container">
+                                                                <div className="initial-circle" style={{ backgroundColor: color1 }}>
+                                                                    {getInitials(emp.firstName, emp.lastName)}
+                                                                </div>
+                                                                <div className="initial-circle" style={{ backgroundColor: color2 }}>
+                                                                    {getInitials(emp.assignByFirstName, emp.assignByLastName)}
+                                                                </div>
+                                                            </div>
+                                                            <div className="details">
+                                                                <h4>{emp.firstName} {emp.lastName}</h4>
+                                                                <hr />
+                                                                <p><strong>Email:</strong> {emp.email}</p>
+                                                                <p><strong>Date:</strong> {emp.date}</p>
+                                                                <p>
+                                                                    <strong className="textbutton">Offer Send to Candidate:</strong>{" "}
+                                                                    {emp.offerGenerated ? "Completed" : "Pending"}
+                                                                </p>
+                                                            </div>
+                                                            <div className="options-container">
+                                                                {editDropdown(emp)}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })
+                                            ) : (
+                                                <p className="error-message">No data available</p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+                {viewType === "table" && (
+                    <>
+                        <div className="form-controls">
+                            <div>
+                                <label htmlFor="statusFilter">Filter by Status: </label>
+                                <select
+                                    id="statusFilter"
+                                    value={tableFilter}
+                                    onChange={(e) => setTableFilter(e.target.value)}
+                                >
+                                    <option value="Pending">Pending</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Offered">Offered</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br />
+                        <div className="table-container">
+                            <table className="interview-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sr.No</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Offer Status</th>
+                                        <th>Actions</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredEmployees.length > 0 ? (
+                                        filteredEmployees.map((emp, index) => {
+                                            const [color1 , color2] = getInitialsColorSet(index);
+                                            return (
+                                                <tr key={emp.id}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{emp.firstName} {emp.lastName}</td>
+                                                    <td>{emp.email}</td>
+                                                    <td>
+                                                        <span className={`status-confirmationBadge ${emp.status === 'Active' ? 'confirmed' : 'terminated'}`}>
+                                                            {emp.status === 'Active' ? "Active" : "Inactive"}
+                                                        </span>
+                                                    </td>
+                                                    <td>{emp.date}</td>
+                                                    <td>
+                                                        <span className={`status-confirmationBadge ${emp.offerGenerated ? 'confirmed' : 'pending'}`}>
+                                                            {emp.offerGenerated ? "Completed" : "Pending"}
+                                                        </span>
+                                                    </td>
+                                                    <td>{editDropdown(emp)}</td>
+                                                    <td><div className="initials-container">
+                                                        <div
+                                                            className="initial-circle"
+                                                            style={{ backgroundColor: color1 }}
+                                                            title={`${emp.firstName} ${emp.lastName}`}
+                                                        >
+                                                            {getInitials(emp.firstName, emp.lastName)}
+                                                        </div>
+                                                        <div
+                                                            className="initial-circle"
+                                                            style={{ backgroundColor: color2 }}
+                                                            title={`${emp.assignByFirstName} ${emp.assignByLastName}`}
+                                                        >
+                                                            {getInitials(emp.assignByFirstName, emp.assignByLastName)}
+                                                        </div>
+                                                    </div></td>
+                                                    
+                                                </tr>
+                                            );
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="7" className="no-data">No employees found for selected status.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
+                )}
+
+
 
             </div>
 
@@ -402,23 +509,6 @@ const PreRegistration = () => {
 
                             <div>
                                 <span className="required-marker">*</span>
-                                <label>Last Name:</label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    value={formData.lastName || ""}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        if (errors.lastName && e.target.value.trim()) {
-                                            setErrors((prevErrors) => ({ ...prevErrors, lastName: "" }));
-                                        }
-                                    }}
-                                    required
-                                />
-                                {errors.lastName && <span className="error-message">{errors.lastName}</span>}
-                            </div>
-                            <div>
-                                <span className="required-marker">*</span>
                                 <label>Middle Name:</label>
                                 <input
                                     type="text"
@@ -434,6 +524,7 @@ const PreRegistration = () => {
                                 />
                                 {errors.middleName && <span className="error-message">{errors.middleName}</span>}
                             </div>
+                            
                             <div>
                                 <span className="required-marker">*</span>
                                 <label>Email:</label>
@@ -487,7 +578,7 @@ const PreRegistration = () => {
                     </div>
                 </div>
             )}
-            
+
         </div>
     );
 };

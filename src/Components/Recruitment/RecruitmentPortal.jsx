@@ -6,6 +6,7 @@ import CandidateRegistration from "./CandidateRegistration";
 import ShortlistedCandidates from "./ShortlistedCandidates";
 import InterviewedCandidate from "./InterviewedCandidate";
 import Confirmedcandidate from "./Confirmedcandidate";
+import ActiveCandidateList from "./ActiveCandidateList";
 
 
 const RecruitmentPortal = () => {
@@ -38,7 +39,7 @@ const RecruitmentPortal = () => {
                 </button>
             </div>
 
-            {activeSection === 'Active' && <CandidateRegistration/>}
+            {activeSection === 'Active' && <ActiveCandidateList/>}
             {activeSection === 'Shortlisted' && <ShortlistedCandidates/>}
             {activeSection === 'Interviewd' && <InterviewedCandidate/>}
             {activeSection === 'Confirmed' && <Confirmedcandidate/>}

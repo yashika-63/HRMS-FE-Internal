@@ -86,8 +86,8 @@ const AssetCreation = ({ employeeId, handleClose, onClose }) => {
             );
             showToast('successfully sent to employee.', 'success');
             setShowConfirmPopup(false);
-            onclose();
-            handleClose();
+            // onClose();
+               handleClose();
         } catch (error) {
             showToast('Error sending asset to employee:', error);
         } finally {

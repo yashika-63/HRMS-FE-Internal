@@ -64,7 +64,6 @@ const EducationDetails = ({ ticketDetails, nextStep, prevStep }) => {
         };
         fetchDropdownData();
         fetchEducationDetails();
-
     }, []);
 
     const fetchEducationDetails = async () => {
@@ -99,11 +98,9 @@ const EducationDetails = ({ ticketDetails, nextStep, prevStep }) => {
         const { name, value } = e.target;
         const newEducations = [...educations];
         let errorMessage = '';
-
         if (name === 'score') {
             const scoreType = newEducations[index].scoreType;
             const cleanedValue = value.replace('', '').trim(); // Remove '%' and trim whitespace
-
             if (scoreType === 'CGPA') {
                 errorMessage = validateCGPA(cleanedValue);
                 newEducations[index].score = errorMessage ? '' : cleanedValue;
@@ -111,7 +108,6 @@ const EducationDetails = ({ ticketDetails, nextStep, prevStep }) => {
                 errorMessage = validatePercentage(cleanedValue);
                 newEducations[index].score = errorMessage ? '' : `${cleanedValue}`;
             }
-
             setErrorMessages(prevErrors => ({
                 ...prevErrors,
                 scoreError: errorMessage
@@ -196,50 +192,69 @@ const EducationDetails = ({ ticketDetails, nextStep, prevStep }) => {
             education.yearOfAddmisstion && education.yearOfPassing;
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const validEducations = educations.filter(education =>
-            education.institute &&
-            education.university &&
-            education.typeOfStudy &&
-            education.yearOfAddmisstion &&
-            education.yearOfPassing &&
-            education.score
+        // Filter NEW records (no ID)
+        const newEducations = educations.filter(edu =>
+            !edu.id &&
+            edu.institute &&
+            edu.university &&
+            edu.typeOfStudy &&
+            edu.yearOfAddmisstion &&
+            edu.yearOfPassing &&
+            edu.score
         );
-        if (validEducations.length === 0) {
-            showToast('Please fill in all the required education details.', 'warn');
+
+        // Filter UPDATED existing records (have ID and are dirty)
+        const updatedEducations = educations.filter((edu, idx) =>
+            edu.id &&
+            dirtyFlags[idx] &&
+            edu.institute &&
+            edu.university &&
+            edu.typeOfStudy &&
+            edu.yearOfAddmisstion &&
+            edu.yearOfPassing &&
+            edu.score
+        );
+
+        if (newEducations.length === 0 && updatedEducations.length === 0) {
+            showToast('No changes to save.', 'info');
             return;
         }
 
         try {
-            let response;
-            let message = '';
-            if (isUpdate) {
-                // Use PUT request for update
-                response = await axios.put(`http://${strings.localhost}/api/education/partial-update/${educations[0].id}`, validEducations);
-                const fullMessage = response?.data?.message || 'Education data updated successfully.';
-                message = fullMessage.split('successfully')[0] + 'successfully';
-            } else {
-                // Use POST request for saving new data
+            // Save new entries (POST)
+            if (newEducations.length > 0) {
                 const { id: verificationTicketId } = ticketDetails;
-                response = await axios.post(`http://${strings.localhost}/api/education/saveByTokenAndTicket?preLoginToken=${preLoginToken}&verificationId=${verificationTicketId}`, validEducations, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const fullMessage = response?.data?.message || 'Education data saved successfully.';
-                message = fullMessage.split('successfully')[0] + 'successfully';
+                await axios.post(
+                    `http://${strings.localhost}/api/education/saveByTokenAndTicket?preLoginToken=${preLoginToken}&verificationId=${verificationTicketId}`,
+                    newEducations
+                );
+                showToast('New education records saved successfully.', 'success');
             }
-            showToast(message, 'success');
+
+            // Update changed entries (PUT each individually)
+            for (let edu of updatedEducations) {
+                await axios.put(
+                    `http://${strings.localhost}/api/education/partial-update/${edu.id}`,
+                    edu
+                );
+            }
+
+            if (updatedEducations.length > 0) {
+                showToast('Updated existing education records.', 'success');
+            }
+
             nextStep();
 
         } catch (error) {
-            console.error('Error saving or updating education data:', error);
-            showToast('Failed ', 'error');
+            console.error('Error saving/updating education records:', error);
+            showToast('An error occurred while saving data.', 'error');
         }
     };
+
+
 
     const validateCGPA = (value) => {
         const numericValue = parseFloat(value);
@@ -257,7 +272,6 @@ const EducationDetails = ({ ticketDetails, nextStep, prevStep }) => {
         return '';
     };
 
-
     const handleScoreTypeChange = (e, index) => {
         const { value } = e.target;
         const newEducations = [...educations];
@@ -268,7 +282,6 @@ const EducationDetails = ({ ticketDetails, nextStep, prevStep }) => {
         } else if (value === 'CGPA' && currentScore.endsWith('%')) {
             newEducations[index].score = currentScore.replace('%', '');
         }
-
         newEducations[index].scoreType = value;
         setEducations(newEducations);
         setErrorMessages(prevErrors => ({
@@ -319,7 +332,6 @@ const EducationDetails = ({ ticketDetails, nextStep, prevStep }) => {
                                 >
                                     Add More
                                 </button>
-
                             )}
                             <div className='input-row'>
                                 <div className="input-wrapper">
@@ -509,11 +521,14 @@ const EducationDetails = ({ ticketDetails, nextStep, prevStep }) => {
                         </div>
                     )}
                     <div className='btnContainer'>
-                        {!isUpdate && (
-                            <button type="submit" className="btn">
-                                Save & Next
-                            </button>
+                        {educations.some(edu => !edu.id) && (
+                            <div className='btnContainer'>
+                                <button type="submit" className="btn">
+                                    Save & Next
+                                </button>
+                            </div>
                         )}
+
                     </div>
                 </div>
             </form>
