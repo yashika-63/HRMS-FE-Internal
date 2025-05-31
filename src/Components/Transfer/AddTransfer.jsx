@@ -76,8 +76,11 @@ const AddTransfer = ({ onClose, onSave }) => {
       toast.success("Transfer request created successfully!");
       onClose();
     } catch (error) {
-      console.error('Error saving transfer:', error);
+      if (error.response?.data?.details?.includes("already has a pending transfer request")) {
+  toast.error(error.response.data.details);
+    } else {
       toast.error('Failed to save transfer. Please try again.');
+    }
     } finally {
       setIsSubmitting(false);
     }
@@ -250,18 +253,6 @@ const AddTransfer = ({ onClose, onSave }) => {
         <div>
           <div className='input-row'>
             <div>
-              <span className="required-marker">*</span>
-              <label htmlFor='workflowId'>Workflow ID:</label>
-              <select className='selectIM' name='id' value={formData.id} onChange={handleInputChange} required >
-                <option value='' ></option>
-                {workflowOptions.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.workflowName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
               <label>Employee ID:</label>
               <input
                 type="text"
@@ -303,7 +294,7 @@ const AddTransfer = ({ onClose, onSave }) => {
           <div className="input-row">
             <div>
               <span className="required-marker">*</span>
-              <label>From Department:</label>
+              <label>Transfer From Department:</label>
               <select
                 name="fromDepartment"
                 value={formData.fromDepartment}
@@ -335,7 +326,7 @@ const AddTransfer = ({ onClose, onSave }) => {
 
             <div>
               <span className="required-marker">*</span>
-              <label>To Department:</label>
+              <label>Transfer To Department:</label>
               <select
                 name="toDepartment"
                 value={formData.toDepartment}
@@ -369,7 +360,7 @@ const AddTransfer = ({ onClose, onSave }) => {
           <div className="input-row">
             <div>
               <span className="required-marker">*</span>
-              <label htmlFor="region">From Region:</label>
+              <label htmlFor="region">Transfer From Region:</label>
               <select
                 name="fromRegion"
                 value={formData.fromRegion}
@@ -401,7 +392,7 @@ const AddTransfer = ({ onClose, onSave }) => {
 
             <div>
               <span className="required-marker">*</span>
-              <label>To Region:</label>
+              <label>Transfer To Region:</label>
               <select
                 name="toRegion"
                 value={formData.toRegion}

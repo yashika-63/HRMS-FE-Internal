@@ -370,7 +370,7 @@ const UpdateTransfer = ({ transferId, onClose, onUpdate }) => {
 
           <div className="input-row">
             <div>
-              <label>From Department:</label>
+              <label>Transfer From Department:</label>
               <select
                 name="fromDepartment"
                 value={formData.fromDepartment}
@@ -392,7 +392,7 @@ const UpdateTransfer = ({ transferId, onClose, onUpdate }) => {
             </div>
 
             <div>
-              <label>To Department:</label>
+              <label>Transfer To Department:</label>
               <select
                 name="toDepartment"
                 value={formData.toDepartment}
@@ -416,7 +416,7 @@ const UpdateTransfer = ({ transferId, onClose, onUpdate }) => {
 
           <div className="input-row">
             <div>
-              <label htmlFor="region">From Region:</label>
+              <label htmlFor="region">Transfer From Region:</label>
               <select
                 name="fromRegion"
                 value={formData.fromRegion}
@@ -438,7 +438,7 @@ const UpdateTransfer = ({ transferId, onClose, onUpdate }) => {
             </div>
 
             <div>
-              <label>To Region:</label>
+              <label>Transfer To Region:</label>
               <select
                 name="toRegion"
                 value={formData.toRegion}

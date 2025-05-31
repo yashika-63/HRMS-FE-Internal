@@ -24,7 +24,7 @@ const AllTrainings = () => {
 
     const [formData, setFormData] = useState({
         heading: '',
-        type: 'Safety',
+        type: '',
         description: '',
         region: '',
         department: '',
@@ -50,7 +50,6 @@ const AllTrainings = () => {
     const [dropdownDepartment, setDropdownDepartment] = useState({
         department: []
     });
-
     const [showAssignPopup, setShowAssignPopup] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState({
         id: '',
@@ -359,7 +358,7 @@ const AllTrainings = () => {
             const transformedData = response.data.content.map(item => ({
                 id: item.id,
                 heading: item.heading || 'No Heading',
-                type: item.type === 1 ? "Mandatory" : "Non-Mandatory",
+                type: item.type,
                 region: item.region || 'No Region',
                 department: item.department || 'No Department',
                 date: item.date || item.createdAt || new Date().toISOString(),
@@ -408,6 +407,7 @@ const AllTrainings = () => {
         setIsEditMode(true);
         setViewMode(false);
         setCurrentTrainingId(training.id);
+        const typeValue = training.type;
 
         try {
 
@@ -415,8 +415,6 @@ const AllTrainings = () => {
                 `http://${strings.localhost}/api/training/${training.id}`
             );
             const trainingData = trainingResponse.data;
-
-            const typeValue = training.type === "Mandatory" ? "Safety" : "Orientation";
 
             const selectedRegion = dropdownData.region.find(
                 r => r.data === training.region
@@ -473,7 +471,7 @@ const AllTrainings = () => {
             console.error('Error setting edit data:', error);
             toast.error('Failed to load training for editing');
 
-            const typeValue = training.type === "Mandatory" ? "Safety" : "Orientation";
+            const typeValue = training.type === "Mandatory" ? 1 : 0;
             const selectedRegion = dropdownData.inductionRegion.find(
                 r => r.data === training.region
             );
@@ -507,7 +505,7 @@ const AllTrainings = () => {
             setViewMode(true);
             setCurrentTrainingId(training.id);
 
-            const typeValue = training.type === "Mandatory" ? "Safety" : "Orientation";
+            const typeValue = training.type === "Mandatory" ? 1 : 0;
 
             const selectedRegion = dropdownData.region.find(
                 r => r.data === training.region
@@ -579,13 +577,8 @@ const AllTrainings = () => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: name === 'type' ? parseInt(value) : value
         }));
-    };
-
-    const handleQuestionChange = (e) => {
-        setNewQuestion(e.target.value);
-        setHasPendingQuestion(e.target.value.trim() !== '');
     };
 
     const handleAddQuestion = () => {
@@ -645,7 +638,7 @@ const AllTrainings = () => {
                 const payload = {
                     ...existingTraining.data,
                     heading: formData.heading,
-                    type: formData.type === 'Safety' ? 1 : 0,
+                    type: formData.type,
                     description: formData.description,
                     region: formData.region,
                     regionId: formData.regionId,
@@ -667,7 +660,7 @@ const AllTrainings = () => {
                     ind.id === currentTrainingId ? {
                         ...ind,
                         heading: formData.heading,
-                        type: formData.type === 'Safety' ? "Mandatory" : "Non-Mandatory",
+                        type: formData.type,
                         description: formData.description,
                         department: formData.department,
                         region: formData.region,
@@ -681,7 +674,7 @@ const AllTrainings = () => {
             } else {
                 const payload = {
                     heading: formData.heading,
-                    type: formData.type === 'Safety' ? 1 : 0,
+                    type: formData.type,
                     description: formData.description,
                     region: formData.region,
                     regionId: formData.regionId,
@@ -708,7 +701,7 @@ const AllTrainings = () => {
                 setTrainings(prev => [...prev, {
                     id: response.data.id,
                     heading: formData.heading,
-                    type: formData.type === 'Safety' ? "Mandatory" : "Non-Mandatory",
+                    type: formData.type === 'Mandatory' ? 1 : 0,
                     region: formData.region,
                     regionId: formData.regionId,
                     department: formData.department,
@@ -947,13 +940,7 @@ const AllTrainings = () => {
                 { name: "heading", label: "Heading", type: "text", required: true },
                 { name: "type", label: "Type", type: "text", required: true },
                 { name: "description", label: "Description", type: "text", required: true },
-                {
-                    name: "region",
-                    label: "Region",
-                    type: "select",
-                    options: ["North", "South", "East", "West"],
-                    required: true
-                }
+                { name: "region", label: "Region", type: "select", options: ["North", "South", "East", "West"], required: true }
             ]
         },
         {
@@ -1076,7 +1063,7 @@ const AllTrainings = () => {
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                 disabled={pagination.currentPage === 0}
                 type="button"
-                className='pagination-btn'
+                className='btn'
             >
                 Previous
             </button>
@@ -1087,7 +1074,7 @@ const AllTrainings = () => {
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 disabled={pagination.currentPage >= pagination.totalPages - 1}
                 type="button"
-                className='pagination-btn'
+                className='btn'
             >
                 Next
             </button>
@@ -1191,6 +1178,10 @@ const AllTrainings = () => {
         </div>
     );
 
+    const getTrainingType = (typeValue) => {
+  return typeValue === 1 ? "Mandatory" : "Non-Mandatory";
+};
+
     // if (isLoading) {
     //     return <div className='coreContainer'>Loading...</div>;
     // }
@@ -1283,7 +1274,6 @@ const AllTrainings = () => {
                         <div className="popup-contentin">
                             <form>
                                 <div className="form-fields">
-                                    {/* Show all steps in view mode, or current step in edit/add mode */}
                                     {(viewMode || currentStep === 1) && (
                                         <div className="popup-group">
                                             <label>
@@ -1404,8 +1394,8 @@ const AllTrainings = () => {
                                                             required
                                                         >
                                                             <option value="">Select Type</option>
-                                                            <option value="Safety">Mandatory</option>
-                                                            <option value="Orientation">Non Mandatory</option>
+                                                            <option value="mandatory">Mandatory</option>
+                                                            <option value="non-mandatory">Non Mandatory</option>
                                                         </select>
                                                     )}
                                                 </div>
@@ -1428,6 +1418,31 @@ const AllTrainings = () => {
                                                             className="selectIM"
                                                             step="0.1"
                                                             required
+                                                        />
+                                                    )}
+                                                </div>
+
+                                                <div className="half-width">
+                                                    <label>Passing Marks{!viewMode && <span className="required-marker">*</span>}</label>
+                                                    {viewMode ? (
+                                                        <input
+                                                            type="number"
+                                                            name="heading"
+                                                            value={formData.heading}
+                                                            onChange={handleInputChange}
+                                                            required
+                                                            readOnly={viewMode}
+                                                            className="read-only-input"
+                                                        />
+                                                    ) : (
+                                                        <input
+                                                            type="number"
+                                                            name="heading"
+                                                            value={formData.heading}
+                                                            onChange={handleInputChange}
+                                                            required
+                                                            readOnly={viewMode}
+                                                            className="selectIM"
                                                         />
                                                     )}
                                                 </div>
@@ -1812,7 +1827,7 @@ const AllTrainings = () => {
                                 <tr key={training.id}>
                                     <td>{index + 1}</td>
                                     <td>{training.heading}</td>
-                                    <td>{training.type ? "Mandatory" : "Non-Mandatory"}</td>
+                                    <td>{getTrainingType(training.type)}</td>
                                     <td>{training.region}</td>
                                     <td>{training.date ? new Date(training.date).toLocaleDateString() : 'N/A'}</td>
                                     <td>{training.department}</td>

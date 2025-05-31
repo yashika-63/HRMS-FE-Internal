@@ -349,13 +349,7 @@ const AddNewInduction = ({ induction, onClose }) => {
                 { name: "heading", label: "Heading", type: "text", required: true },
                 { name: "type", label: "Type", type: "text", required: true },
                 { name: "description", label: "Description", type: "text", required: true },
-                {
-                    name: "region",
-                    label: "Region",
-                    type: "select",
-                    options: ["North", "South", "East", "West"],
-                    required: true
-                }
+                { name: "region", label: "Region", type: "select", options: ["North", "South", "East", "West"], required: true }
             ]
         },
         {

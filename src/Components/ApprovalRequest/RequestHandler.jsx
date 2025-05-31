@@ -8,6 +8,7 @@ import TimesheetApprovalRequest from "./TimesheetApprovalRequest";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookOpen, faBullhorn, faCalendarCheck, faCheckToSlot, faPeopleArrowsLeftRight, faReceipt, faStar, faStopwatch, faTree, faUserTimes } from "@fortawesome/free-solid-svg-icons";
 import ConfirmationRequest from "./ConfirmationRequest";
+import TransferApprovalRequest from "./TransferApprovalRequest";
 
 
 
@@ -69,7 +70,7 @@ const Requesthandler = () => {
             {activeSection === 'Training' && <TrainingApprovalRequest />}
             {activeSection === 'Timesheet' && <TimesheetApprovalRequest />}
             {activeSection === 'Confirmation' && <ConfirmationRequest />}
-            {activeSection === 'Transfer' && <ConfirmationRequest />}
+            {activeSection === 'Transfer' && <TransferApprovalRequest />}
 
 
 

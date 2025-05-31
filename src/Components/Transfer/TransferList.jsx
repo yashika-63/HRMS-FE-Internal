@@ -10,6 +10,7 @@ import { strings } from '../../string';
 
 const TransferList = () => {
     const companyId = localStorage.getItem('companyId');
+    const currentYear = new Date().getFullYear();
     const [transfers, setTransfers] = useState([]);
     const [filteredTransfers, setFilteredTransfers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,7 +20,7 @@ const TransferList = () => {
     const [filters, setFilters] = useState({
         department: '',
         region: '',
-        year: '',
+        year: currentYear.toString(),
         employeeName: ''
     });
     const [showAddTransfer, setShowAddTransfer] = useState(false);
@@ -64,44 +65,57 @@ const TransferList = () => {
         return years;
     };
 
-   const handleSearch = async (paramsObj = { ...filters, employeeName }) => {
-    try {
-        setLoading(true);
-        const params = new URLSearchParams();
+    const handleSearch = async (paramsObj = { ...filters, employeeName }) => {
+        try {
+            setLoading(true);
+            const params = new URLSearchParams();
 
-        if (paramsObj.department) {
-            const dept = dropdownData.department.find(d => d.data === paramsObj.department);
-            if (dept) params.append('deptId', dept.masterId);
-        }
-        if (paramsObj.region) {
-            const region = dropdownData.region.find(r => r.data === paramsObj.region);
-            if (region) params.append('regionId', region.masterId);
-        }
-        if (paramsObj.year) {
-            params.append('year', paramsObj.year);
-        }
-        if (paramsObj.employeeName) {
-            params.append('employeeName', paramsObj.employeeName);
-        }
+            if (paramsObj.department) {
+                const dept = dropdownData.department.find(d => d.data === paramsObj.department);
+                if (dept) params.append('deptId', dept.masterId);
+            }
+            if (paramsObj.region) {
+                const region = dropdownData.region.find(r => r.data === paramsObj.region);
+                if (region) params.append('regionId', region.masterId);
+            }
+            if (paramsObj.year) {
+                params.append('year', paramsObj.year);
+            }
+            if (paramsObj.employeeName) {
+                params.append('employeeName', paramsObj.employeeName);
+            }
 
-        const response = await fetch(`http://${strings.localhost}/api/Transfer-request/search-Transfer-Request?${params.toString()}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch filtered transfers');
+            const response = await fetch(`http://${strings.localhost}/api/Transfer-request/search-Transfer-Request?${params.toString()}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch filtered transfers');
+            }
+            const data = await response.json();
+            setFilteredTransfers(data.content);
+            setLoading(false);
+        } catch (err) {
+            setError(err.message);
+            setLoading(false);
+            console.error('Error fetching filtered transfers:', err);
         }
-        const data = await response.json();
-        setFilteredTransfers(data.content);
-        setLoading(false);
-    } catch (err) {
-        setError(err.message);
-        setLoading(false);
-        console.error('Error fetching filtered transfers:', err);
-    }
-};
+    };
 
 
     useEffect(() => {
         handleSearch();
     }, [filters]);
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}-${month}-${year}`;
+    };
 
     const handleYearChange = (e) => {
         setFilters(prev => ({
@@ -278,7 +292,7 @@ const TransferList = () => {
                                 <td>{transfer.toDepartment}</td>
                                 <td>{transfer.fromRegion}</td>
                                 <td>{transfer.toRegion}</td>
-                                <td>{transfer.transferDate}</td>
+                                <td>{formatDate(transfer.transferDate)}</td>
                                 <td>{transfer.reportingManagerName}</td>
                                 <td>{transfer.reason}</td>
                                 <td>

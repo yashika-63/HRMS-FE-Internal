@@ -4,26 +4,35 @@ import { strings } from "../../string";
 import { showToast } from "../../Api.jsx";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ViewTransferApproval from "./ViewTransferApproval.jsx";
 
 const TransferApprovalRequest = () => {
-    const [timesheets, setTimesheets] = useState([]);
-    const [selectedTimesheet, setSelectedTimesheet] = useState(null);
-    const [expandedDays, setExpandedDays] = useState({});
-    const [showModal, setShowModal] = useState(false);
-    const [showConfirmationDialog, setShowConfirmationDialog] = useState(false); 
-    const [actionToConfirm, setActionToConfirm] = useState(null); 
+    const [reportingManagerTransfers, setReportingManagerTransfers] = useState([]);
+    const [workflowTransfers, setWorkflowTransfers] = useState([]);
+    const [transferToView, setTransferToView] = useState(null);
+    const [showViewModal, setShowViewModal] = useState(false);
     const reportingManagerId = localStorage.getItem('employeeId');
+    const companyRole = localStorage.getItem("companyRole");
+    const companyId = localStorage.getItem('companyId');
+    const division = localStorage.getItem('division');
+    const department = localStorage.getItem('department');
 
     useEffect(() => {
-        fetchTimesheets();
+        fetchTransfers();
     }, []);
 
-    const fetchTimesheets = async () => {
+    const fetchTransfers = async () => {
         try {
-            const response = await axios.get(`http://${strings.localhost}/api/timesheetmain/timesheets/pending/1`);
-            setTimesheets(response.data);
+            const [managerResponse, workflowResponse] = await Promise.all([
+                axios.get(`http://${strings.localhost}/api/Transfer-request/get-transfer-by-reporting/${reportingManagerId}?currentReportingActionTaken=false`),
+                axios.get(`http://${strings.localhost}/api/transfer-approval/get-by-filter/${companyId}/${division}/${department}/${companyRole}`)
+            ]);
+
+            setReportingManagerTransfers(managerResponse.data || []);
+            setWorkflowTransfers(workflowResponse.data || []);
         } catch (error) {
             console.error("Error fetching transfers:", error);
+            showToast("Failed to fetch transfer requests", 'error');
         }
     };
 
@@ -33,94 +42,37 @@ const TransferApprovalRequest = () => {
         return date.toLocaleDateString('en-GB', options).replace(/\//g, '-');
     };
 
-    const handleShowDetails = (timesheet) => {
-        setSelectedTimesheet(timesheet);
-        setShowModal(true);
+    const handleApproveComplete = () => {
+        fetchTransfers();
+        setShowViewModal(false);
     };
 
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setSelectedTimesheet(null);
+    const handleRejectComplete = () => {
+        fetchTransfers();
+        setShowViewModal(false);
     };
 
-    const toggleDayDetails = (dayId) => {
-        setExpandedDays(prevState => ({
-            ...prevState,
-            [dayId]: !prevState[dayId]
-        }));
+    const handleViewTransfer = (transfer, isWorkflowTransfer = false) => {
+        setTransferToView({ ...transfer, isWorkflowTransfer });
+        setShowViewModal(true);
     };
 
-    const handleApprove = async () => {
-        if (!selectedTimesheet) {
-            console.error("No transfer selected for approval.");
-            return;
-        }
-
-        try {
-            const response = await axios.put(`http://${strings.localhost}/api/timesheetmain/timesheets/approveOrReject/${selectedTimesheet.id}?approved=true&rejected=false`);
-            showToast("Transfer approved successfully.", 'success');
-            handleCloseModal();
-            fetchTimesheets();
-        } catch (error) {
-            console.error("Error approving transfer:", error);
-            showToast("Failed to approve transfer. Please try again.", 'error');
-        }
+    const handleCloseViewModal = () => {
+        setShowViewModal(false);
+        setTransferToView(null);
     };
 
-    const handleReject = async () => {
-        if (!selectedTimesheet) {
-            showToast("No transfer selected for approval.", 'warn');
-            return;
-        }
-
-        try {
-            const response = await axios.put(`http://${strings.localhost}/api/timesheetmain/timesheets/approveOrReject/${selectedTimesheet.id}?approved=false&rejected=true`);
-            showToast("Transfer rejected successfully", 'success');
-            handleCloseModal();
-            fetchTimesheets();
-        } catch (error) {
-            console.error("Error rejecting transfer:", error);
-            showToast("Failed to reject transfer. Please try again.", 'error');
-        }
-    };
-
-    const handleApproveWithConfirmation = () => {
-        setActionToConfirm('approve');
-        setShowModal(false);
-        setShowConfirmationDialog(true);
-    };
-
-    const handleRejectWithConfirmation = () => {
-        setActionToConfirm('reject');
-        setShowModal(false);
-        setShowConfirmationDialog(true);
-    };
-
-    const handleConfirmAction = () => {
-        if (actionToConfirm === 'approve') {
-            handleApprove();
-        } else if (actionToConfirm === 'reject') {
-            handleReject();
-        }
-        setShowConfirmationDialog(false);
-    };
-
-    const handleCancelAction = () => {
-        setShowConfirmationDialog(false);
-    };
-
-    const editdropdownTimesheet = (timesheet) => (
+    const editdropdownTransfer = (transfer, isWorkflowTransfer = false) => (
         <div className="dropdown">
             <button className="dots-button">
                 <FontAwesomeIcon icon={faEllipsisV} />
             </button>
             <div className="dropdown-content">
-
                 <div>
                     <button type="button"
                         onClick={(e) => {
                             e.stopPropagation();
-                            handleShowDetails(timesheet);
+                            handleViewTransfer(transfer, isWorkflowTransfer);
                         }}> View </button>
                 </div>
             </div>
@@ -129,129 +81,107 @@ const TransferApprovalRequest = () => {
 
     return (
         <div className='coreContainer'>
+            <h2>Reporting Manager Transfers</h2>
             <table className='Attendance-table'>
                 <thead>
                     <tr>
                         <th>Sr.No</th>
                         <th>Employee Id</th>
                         <th>Employee Name</th>
-                       
-                        <th>From Date</th>
-                        <th>To Date</th>
-                        {/* <th>Request Status</th> */}
-                        <th>Send For Approval On </th>
+                        <th>From Department</th>
+                        <th>To Department</th>
+                        <th>From Region</th>
+                        <th>To Region</th>
+                        <th>Transfer Date</th>
+                        <th>Reason</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {timesheets.length > 0 ? (
-                        timesheets.map((timesheet, index) => (
-                            <tr key={timesheet.id} onClick={() => handleShowDetails(timesheet)} style={{ cursor: "pointer" }}>
+                    {reportingManagerTransfers.length > 0 ? (
+                        reportingManagerTransfers.map((transfer, index) => (
+                            <tr key={transfer.id} style={{ cursor: "pointer" }}>
                                 <td>{index + 1}</td>
-                                <td  style={{ cursor: 'pointer', color: 'blue' }}>{timesheet.employee?.employeeId}</td>
-                                <td>{timesheet.employee?.firstName || "N/A"}</td>
-                               
-                                <td>{formatDate(timesheet.fromDate)}</td>
-                                <td>{formatDate(timesheet.toDate)}</td>
-                                {/* <td>{timesheet.requestStatus || "Pending"}</td> */}
-                                <td>{timesheet.dateSendForApproval || "N/A"}</td>
-                                <td>{editdropdownTimesheet(timesheet)}</td>
-                                {/* <td>
-                                    <button type="button" className="textbutton" onClick={(e) => { e.stopPropagation(); handleShowDetails(timesheet); }}>
-                                        Show Details
-                                    </button>
-                                </td> */}
+                                <td style={{ cursor: 'pointer', color: 'blue' }}>
+                                    {transfer.employee?.employeeId || "N/A"}
+                                </td>
+                                <td>
+                                    {transfer.employeeName ||
+                                        `${transfer.employee?.firstName || ""} ${transfer.employee?.lastName || ""}`.trim() || "N/A"}
+                                </td>
+                                <td>{transfer.fromDepartment || "N/A"}</td>
+                                <td>{transfer.toDepartment || "N/A"}</td>
+                                <td>{transfer.fromRegion || "N/A"}</td>
+                                <td>{transfer.toRegion || "N/A"}</td>
+                                <td>{formatDate(transfer.transferDate)}</td>
+                                <td>{transfer.reason || "N/A"}</td>
+                                <td>{editdropdownTransfer(transfer, false)}</td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="7">No pending transfers found</td>
+                            <td colSpan="10">No pending reporting manager transfers found</td>
                         </tr>
                     )}
                 </tbody>
             </table>
 
-            {showModal && selectedTimesheet && (
+            <h2>Workflow Transfers</h2>
+            <table className='Attendance-table'>
+                <thead>
+                    <tr>
+                        <th>Sr.No</th>
+                        <th>Employee Id</th>
+                        <th>Employee Name</th>
+                        <th>From Department</th>
+                        <th>To Department</th>
+                        <th>From Region</th>
+                        <th>To Region</th>
+                        <th>Transfer Date</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {workflowTransfers.length > 0 ? (
+                        workflowTransfers.map((transfer, index) => (
+                            <tr key={transfer.id} style={{ cursor: "pointer" }}>
+                                <td>{index + 1}</td>
+                                <td style={{ cursor: 'pointer', color: 'blue' }}>
+                                    {transfer.employee?.employeeId || "N/A"}
+                                </td>
+                                <td>
+                                    {transfer.employeeName ||
+                                        `${transfer.employee?.firstName || ""} ${transfer.employee?.lastName || ""}`.trim() || "N/A"}
+                                </td>
+                                <td>{transfer.fromDepartment || "N/A"}</td>
+                                <td>{transfer.toDepartment || "N/A"}</td>
+                                <td>{transfer.fromRegion || "N/A"}</td>
+                                <td>{transfer.toRegion || "N/A"}</td>
+                                <td>{formatDate(transfer.transferDate)}</td>
+                                <td>{transfer.reason || "N/A"}</td>
+                                <td>{editdropdownTransfer(transfer, true)}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="10">No pending workflow transfers found</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+
+            {showViewModal && transferToView && (
                 <div className="modal-overlay">
-                    <div className="modal-content">
-                        <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <h3>Transfer Details</h3>
-                        <table className="Attendance-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
-                                    <th>Total Time</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {selectedTimesheet.timesheetDays && selectedTimesheet.timesheetDays.length > 0 ? (
-                                    selectedTimesheet.timesheetDays.map((day) => (
-                                        <React.Fragment key={day.id}>
-                                            <tr onClick={() => toggleDayDetails(day.id)} style={{ cursor: "pointer" }}>
-                                                <td>{formatDate(day.date)}</td>
-                                                <td>{day.dayStartTime}</td>
-                                                <td>{day.dayEndTime}</td>
-                                                <td>{day.totalTime}</td>
-                                                <td>
-                                                    <button className="textbutton" onClick={(e) => { e.stopPropagation(); toggleDayDetails(day.id); }}>
-                                                        {expandedDays[day.id] ? "Hide Details" : "Show Details"}
-                                                    </button>
-                                                </td>
-                                            </tr>
-
-                                            {expandedDays[day.id] && day.timesheetDayDetails && day.timesheetDayDetails.length > 0 && (
-                                                <tr className="details-row">
-                                                    <td colSpan="5">
-                                                        <table className="nested-table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Task Name</th>
-                                                                    <th>Hours Spent</th>
-                                                                    <th>Description</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {day.timesheetDayDetails.map((detail) => (
-                                                                    <tr key={detail.id}>
-                                                                        <td>{detail.taskName}</td>
-                                                                        <td>{detail.hoursSpent}</td>
-                                                                        <td>{detail.taskDescription}</td>
-                                                                    </tr>
-                                                                ))}
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </React.Fragment>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="5">No transfer details available</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                        <div className='form-controls'>
-                            <button className='btn' type='button' onClick={handleApproveWithConfirmation}>Approve</button>
-                            <button className='outline-btn' type='button' onClick={handleRejectWithConfirmation}>Reject</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showConfirmationDialog && (
-                <div className="add-popup">
-                    <div>
-                        <h3 style={{ textAlign: 'center' }}>Are you sure?</h3>
-                        <p style={{ textAlign: 'center' }}>Do you want to {actionToConfirm} this transfer?</p>
-                        <div className="btnContainer">
-                            <button type="button" className="btn" onClick={handleConfirmAction}>Yes</button>
-                            <button type="button" className="outline-btn" onClick={handleCancelAction}>No</button>
-                        </div>
+                    <div className="modal-content" style={{ maxWidth: '900px' }}>
+                        <span className="close" onClick={handleCloseViewModal}>&times;</span>
+                        <ViewTransferApproval
+                            transferId={transferToView.id}
+                            onClose={handleCloseViewModal}
+                            onApproveComplete={handleApproveComplete}
+                            onRejectComplete={handleRejectComplete}
+                            isWorkflowTransfer={transferToView.isWorkflowTransfer}
+                        />
                     </div>
                 </div>
             )}
